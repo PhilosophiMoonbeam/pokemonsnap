@@ -405,39 +405,43 @@ void func_80003530(u16* data, u8* outBuffer) {
         if (!value) {
             VPK0_MEM_GET_BITS(*outPtr++, 8);
         } else {
-            lengthsNode = lengthsTree;
+            HuffmanTreeNode* lengthsCursor = lengthsTree;
+
             if (sampleMethod != 0) {
+                HuffmanTreeNode* sampleCursor = offsetsTree;
+
                 sampleAdjust = 0;
-                sampleNode = offsetsTree;
-                while (sampleNode->left != NULL) {
+                while (sampleCursor->left != NULL) {
                     VPK0_MEM_GET_BITS(value, 1);
-                    sampleNode = !value ? sampleNode->left : sampleNode->right;
+                    sampleCursor = !value ? sampleCursor->left : sampleCursor->right;
                 }
-                VPK0_MEM_GET_BITS(value, sampleNode->value);
+                VPK0_MEM_GET_BITS(value, sampleCursor->value);
                 if (value <= 2) {
+                    HuffmanTreeNode* offsetsCursor = offsetsTree;
+
                     sampleAdjust = value + 1;
-                    offsetsNode = offsetsTree;
-                    while (offsetsNode->left != NULL) {
+                    while (offsetsCursor->left != NULL) {
                         VPK0_MEM_GET_BITS(value, 1);
-                        offsetsNode = !value ? offsetsNode->left : offsetsNode->right;
+                        offsetsCursor = !value ? offsetsCursor->left : offsetsCursor->right;
                     }
-                    VPK0_MEM_GET_BITS(value, offsetsNode->value);
+                    VPK0_MEM_GET_BITS(value, offsetsCursor->value);
                 }
                 copySrc = outPtr - value * 4 - sampleAdjust + 8;
             } else {
-                offsetsNode = offsetsTree;
-                while (offsetsNode->left != NULL) {
+                HuffmanTreeNode* offsetsCursor = offsetsTree;
+
+                while (offsetsCursor->left != NULL) {
                     VPK0_MEM_GET_BITS(value, 1);
-                    offsetsNode = !value ? offsetsNode->left : offsetsNode->right;
+                    offsetsCursor = !value ? offsetsCursor->left : offsetsCursor->right;
                 }
-                VPK0_MEM_GET_BITS(value, offsetsNode->value);
+                VPK0_MEM_GET_BITS(value, offsetsCursor->value);
                 copySrc = outPtr - value;
             }
-            while (lengthsNode->left != NULL) {
+            while (lengthsCursor->left != NULL) {
                 VPK0_MEM_GET_BITS(value, 1);
-                lengthsNode = !value ? lengthsNode->left : lengthsNode->right;
+                lengthsCursor = !value ? lengthsCursor->left : lengthsCursor->right;
             }
-            VPK0_MEM_GET_BITS(value, lengthsNode->value);
+            VPK0_MEM_GET_BITS(value, lengthsCursor->value);
             while (value-- > 0) {
                 *(outPtr++) = *(copySrc++);
             }
