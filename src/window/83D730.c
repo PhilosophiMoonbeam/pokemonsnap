@@ -146,8 +146,7 @@ void UIMem_Deallocate(void* data) {
 }
 
 #ifdef NON_MATCHING
-u8* UIMem_Reallocate(u8* data_, u32 size) {
-    u8* data = data_;
+u8* UIMem_Reallocate(u8* data, u32 size) {
     HeapChunk* next;
     HeapChunk* afterNext;
     u8* newData;
