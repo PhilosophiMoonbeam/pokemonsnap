@@ -325,15 +325,15 @@ void func_80003530(u16* data, u8* outBuffer) {
     HuffmanTreeNode* lengthsTree;
     HuffmanTreeNode* offNode;
     HuffmanTreeNode* lenNode;
+    u32 sampleMethod;
+    HuffmanTreeNode* offStack[20];
+    HuffmanTreeNode* lenStack[20];
     u8* outPtr;
     u8* outEnd;
     u8* copySrc;
     u16* csr;
     u32 tempValue;
     s32 numBits;
-    u32 sampleMethod;
-    HuffmanTreeNode* offStack[20];
-    HuffmanTreeNode* lenStack[20];
     s32 offStackSize;
     s32 lenStackSize;
     s32 value;
