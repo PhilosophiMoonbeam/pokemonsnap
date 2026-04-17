@@ -343,14 +343,18 @@ void func_80003530(u16* data, u8* outBuffer) {
     s32 sampleAdjust;
 
     poolPtr = pool;
-    tempValue = ((u32) data[3] << 16) | data[4];
+    tempValue = data[0];
+    tempValue = (tempValue << 16) | data[1];
+    tempValue = (tempValue << 16) | data[2];
+    tempValue = (tempValue << 16) | data[3];
     numBits = 8;
     csr = data + 5;
     outPtr = outBuffer;
     // data[0..1] is the "vpk0" magic, data[2..3] is decompressed size,
     // and the high byte of data[4] stores the sample method.
-    outEnd = outBuffer + (((u32) data[2] << 16) | data[3]);
-    sampleMethod = data[4] >> 8;
+    outEnd = outBuffer + tempValue;
+    tempValue = (tempValue << 16) | data[4];
+    sampleMethod = (tempValue >> 8) & 0xFF;
 
     offStackSize = 0;
     offStack[0] = NULL;
