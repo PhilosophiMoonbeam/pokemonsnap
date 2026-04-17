@@ -321,11 +321,8 @@ void func_80003530(u16* data, u8* outBuffer) {
 
     HuffmanTreeNode pool[65];
     HuffmanTreeNode* poolPtr;
-    HuffmanTreeNode* sampleNode;
     HuffmanTreeNode* offsetsTree;
     HuffmanTreeNode* lengthsTree;
-    HuffmanTreeNode* offsetsNode;
-    HuffmanTreeNode* lengthsNode;
     HuffmanTreeNode* offNode;
     HuffmanTreeNode* lenNode;
     HuffmanTreeNode* offStack[20];
