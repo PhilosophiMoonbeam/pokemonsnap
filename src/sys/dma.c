@@ -338,6 +338,7 @@ void func_80003530(u16* data, u8* outBuffer) {
     s32 lenStackSize;
     s32 value;
     s32 sampleAdjust;
+    s32 unusedPad;
 
     poolPtr = pool;
     tempValue = data[0];
