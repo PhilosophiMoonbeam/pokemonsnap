@@ -190,12 +190,12 @@ u8* UIMem_Reallocate(u8* data_, u32 size) {
         UIMem_Unlink(next);
     }
 
-    oldSize = (GET_CHUNK(data))->size;
-
     newData = UIMem_Allocate(size);
     if (newData == NULL) {
         return NULL;
     }
+
+    oldSize = (GET_CHUNK(data))->size;
 
     for (i = 0; i < oldSize; i++) {
         newData[i] = data[i];
