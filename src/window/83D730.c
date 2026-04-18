@@ -174,20 +174,20 @@ u8* UIMem_Reallocate(u8* data, u32 size) {
         }
 
         next = NEXT_CHUNK(chunk);
-        if (next >= D_803A6908_87A0B8 || next->allocated) {
-            break;
+        if (next < D_803A6908_87A0B8) {
+            if (!next->allocated) {
+                afterNext = NEXT_CHUNK(next);
+                if (chunk->size + next->size >= size_with_header) {
+                    if (afterNext < D_803A6908_87A0B8) {
+                        PREV_CHUNK(afterNext) = chunk;
+                    }
+                    chunk->size += next->size;
+                    UIMem_Unlink(next);
+                    continue;
+                }
+            }
         }
-
-        afterNext = NEXT_CHUNK(next);
-        if (chunk->size + next->size < size_with_header) {
-            break;
-        }
-
-        if (afterNext < D_803A6908_87A0B8) {
-            PREV_CHUNK(afterNext) = chunk;
-        }
-        chunk->size += next->size;
-        UIMem_Unlink(next);
+        break;
     }
 
     newData = UIMem_Allocate(size);
