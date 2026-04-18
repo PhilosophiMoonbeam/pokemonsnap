@@ -106,7 +106,95 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
     return &func_8009BC74()[arg0];
 }
 
+#ifdef NON_MATCHING
+
+typedef struct UnkWindow847EC4 {
+    u16* buf;
+    s32 width;
+    s32 height;
+} UnkWindow847EC4;
+
+static u16 func_80374714_847EC4_average(u16 a, u16 b, u16 c, u16 d) {
+    s32 r;
+    s32 g;
+    s32 bl;
+
+    r = (a & 0xF800) + (b & 0xF800) + (c & 0xF800) + (d & 0xF800);
+    g = (a & 0x07C0) + (b & 0x07C0) + (c & 0x07C0) + (d & 0x07C0);
+    bl = (a & 0x003E) + (b & 0x003E) + (c & 0x003E) + (d & 0x003E);
+
+    return ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
+}
+
+static void func_80374714_847EC4_store(Bitmap* bitmap, s32 row, s32 col, u16 value) {
+    u8* dst;
+
+    dst = (u8*) bitmap->buf + (((row * bitmap->width_img) + col) * sizeof(u16));
+    if (row & 1) {
+        dst = (u8*) (((uintptr_t) dst) ^ 4);
+    }
+    *(u16*) dst = value;
+}
+
+s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
+    Bitmap* bitmap;
+    UnkWindow847EC4* src;
+    s32 pixelCount;
+    s32 y;
+    s32 x;
+    s32 rowInBitmap;
+    s32 tileHeight;
+
+    bitmap = sprite->bitmap;
+    if (photo == NULL) {
+        src = NULL;
+    } else {
+        src = (UnkWindow847EC4*) func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo);
+    }
+
+    if (src == NULL) {
+        u16* dst;
+
+        pixelCount = bitmap->width_img * sprite->height;
+        dst = bitmap->buf;
+        for (y = 0; y < pixelCount; y++) {
+            dst[y] = 0;
+        }
+        osWritebackDCache(bitmap->buf, pixelCount);
+        return 1;
+    }
+
+    rowInBitmap = 0;
+    tileHeight = bitmap->actualHeight;
+    for (y = 0; y < sprite->height; y++) {
+        u16* srcRow0;
+        u16* srcRow1;
+
+        if (rowInBitmap >= tileHeight) {
+            rowInBitmap = 0;
+            bitmap++;
+            tileHeight = bitmap->actualHeight;
+        }
+
+        srcRow0 = src->buf + ((y * src->width) * 2);
+        srcRow1 = srcRow0 + src->width;
+
+        for (x = 0; x < sprite->width; x++) {
+            func_80374714_847EC4_store(bitmap, rowInBitmap, x,
+                func_80374714_847EC4_average(srcRow0[0], srcRow0[1], srcRow1[0], srcRow1[1]));
+            srcRow0 += 2;
+            srcRow1 += 2;
+        }
+
+        rowInBitmap++;
+    }
+
+    osWritebackDCache(sprite->bitmap->buf, sprite->bitmap->width_img * sprite->height);
+    return 0;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/window/847B60/func_80374714_847EC4.s")
+#endif
 
 void func_80374D20_8484D0(void) {
     func_8009FBC4();
