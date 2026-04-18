@@ -394,7 +394,7 @@ extern u16 sSinTable[];
     }
 
 Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
-    UnkPinkRat* pinkRat;
+    Effect* pinkRat;
     Particle* temp_v0;
     s32 unused1;
     u8* var_s1;
@@ -534,12 +534,12 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             temp_s0 = *var_s1++;
                             temp_s0 <<= 8;
                             temp_s0 += *var_s1++;
-                            pinkRat = fx_createEffect(arg0->unk_08, temp_s0);
+                            pinkRat = fx_createEffect(arg0->bankID, temp_s0);
                             if (pinkRat != NULL) {
-                                pinkRat->unk_14.x = arg0->unk_20.x;
-                                pinkRat->unk_14.y = arg0->unk_20.y;
-                                pinkRat->unk_14.z = arg0->unk_20.z;
-                                pinkRat->unk_04 = arg0->unk_04;
+                                pinkRat->pos.x = arg0->pos.x;
+                                pinkRat->pos.y = arg0->pos.y;
+                                pinkRat->pos.z = arg0->pos.z;
+                                pinkRat->effectID = arg0->effectID;
                             }
                             break;
                         case 0xA6:
@@ -549,22 +549,22 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             sp88 = *var_s1++;
                             sp88 <<= 8;
                             sp88 += *var_s1++;
-                            arg0->unk_1E = temp_s0 + (s32) (randFloat() * sp88);
+                            arg0->lifetime = temp_s0 + (s32) (randFloat() * sp88);
                             break;
                         case 0xA7:
                             temp_s0 = *var_s1++;
                             if (temp_s0 >= (s32) (randFloat() * 100.0f)) {
-                                arg0->unk_1E = 1;
+                                arg0->lifetime = 1;
                                 goto EXIT;
                             }
                             break;
                         case 0xA8:
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_20.x += sp80 * randFloat();
+                            arg0->pos.x += sp80 * randFloat();
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_20.y += sp80 * randFloat();
+                            arg0->pos.y += sp80 * randFloat();
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_20.z += sp80 * randFloat();
+                            arg0->pos.z += sp80 * randFloat();
                             break;
                         case 0xA9:
                             var_s1 = func_800A27B0(var_s1, &sp80);
@@ -578,28 +578,28 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             sp88 <<= 8;
                             sp88 += *var_s1++;
                             temp_s0 += (s32) (sp88 * randFloat());
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->unk_08, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
-                                temp_v0->unk_20.x = arg0->unk_20.x;
-                                temp_v0->unk_20.y = arg0->unk_20.y;
-                                temp_v0->unk_20.z = arg0->unk_20.z;
-                                temp_v0->unk_04 = arg0->unk_04;
-                                temp_v0->unk_58 = arg0->unk_58;
-                                fx_updateStruct(temp_v0, arg0, (s32) arg0->unk_08 >> 3);
+                                temp_v0->pos.x = arg0->pos.x;
+                                temp_v0->pos.y = arg0->pos.y;
+                                temp_v0->pos.z = arg0->pos.z;
+                                temp_v0->effectID = arg0->effectID;
+                                temp_v0->fx = arg0->fx;
+                                fx_updateStruct(temp_v0, arg0, arg0->bankID >> 3);
                             }
                             break;
                         case 0xAB:
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_2C.x *= sp80;
-                            arg0->unk_2C.y *= sp80;
-                            arg0->unk_2C.z *= sp80;
+                            arg0->vel.x *= sp80;
+                            arg0->vel.y *= sp80;
+                            arg0->vel.z *= sp80;
                             break;
                         case 0xAC:
-                            var_s1 = func_800A27B0(func_800A27B0(func_800A27E8(var_s1, &arg0->unk_0E), &arg0->unk_44), &sp80);
-                            arg0->unk_44 += sp80 * randFloat();
-                            if (arg0->unk_0E == 1) {
-                                arg0->unk_0E = 0;
-                                arg0->unk_40 = arg0->unk_44;
+                            var_s1 = func_800A27B0(func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget), &sp80);
+                            arg0->sizeTarget += sp80 * randFloat();
+                            if (arg0->sizeTargetLength == 1) {
+                                arg0->sizeTargetLength = 0;
+                                arg0->size = arg0->sizeTarget;
                             }
                             break;
                         case 0xAD:
@@ -647,131 +647,131 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             temp_s0 = *var_s1++;
                             temp_s0 <<= 8;
                             temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->unk_08, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
-                                temp_v0->unk_20.x = arg0->unk_20.x;
-                                temp_v0->unk_20.y = arg0->unk_20.y;
-                                temp_v0->unk_20.z = arg0->unk_20.z;
-                                temp_v0->unk_2C.x = arg0->unk_2C.x;
-                                temp_v0->unk_2C.y = arg0->unk_2C.y;
-                                temp_v0->unk_2C.z = arg0->unk_2C.z;
-                                temp_v0->unk_04 = arg0->unk_04;
-                                temp_v0->unk_58 = arg0->unk_58;
-                                fx_updateStruct(temp_v0, arg0, arg0->unk_08 >> 3);
+                                temp_v0->pos.x = arg0->pos.x;
+                                temp_v0->pos.y = arg0->pos.y;
+                                temp_v0->pos.z = arg0->pos.z;
+                                temp_v0->vel.x = arg0->vel.x;
+                                temp_v0->vel.y = arg0->vel.y;
+                                temp_v0->vel.z = arg0->vel.z;
+                                temp_v0->effectID = arg0->effectID;
+                                temp_v0->fx = arg0->fx;
+                                fx_updateStruct(temp_v0, arg0, arg0->bankID >> 3);
                             }
                             break;
                         case 0xBA:
                             sp80 = *var_s1++;
-                            arg0->unk_4C.r += sp80 * randFloat();
+                            arg0->targetPrimColor.r += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_4C.g += sp80 * randFloat();
+                            arg0->targetPrimColor.g += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_4C.b += sp80 * randFloat();
+                            arg0->targetPrimColor.b += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_4C.a += sp80 * randFloat();
+                            arg0->targetPrimColor.a += sp80 * randFloat();
 
-                            if (arg0->unk_10 == 0) {
-                                arg0->unk_48 = arg0->unk_4C;
+                            if (arg0->targetPrimColorLength == 0) {
+                                arg0->primColor = arg0->targetPrimColor;
                             }
                             break;
                         case 0xBB:
                             sp80 = *var_s1++;
-                            arg0->unk_54.r += sp80 * randFloat();
+                            arg0->targetEnvColor.r += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_54.g += sp80 * randFloat();
+                            arg0->targetEnvColor.g += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_54.b += sp80 * randFloat();
+                            arg0->targetEnvColor.b += sp80 * randFloat();
                             sp80 = *var_s1++;
-                            arg0->unk_54.a += sp80 * randFloat();
-                            if (arg0->unk_12 == 0) {
-                                arg0->unk_50 = arg0->unk_54;
+                            arg0->targetEnvColor.a += sp80 * randFloat();
+                            if (arg0->targetEnvColorLength == 0) {
+                                arg0->envColor = arg0->targetEnvColor;
                             }
                             break;
                         case 0xBC:
-                            arg0->unk_0B = *var_s1++;
+                            arg0->dataID = *var_s1++;
                             sp80 = *var_s1++;
-                            arg0->unk_0B += sp80 * randFloat();
+                            arg0->dataID += sp80 * randFloat();
                             break;
                         case 0xBD:
                             var_s1 = func_800A27B0(var_s1, &sp80);
                             var_s1 = func_800A27B0(var_s1, &sp7C);
                             sp80 += sp7C * randFloat();
-                            sp7C = sqrtf(SQ(arg0->unk_2C.x) + SQ(arg0->unk_2C.y) + SQ(arg0->unk_2C.z));
+                            sp7C = sqrtf(SQ(arg0->vel.x) + SQ(arg0->vel.y) + SQ(arg0->vel.z));
                             sp80 /= sp7C;
-                            arg0->unk_2C.x *= sp80;
-                            arg0->unk_2C.y *= sp80;
-                            arg0->unk_2C.z *= sp80;
+                            arg0->vel.x *= sp80;
+                            arg0->vel.y *= sp80;
+                            arg0->vel.z *= sp80;
                             break;
                         case 0xBE:
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_2C.x *= sp80;
+                            arg0->vel.x *= sp80;
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_2C.y *= sp80;
+                            arg0->vel.y *= sp80;
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->unk_2C.z *= sp80;
+                            arg0->vel.z *= sp80;
                             break;
                         case 0xBF:
                             temp_s0 = *var_s1++ - 1;
                             arg0->flags = arg0->flags | 0x8000 | (temp_s0 << 0xC);
                             break;
                         case 0xC0:
-                            var_s1 = func_800A27E8(var_s1, &arg0->unk_10);
-                            arg0->unk_4C = arg0->unk_48;
+                            var_s1 = func_800A27E8(var_s1, &arg0->targetPrimColorLength);
+                            arg0->targetPrimColor = arg0->primColor;
                             if (temp_a0 & 1) {
-                                arg0->unk_4C.r = *var_s1++;
+                                arg0->targetPrimColor.r = *var_s1++;
                             }
                             if (temp_a0 & 2) {
-                                arg0->unk_4C.g = *var_s1++;
+                                arg0->targetPrimColor.g = *var_s1++;
                             }
                             if (temp_a0 & 4) {
-                                arg0->unk_4C.b = *var_s1++;
+                                arg0->targetPrimColor.b = *var_s1++;
                             }
                             if (temp_a0 & 8) {
-                                arg0->unk_4C.a = *var_s1++;
+                                arg0->targetPrimColor.a = *var_s1++;
                             }
-                            if (arg0->unk_10 == 1) {
-                                arg0->unk_48 = arg0->unk_4C;
-                                arg0->unk_10 = 0;
+                            if (arg0->targetPrimColorLength == 1) {
+                                arg0->primColor = arg0->targetPrimColor;
+                                arg0->targetPrimColorLength = 0;
                             }
                             break;
                         case 0xD0:
-                            var_s1 = func_800A27E8(var_s1, &arg0->unk_12);
-                            arg0->unk_54 = arg0->unk_50;
+                            var_s1 = func_800A27E8(var_s1, &arg0->targetEnvColorLength);
+                            arg0->targetEnvColor = arg0->envColor;
                             if (temp_a0 & 1) {
-                                arg0->unk_54.r = *var_s1++;
+                                arg0->targetEnvColor.r = *var_s1++;
                             }
                             if (temp_a0 & 2) {
-                                arg0->unk_54.g = *var_s1++;
+                                arg0->targetEnvColor.g = *var_s1++;
                             }
                             if (temp_a0 & 4) {
-                                arg0->unk_54.b = *var_s1++;
+                                arg0->targetEnvColor.b = *var_s1++;
                             }
                             if (temp_a0 & 8) {
-                                arg0->unk_54.a = *var_s1++;
+                                arg0->targetEnvColor.a = *var_s1++;
                             }
-                            if (arg0->unk_12 == 1) {
-                                arg0->unk_50 = arg0->unk_54;
-                                arg0->unk_12 = 0;
+                            if (arg0->targetEnvColorLength == 1) {
+                                arg0->envColor = arg0->targetEnvColor;
+                                arg0->targetEnvColorLength = 0;
                             }
                             break;
                         case 0xFA:
-                            arg0->unk_09 = *var_s1++;
-                            arg0->unk_1C = var_s1 - arg0->scriptPtr;
+                            arg0->loopCount = *var_s1++;
+                            arg0->loopPtr = var_s1 - arg0->bytecode;
                             break;
                         case 0xFB:
-                            if (--arg0->unk_09 != 0) {
-                                var_s1 = &arg0->scriptPtr[arg0->unk_1C];
+                            if (--arg0->loopCount != 0) {
+                                var_s1 = &arg0->bytecode[arg0->loopPtr];
                             }
                             break;
                         case 0xFC:
-                            arg0->unk_1A = var_s1 - arg0->scriptPtr;
+                            arg0->returnPtr = var_s1 - arg0->bytecode;
                             break;
                         case 0xFD:
-                            var_s1 = &arg0->scriptPtr[arg0->unk_1A];
+                            var_s1 = &arg0->bytecode[arg0->returnPtr];
                             break;
                         case 0xFE:
                         case 0xFF:
-                            arg0->unk_1E = 1;
+                            arg0->lifetime = 1;
                             goto EXIT;
                     }
                 } else {
@@ -780,13 +780,13 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                         sp94 = (*var_s1++) + (sp94 << 8);
                     }
                     if ((temp_a0 & 0xC0) && ((temp_a0 & 0xC0) == 0x40)) {
-                        arg0->unk_0B = *var_s1++;
+                        arg0->dataID = *var_s1++;
                     }
                 }
                 if (sp94 != 0) {
                 EXIT:
-                    arg0->unk_18 = var_s1 - arg0->scriptPtr;
-                    arg0->unk_0C = sp94;
+                    arg0->bytecodePos = var_s1 - arg0->bytecode;
+                    arg0->bytecodeTimer = sp94;
                     break;
                 }
             }
