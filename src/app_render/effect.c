@@ -968,7 +968,7 @@ void fx_draw(GObj* camObj) {
     f32 temp_f20;
     f32 temp_f2;
 
-    for (sp1F8 = 0; sp1F8 < 4; sp1F8++) {
+    for (sp1F8 = 0; sp1F8 < ARRAY_COUNT(D_800BE1F0); sp1F8++) {
         var_s2 = NULL;
         cam = D_800BE1F0[sp1F8];
 
@@ -1019,7 +1019,7 @@ void fx_draw(GObj* camObj) {
         gDPSetColorDither(gMainGfxPos[0]++, fx_colorDitherMode);
         gDPSetAlphaDither(gMainGfxPos[0]++, fx_alphaDitherMode);
 
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < ARRAY_COUNT(D_800BE1A8); j++) {
             for (var_s7 = D_800BE1A8[j]; var_s7 != NULL; var_s7 = var_s7->next) {
                 if (var_s7->size == 0.0f) {
                     continue;
