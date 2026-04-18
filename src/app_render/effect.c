@@ -425,9 +425,9 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
         return arg0->next;
     }
 
-    if (arg0->unk_0C != 0) {
-        if (--arg0->unk_0C == 0) {
-            var_s1 = &arg0->scriptPtr[arg0->unk_18];
+    if (arg0->bytecodeTimer != 0) {
+        if (--arg0->bytecodeTimer == 0) {
+            var_s1 = &arg0->bytecode[arg0->bytecodePos];
             while (true) {
                 temp_a0 = *var_s1++;
                 if (temp_a0 >= 0x80) {
@@ -442,75 +442,75 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                     switch (var_v1) {
                         case 0x80:
                             if (temp_a0 & 1) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_20.x);
+                                var_s1 = func_800A27B0(var_s1, &arg0->pos.x);
                             }
                             if (temp_a0 & 2) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_20.y);
+                                var_s1 = func_800A27B0(var_s1, &arg0->pos.y);
                             }
                             if (temp_a0 & 4) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_20.z);
+                                var_s1 = func_800A27B0(var_s1, &arg0->pos.z);
                             }
                             break;
                         case 0x88:
                             if (temp_a0 & 1) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_20.x += sp80;
+                                arg0->pos.x += sp80;
                             }
                             if (temp_a0 & 2) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_20.y += sp80;
+                                arg0->pos.y += sp80;
                             }
                             if (temp_a0 & 4) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_20.z += sp80;
+                                arg0->pos.z += sp80;
                             }
                             break;
                         case 0x90:
                             if (temp_a0 & 1) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_2C.x);
+                                var_s1 = func_800A27B0(var_s1, &arg0->vel.x);
                             }
                             if (temp_a0 & 2) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_2C.y);
+                                var_s1 = func_800A27B0(var_s1, &arg0->vel.y);
                             }
                             if (temp_a0 & 4) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->unk_2C.z);
+                                var_s1 = func_800A27B0(var_s1, &arg0->vel.z);
                             }
                             break;
                         case 0x98:
                             if (temp_a0 & 1) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_2C.x += sp80;
+                                arg0->vel.x += sp80;
                             }
                             if (temp_a0 & 2) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_2C.y += sp80;
+                                arg0->vel.y += sp80;
                             }
                             if (temp_a0 & 4) {
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->unk_2C.z += sp80;
+                                arg0->vel.z += sp80;
                             }
                             break;
                         case 0xA0:
-                            var_s1 = func_800A27B0(func_800A27E8(var_s1, &arg0->unk_0E), &arg0->unk_44);
-                            if (arg0->unk_0E == 1) {
-                                arg0->unk_0E = 0;
-                                arg0->unk_40 = arg0->unk_44;
+                            var_s1 = func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget);
+                            if (arg0->sizeTargetLength == 1) {
+                                arg0->sizeTargetLength = 0;
+                                arg0->size = arg0->sizeTarget;
                             }
                             break;
                         case 0xA1:
                             arg0->flags = *var_s1++;
                             break;
                         case 0xA2:
-                            var_s1 = func_800A27B0(var_s1, &arg0->unk_38);
-                            if (arg0->unk_38 == 0.0f) {
+                            var_s1 = func_800A27B0(var_s1, &arg0->gravity);
+                            if (arg0->gravity == 0.0f) {
                                 arg0->flags &= ~1;
                             } else {
                                 arg0->flags |= 1;
                             }
                             break;
                         case 0xA3:
-                            var_s1 = func_800A27B0(var_s1, &arg0->unk_3C);
-                            if (arg0->unk_3C == 1.0f) {
+                            var_s1 = func_800A27B0(var_s1, &arg0->friction);
+                            if (arg0->friction == 1.0f) {
                                 arg0->flags &= ~2;
                             } else {
                                 arg0->flags |= 2;
@@ -520,14 +520,14 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             temp_s0 = *var_s1++;
                             temp_s0 <<= 8;
                             temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->unk_08, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
-                                temp_v0->unk_20.x = arg0->unk_20.x;
-                                temp_v0->unk_20.y = arg0->unk_20.y;
-                                temp_v0->unk_20.z = arg0->unk_20.z;
-                                temp_v0->unk_04 = arg0->unk_04;
-                                temp_v0->unk_58 = arg0->unk_58;
-                                fx_updateStruct(temp_v0, arg0, (s32) arg0->unk_08 >> 3);
+                                temp_v0->pos.x = arg0->pos.x;
+                                temp_v0->pos.y = arg0->pos.y;
+                                temp_v0->pos.z = arg0->pos.z;
+                                temp_v0->effectID = arg0->effectID;
+                                temp_v0->fx = arg0->fx;
+                                fx_updateStruct(temp_v0, arg0, (s32) arg0->bankID >> 3);
                             }
                             break;
                         case 0xA5:
