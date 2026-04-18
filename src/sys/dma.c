@@ -327,6 +327,7 @@ void func_80003530(u16* data, u8* outBuffer) {
     HuffmanTreeNode* lenNode;
     HuffmanTreeNode* sampleCursor;
     HuffmanTreeNode* offsetsCursor;
+    HuffmanTreeNode* lengthsCursor;
     u32 sampleMethod;
     HuffmanTreeNode* offStack[20];
     u8* outPtr;
@@ -411,7 +412,7 @@ void func_80003530(u16* data, u8* outBuffer) {
         if (!value) {
             VPK0_MEM_GET_BITS(*outPtr++, 8);
         } else {
-            HuffmanTreeNode* lengthsCursor = lengthsTree;
+            lengthsCursor = lengthsTree;
 
             if (sampleMethod != 0) {
                 sampleCursor = offsetsTree;
