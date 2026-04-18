@@ -446,12 +446,8 @@ void func_80003530(u16* data, u8* outBuffer) {
                 lengthsCursor = !value ? lengthsCursor->left : lengthsCursor->right;
             }
             VPK0_MEM_GET_BITS(value, lengthsCursor->value);
-            {
-                s32 copyCount = value;
-
-                while (copyCount-- > 0) {
-                    *(outPtr++) = *(copySrc++);
-                }
+            while (value-- > 0) {
+                *(outPtr++) = *(copySrc++);
             }
         }
     }
