@@ -1210,9 +1210,9 @@ void fx_draw(GObj* camObj) {
                 }
 
                 if (var_s7->flags & 0x400) {
-                    var_a1_2 = 3;
+                    var_a1_2 = G_AC_DITHER;
                 } else {
-                    var_a1_2 = 1;
+                    var_a1_2 = G_AC_THRESHOLD;
                     if (var_s7->flags & 0x200) {
                         var_a0 = var_s7->envColor.a;
                     } else {
