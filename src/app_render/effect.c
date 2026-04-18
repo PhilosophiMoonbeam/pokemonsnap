@@ -793,36 +793,36 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
         }
     }
 
-    if (arg0->unk_0E != 0) {
-        arg0->unk_40 += (arg0->unk_44 - arg0->unk_40) / arg0->unk_0E;
-        arg0->unk_0E--;
+    if (arg0->sizeTargetLength != 0) {
+        arg0->size += (arg0->sizeTarget - arg0->size) / arg0->sizeTargetLength;
+        arg0->sizeTargetLength--;
     }
 
-    if (arg0->unk_10 != 0) {
-        INTERP(arg0->unk_48.r, arg0->unk_4C.r, arg0->unk_10);
-        INTERP(arg0->unk_48.g, arg0->unk_4C.g, arg0->unk_10);
-        INTERP(arg0->unk_48.b, arg0->unk_4C.b, arg0->unk_10);
-        INTERP(arg0->unk_48.a, arg0->unk_4C.a, arg0->unk_10);
-        arg0->unk_10 = arg0->unk_10 - 1;
+    if (arg0->targetPrimColorLength != 0) {
+        INTERP(arg0->primColor.r, arg0->targetPrimColor.r, arg0->targetPrimColorLength);
+        INTERP(arg0->primColor.g, arg0->targetPrimColor.g, arg0->targetPrimColorLength);
+        INTERP(arg0->primColor.b, arg0->targetPrimColor.b, arg0->targetPrimColorLength);
+        INTERP(arg0->primColor.a, arg0->targetPrimColor.a, arg0->targetPrimColorLength);
+        arg0->targetPrimColorLength = arg0->targetPrimColorLength - 1;
     }
 
-    if (arg0->unk_12 != 0) {
-        INTERP(arg0->unk_50.r, arg0->unk_54.r, arg0->unk_12);
-        INTERP(arg0->unk_50.g, arg0->unk_54.g, arg0->unk_12);
-        INTERP(arg0->unk_50.b, arg0->unk_54.b, arg0->unk_12);
-        INTERP(arg0->unk_50.a, arg0->unk_54.a, arg0->unk_12);
-        arg0->unk_12 = arg0->unk_12 - 1;
+    if (arg0->targetEnvColorLength != 0) {
+        INTERP(arg0->envColor.r, arg0->targetEnvColor.r, arg0->targetEnvColorLength);
+        INTERP(arg0->envColor.g, arg0->targetEnvColor.g, arg0->targetEnvColorLength);
+        INTERP(arg0->envColor.b, arg0->targetEnvColor.b, arg0->targetEnvColorLength);
+        INTERP(arg0->envColor.a, arg0->targetEnvColor.a, arg0->targetEnvColorLength);
+        arg0->targetEnvColorLength = arg0->targetEnvColorLength - 1;
     }
 
-    if (--arg0->unk_1E == 0) {
+    if (--arg0->lifetime == 0) {
         if (arg1 == NULL) {
             D_800BE1A8[arg2] = arg0->next;
         } else {
             arg1->next = arg0->next;
         }
         next = arg0->next;
-        if ((arg0->unk_58 != NULL) && (arg0->flags & 4) && (arg0->unk_58->unk_08 == 2)) {
-            arg0->unk_58->unk_4C.data2.unk_04--;
+        if ((arg0->fx != NULL) && (arg0->flags & 4) && (arg0->fx->kind == 2)) {
+            arg0->fx->effectVars.data2.unk_04--;
         }
 
         arg0->next = D_800BE1A0;
