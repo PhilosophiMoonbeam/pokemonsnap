@@ -84,7 +84,7 @@ func_80371F54_845704(Gfx** glp, Sprite* s, Bitmap* b,
         rxl = D_803A6650_879E00 * 4;
 #ifdef DEBUG_SCISSOR
         emPrintf("Sprite Scissoring: Right Edge (%d) not in range (%d,%d)\n",
-                 xx, scissor_xmin, D_803A6650_879E00);
+                 xx, D_803A6648_879DF8, D_803A6650_879E00);
 #endif
     } else {
         rxl = xx * 4;
@@ -94,7 +94,7 @@ func_80371F54_845704(Gfx** glp, Sprite* s, Bitmap* b,
         ryl = D_803A6654_879E04 * 4;
 #ifdef DEBUG_SCISSOR
         emPrintf("Sprite Scissoring: Bottom Edge (%d) not in range (%d,%d)\n",
-                 yy, scissor_ymin, D_803A6654_879E04);
+                 yy, D_803A664C_879DFC, D_803A6654_879E04);
 #endif
     } else {
         ryl = yy * 4;
