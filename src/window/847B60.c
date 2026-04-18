@@ -3,6 +3,16 @@
 #include "app_render/app_render.h"
 #include "photo_check/photo_check.h"
 
+typedef struct WindowPhotoBuffer {
+    u16* buf;
+    s32 width;
+    s32 height;
+    s32 unkC;
+    u16* unk10;
+    s32 unk14;
+    s32 unk18;
+} WindowPhotoBuffer;
+
 extern s32 D_803A6660_879E10;
 extern s32 D_803A6664_879E14;
 extern f32 D_803A6668_879E18;
@@ -11,7 +21,7 @@ extern bool D_803A6670_879E20;
 extern s32 D_803A6674_879E24;
 extern s32 D_803A6678_879E28;
 extern PhotoData* D_803A667C_879E2C;
-extern u16* D_803A6684_879E34;
+extern WindowPhotoBuffer D_803A6684_879E34;
 
 static u16* D_803A6C10_87A3C0;
 static u16* D_803A6C14_87A3C4;
@@ -70,8 +80,8 @@ Unk803A6C18* func_8037452C_847CDC(PhotoData* arg0) {
     return &D_803A6C18_87A3C8;
 }
 
-u16** func_80374608_847DB8(s32 arg0, s32 arg1, PhotoData* arg2) {
-    D_803A6684_879E34 = D_803A6C10_87A3C0;
+WindowPhotoBuffer* func_80374608_847DB8(s32 arg0, s32 arg1, PhotoData* arg2) {
+    D_803A6684_879E34.buf = D_803A6C10_87A3C0;
 
     if (arg0 < 16) {
         arg0 = 16;
@@ -108,14 +118,9 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
 
 #ifdef NON_MATCHING
 
-typedef struct UnkWindow847EC4 {
-    u16* buf;
-    s32 width;
-} UnkWindow847EC4;
-
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     Bitmap* bitmap;
-    UnkWindow847EC4* src;
+    WindowPhotoBuffer* src;
     s32 texelCount;
     s32 dstStride;
     s32 y;
@@ -127,7 +132,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     if (photo == NULL) {
         src = NULL;
     } else {
-        src = (UnkWindow847EC4*) func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo);
+        src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo);
     }
 
     if (src == NULL) {
