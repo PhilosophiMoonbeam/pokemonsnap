@@ -921,7 +921,7 @@ void fx_draw(GObj* camObj) {
     Particle* var_s7;
     EffectSprites* v0;
     OMCamera* cam;
-    s32 sp2D4;
+    u8* sp2D4;
     s32 sp2D0;
     s32 sp2CC;
     s32 sp2C8;
@@ -949,11 +949,11 @@ void fx_draw(GObj* camObj) {
     s32 sp1FC;
     s32 sp1F8;
     s32 sp1F4;
-    s32 sp1C8;
-    s32 sp1C4;
+    u8* sp1C8;
+    u8* sp1C4;
 
     s32 j;
-    s32 var_s2;
+    u8* var_s2;
 
     s32 temp_fp;
     s32 temp_t4;
@@ -969,7 +969,7 @@ void fx_draw(GObj* camObj) {
     f32 temp_f2;
 
     for (sp1F8 = 0; sp1F8 < 4; sp1F8++) {
-        var_s2 = 0;
+        var_s2 = NULL;
         cam = D_800BE1F0[sp1F8];
 
         if (cam == NULL) {
@@ -995,7 +995,7 @@ void fx_draw(GObj* camObj) {
         sp2C8 = -1;
         sp2CC = -1;
         sp2D0 = -1;
-        sp2D4 = 0;
+        sp2D4 = NULL;
 
         sp218 = cam->vp.vp.vscale[0];
         sp210 = -cam->vp.vp.vscale[1];
@@ -1168,25 +1168,25 @@ void fx_draw(GObj* camObj) {
                         case G_IM_SIZ_4b:
                             gDPLoadTextureBlock_4b(gMainGfxPos[0]++, sp1C8, temp_fp, temp_s3, temp_s5, 0, sp1F4, var_s6, var_s1, var_t2, G_TX_NOLOD, G_TX_NOLOD);
                             if (temp_s3 * temp_s5 >= 0x1000) {
-                                sp2D4 = 0;
+                                sp2D4 = NULL;
                             }
                             break;
                         case G_IM_SIZ_8b:
                             gDPLoadTextureBlock(gMainGfxPos[0]++, sp1C8, temp_fp, G_IM_SIZ_8b, temp_s3, temp_s5, 0, sp1F4, var_s6, var_s1, var_t2, G_TX_NOLOD, G_TX_NOLOD);
                             if (temp_s3 * temp_s5 >= 0x800) {
-                                sp2D4 = 0;
+                                sp2D4 = NULL;
                             }
                             break;
                         case G_IM_SIZ_16b:
                             gDPLoadTextureBlock(gMainGfxPos[0]++, sp1C8, temp_fp, G_IM_SIZ_16b, temp_s3, temp_s5, 0, sp1F4, var_s6, var_s1, var_t2, G_TX_NOLOD, G_TX_NOLOD);
                             if (temp_s3 * temp_s5 >= 0x400) {
-                                sp2D4 = 0;
+                                sp2D4 = NULL;
                             }
                             break;
                         case G_IM_SIZ_32b:
                             gDPLoadTextureBlock(gMainGfxPos[0]++, sp1C8, temp_fp, G_IM_SIZ_32b, temp_s3, temp_s5, 0, sp1F4, var_s6, var_s1, var_t2, G_TX_NOLOD, G_TX_NOLOD);
                             if (temp_s3 * temp_s5 >= 0x200) {
-                                sp2D4 = 0;
+                                sp2D4 = NULL;
                             }
                             break;
                     }
