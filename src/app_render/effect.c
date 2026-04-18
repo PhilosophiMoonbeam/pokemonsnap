@@ -864,23 +864,23 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
         arg0->unk_20.z = -temp_f2_2 * sp54 * sp58 - nv * sp5C + arg0->unk_2C.z * sp54 * sp50 + pinkRat->unk_14.z;
     } else {
         if (arg0->flags & 1) {
-            arg0->unk_2C.y -= arg0->unk_38;
+            arg0->vel.y -= arg0->gravity;
         }
         if (arg0->flags & 2) {
-            arg0->unk_2C.x *= arg0->unk_3C;
-            arg0->unk_2C.y *= arg0->unk_3C;
-            arg0->unk_2C.z *= arg0->unk_3C;
+            arg0->vel.x *= arg0->friction;
+            arg0->vel.y *= arg0->friction;
+            arg0->vel.z *= arg0->friction;
         }
-        arg0->unk_20.x += arg0->unk_2C.x;
-        arg0->unk_20.y += arg0->unk_2C.y;
-        arg0->unk_20.z += arg0->unk_2C.z;
+        arg0->pos.x += arg0->vel.x;
+        arg0->pos.y += arg0->vel.y;
+        arg0->pos.z += arg0->vel.z;
     }
     if (arg0->flags & 0x8000) {
         temp_s0 = (arg0->flags & 0x7000) >> 12;
         if (D_800BE204[temp_s0] != NULL) {
-            D_800BE204[temp_s0]->unk_1C.x = arg0->unk_20.x;
-            D_800BE204[temp_s0]->unk_1C.y = arg0->unk_20.y;
-            D_800BE204[temp_s0]->unk_1C.z = arg0->unk_20.z;
+            D_800BE204[temp_s0]->position.v.x = arg0->pos.x;
+            D_800BE204[temp_s0]->position.v.y = arg0->pos.y;
+            D_800BE204[temp_s0]->position.v.z = arg0->pos.z;
         }
     }
     return arg0->next;
