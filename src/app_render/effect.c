@@ -520,7 +520,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             temp_s0 = *var_s1++;
                             temp_s0 <<= 8;
                             temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
                                 temp_v0->pos.x = arg0->pos.x;
                                 temp_v0->pos.y = arg0->pos.y;
@@ -578,7 +578,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             sp88 <<= 8;
                             sp88 += *var_s1++;
                             temp_s0 += (s32) (sp88 * randFloat());
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
                                 temp_v0->pos.x = arg0->pos.x;
                                 temp_v0->pos.y = arg0->pos.y;
@@ -647,7 +647,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             temp_s0 = *var_s1++;
                             temp_s0 <<= 8;
                             temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(&arg0->next, arg0->bankID, temp_s0);
+                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
                             if (temp_v0 != NULL) {
                                 temp_v0->pos.x = arg0->pos.x;
                                 temp_v0->pos.y = arg0->pos.y;
