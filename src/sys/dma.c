@@ -342,16 +342,20 @@ void func_80003530(u16* data, u8* outBuffer) {
 
     poolPtr = pool;
     tempValue = data[0];
-    tempValue = (tempValue << 16) | data[1];
-    tempValue = (tempValue << 16) | data[2];
-    tempValue = (tempValue << 16) | data[3];
+    tempValue <<= 16;
+    tempValue |= data[1];
+    tempValue <<= 16;
+    tempValue |= data[2];
+    tempValue <<= 16;
+    tempValue |= data[3];
     numBits = 8;
     csr = data + 5;
     outPtr = outBuffer;
     // data[0..1] is the "vpk0" magic, data[2..3] is decompressed size,
     // and the high byte of data[4] stores the sample method.
     outEnd = outBuffer + tempValue;
-    tempValue = (tempValue << 16) | data[4];
+    tempValue <<= 16;
+    tempValue |= data[4];
     sampleMethod = (tempValue >> 8) & 0xFF;
 
     offStackSize = 0;
