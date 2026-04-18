@@ -920,6 +920,7 @@ void fx_structFuncRun(GObj* obj) {
 void fx_draw(GObj* camObj) {
     Particle* var_s7;
     EffectSprites* v0;
+    OMCamera* cam;
     s32 sp2D4;
     s32 sp2D0;
     s32 sp2CC;
@@ -969,25 +970,26 @@ void fx_draw(GObj* camObj) {
 
     for (sp1F8 = 0; sp1F8 < 4; sp1F8++) {
         var_s2 = 0;
+        cam = D_800BE1F0[sp1F8];
 
-        if (D_800BE1F0[sp1F8] == NULL) {
+        if (cam == NULL) {
             continue;
         }
 
-        hal_look_at_roll_f(sp288, D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.xEye,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.yEye,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.zEye,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.xAt,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.yAt,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.zAt,
-                           D_800BE1F0[sp1F8]->viewMtx.lookAtRoll.roll,
+        hal_look_at_roll_f(sp288, cam->viewMtx.lookAtRoll.xEye,
+                           cam->viewMtx.lookAtRoll.yEye,
+                           cam->viewMtx.lookAtRoll.zEye,
+                           cam->viewMtx.lookAtRoll.xAt,
+                           cam->viewMtx.lookAtRoll.yAt,
+                           cam->viewMtx.lookAtRoll.zAt,
+                           cam->viewMtx.lookAtRoll.roll,
                            0.0f, 1.0f, 0.0f);
         hal_perspective_fast_f(sp248, NULL,
-                               D_800BE1F0[sp1F8]->perspMtx.persp.fovy,
-                               D_800BE1F0[sp1F8]->perspMtx.persp.aspect,
-                               D_800BE1F0[sp1F8]->perspMtx.persp.near,
-                               D_800BE1F0[sp1F8]->perspMtx.persp.far,
-                               D_800BE1F0[sp1F8]->perspMtx.persp.scale);
+                               cam->perspMtx.persp.fovy,
+                               cam->perspMtx.persp.aspect,
+                               cam->perspMtx.persp.near,
+                               cam->perspMtx.persp.far,
+                               cam->perspMtx.persp.scale);
         guMtxCatF(sp288, sp248, sp248);
 
         sp2C8 = -1;
@@ -995,12 +997,12 @@ void fx_draw(GObj* camObj) {
         sp2D0 = -1;
         sp2D4 = 0;
 
-        sp218 = D_800BE1F0[sp1F8]->vp.vp.vscale[0];
-        sp210 = -D_800BE1F0[sp1F8]->vp.vp.vscale[1];
-        sp208 = D_800BE1F0[sp1F8]->vp.vp.vscale[2];
-        sp214 = D_800BE1F0[sp1F8]->vp.vp.vtrans[0];
-        sp20C = D_800BE1F0[sp1F8]->vp.vp.vtrans[1];
-        sp204 = D_800BE1F0[sp1F8]->vp.vp.vtrans[2];
+        sp218 = cam->vp.vp.vscale[0];
+        sp210 = -cam->vp.vp.vscale[1];
+        sp208 = cam->vp.vp.vscale[2];
+        sp214 = cam->vp.vp.vtrans[0];
+        sp20C = cam->vp.vp.vtrans[1];
+        sp204 = cam->vp.vp.vtrans[2];
 
         sp220 = sqrtf(SQ(sp248[0][0]) + SQ(sp248[1][0]) + SQ(sp248[2][0]));
         temp_f0 = sqrtf(SQ(sp248[0][1]) + SQ(sp248[1][1]) + SQ(sp248[2][1]));
