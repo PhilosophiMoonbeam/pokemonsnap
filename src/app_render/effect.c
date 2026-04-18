@@ -376,7 +376,7 @@ void fx_addDistVelMagDObj(Particle* particle, DObj* dobj, f32 magnitude) {
     }
 }
 
-#if 0
+#ifdef NON_MATCHING
 extern u16 sSinTable[];
 #define INTERP(a, b, c) a = ((a << 0x10) + (b - a) * (0x10000 / c)) >> 0x10;
 #define SINCOS(inAngle, sinVal, cosVal)                  \
@@ -636,12 +636,12 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             break;
                         case 0xB7:
                             temp_s0 = *var_s1++;
-                            fx_setDistVelDObj(arg0, D_800BE204[temp_s0 - 1]);
+                            fx_setDistVelDObj(arg0, D_800BE208[temp_s0 - 1]);
                             break;
                         case 0xB8:
                             temp_s0 = *var_s1++;
                             var_s1 = func_800A27B0(var_s1, &sp80);
-                            fx_addDistVelMagDObj(arg0, D_800BE204[temp_s0 - 1], sp80);
+                            fx_addDistVelMagDObj(arg0, D_800BE208[temp_s0 - 1], sp80);
                             break;
                         case 0xB9:
                             temp_s0 = *var_s1++;
@@ -877,10 +877,10 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     }
     if (arg0->flags & 0x8000) {
         temp_s0 = (arg0->flags & 0x7000) >> 12;
-        if (D_800BE204[temp_s0] != NULL) {
-            D_800BE204[temp_s0]->position.v.x = arg0->pos.x;
-            D_800BE204[temp_s0]->position.v.y = arg0->pos.y;
-            D_800BE204[temp_s0]->position.v.z = arg0->pos.z;
+        if (D_800BE208[temp_s0] != NULL) {
+            D_800BE208[temp_s0]->position.v.x = arg0->pos.x;
+            D_800BE208[temp_s0]->position.v.y = arg0->pos.y;
+            D_800BE208[temp_s0]->position.v.z = arg0->pos.z;
         }
     }
     return arg0->next;
