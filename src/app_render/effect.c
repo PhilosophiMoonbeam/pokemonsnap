@@ -831,37 +831,37 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     }
 
     if (arg0->flags & 4) {
-        pinkRat = arg0->unk_58;
+        pinkRat = arg0->fx;
 
-        SINCOS(arg0->unk_38, sp5C, sp54);
-        SINCOS(arg0->unk_3C, sp58, sp50);
+        SINCOS(arg0->gravity, sp5C, sp54);
+        SINCOS(arg0->friction, sp58, sp50);
 
         sp5C *= 1.0f / 0x8000;
         sp54 *= 1.0f / 0x8000;
         sp58 *= 1.0f / 0x8000;
         sp50 *= 1.0f / 0x8000;
 
-        arg0->unk_2C.z += pinkRat->unk_4C.data1.x;
+        arg0->vel.z += pinkRat->effectVars.data2.unk_00;
 
         sp70 = ABS(pinkRat->unk_38);
         var_f2 = ABS(pinkRat->unk_3C);
 
         SINCOS(var_f2, var_f18, sp44);
 
-        sp70 += arg0->unk_2C.z * (var_f18 / sp44);
-        sp70 *= arg0->unk_2C.y;
-        arg0->unk_2C.x += pinkRat->unk_2C;
+        sp70 += arg0->vel.z * (var_f18 / sp44);
+        sp70 *= arg0->vel.y;
+        arg0->vel.x += pinkRat->gravity;
 
-        SINCOS(arg0->unk_2C.x, var_f18, sp44);
+        SINCOS(arg0->vel.x, var_f18, sp44);
 
         sp70 *= 1.0f / 0x8000;
         temp_f2_2 = sp70 * sp44;
         temp_f2_2 = temp_f2_2 + temp_f2_2;
         nv = sp70 * var_f18;
 
-        arg0->unk_20.x = temp_f2_2 * sp50 + arg0->unk_2C.z * sp58 + pinkRat->unk_14.x;
-        arg0->unk_20.y = -temp_f2_2 * sp5C * sp58 + nv * sp54 + arg0->unk_2C.z * sp5C * sp50 + pinkRat->unk_14.y;
-        arg0->unk_20.z = -temp_f2_2 * sp54 * sp58 - nv * sp5C + arg0->unk_2C.z * sp54 * sp50 + pinkRat->unk_14.z;
+        arg0->pos.x = temp_f2_2 * sp50 + arg0->vel.z * sp58 + pinkRat->pos.x;
+        arg0->pos.y = -temp_f2_2 * sp5C * sp58 + nv * sp54 + arg0->vel.z * sp5C * sp50 + pinkRat->pos.y;
+        arg0->pos.z = -temp_f2_2 * sp54 * sp58 - nv * sp5C + arg0->vel.z * sp54 * sp50 + pinkRat->pos.z;
     } else {
         if (arg0->flags & 1) {
             arg0->vel.y -= arg0->gravity;
