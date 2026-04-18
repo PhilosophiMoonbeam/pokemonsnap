@@ -195,7 +195,7 @@ u8* UIMem_Reallocate(u8* data, u32 size) {
         return NULL;
     }
 
-    oldSize = chunk->size;
+    oldSize = (GET_CHUNK(data))->size;
 
     for (i = 0; i < oldSize; i++) {
         newData[i] = data[i];
