@@ -1104,12 +1104,12 @@ void fx_draw(GObj* camObj) {
                             var_s1 = 8;
                             break;
                         default:
-                            var_s1 = 0;
+                            var_s1 = G_TX_NOMASK;
                             break;
                     }
                 } else {
                     sp1F4 = G_TX_CLAMP;
-                    var_s1 = 0;
+                    var_s1 = G_TX_NOMASK;
                 }
 
                 if (var_s7->flags & 0x40) {
@@ -1141,12 +1141,12 @@ void fx_draw(GObj* camObj) {
                             var_t2 = 8;
                             break;
                         default:
-                            var_t2 = 0;
+                            var_t2 = G_TX_NOMASK;
                             break;
                     }
                 } else {
                     var_s6 = G_TX_CLAMP;
-                    var_t2 = 0;
+                    var_t2 = G_TX_NOMASK;
                 }
 
                 if (temp_fp == G_IM_FMT_CI) {
