@@ -1077,7 +1077,7 @@ void fx_draw(GObj* camObj) {
 
                 if (var_s7->flags & 0x20) {
                     sp200 *= 2;
-                    sp1F4 = 1;
+                    sp1F4 = G_TX_MIRROR;
                     switch (temp_s3) {
                         case 2:
                             var_s1 = 1;
@@ -1108,13 +1108,13 @@ void fx_draw(GObj* camObj) {
                             break;
                     }
                 } else {
-                    sp1F4 = 2;
+                    sp1F4 = G_TX_CLAMP;
                     var_s1 = 0;
                 }
 
                 if (var_s7->flags & 0x40) {
                     sp1FC *= 2;
-                    var_s6 = 1;
+                    var_s6 = G_TX_MIRROR;
                     switch (temp_s5) {
                         case 2:
                             var_t2 = 1;
@@ -1145,7 +1145,7 @@ void fx_draw(GObj* camObj) {
                             break;
                     }
                 } else {
-                    var_s6 = 2;
+                    var_s6 = G_TX_CLAMP;
                     var_t2 = 0;
                 }
 
