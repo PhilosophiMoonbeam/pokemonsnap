@@ -919,7 +919,7 @@ void fx_structFuncRun(GObj* obj) {
 #if 0
 void fx_draw(GObj* camObj) {
     Particle* var_s7;
-    ParticleAnimData* v0;
+    EffectSprites* v0;
     s32 sp2D4;
     s32 sp2D0;
     s32 sp2CC;
@@ -1019,11 +1019,11 @@ void fx_draw(GObj* camObj) {
 
         for (j = 0; j < 16; j++) {
             for (var_s7 = D_800BE1A8[j]; var_s7 != NULL; var_s7 = var_s7->next) {
-                if (var_s7->unk_40 == 0.0f) {
+                if (var_s7->size == 0.0f) {
                     continue;
                 }
-                temp_f12 = (sp248[0][0] * var_s7->unk_20.x + sp248[1][0] * var_s7->unk_20.y + sp248[2][0] * var_s7->unk_20.z + sp248[3][0]);
-                temp_f20 = sp248[0][3] * var_s7->unk_20.x + sp248[1][3] * var_s7->unk_20.y + sp248[2][3] * var_s7->unk_20.z + sp248[3][3];
+                temp_f12 = (sp248[0][0] * var_s7->pos.x + sp248[1][0] * var_s7->pos.y + sp248[2][0] * var_s7->pos.z + sp248[3][0]);
+                temp_f20 = sp248[0][3] * var_s7->pos.x + sp248[1][3] * var_s7->pos.y + sp248[2][3] * var_s7->pos.z + sp248[3][3];
 
                 if (temp_f20 == 0.0f) {
                     continue;
@@ -1031,14 +1031,14 @@ void fx_draw(GObj* camObj) {
 
                 temp_f2 = 1.0f / temp_f20;
                 temp_f12 *= temp_f2;
-                temp_f14 = (sp248[0][1] * var_s7->unk_20.x + sp248[1][1] * var_s7->unk_20.y + sp248[2][1] * var_s7->unk_20.z + sp248[3][1]) * temp_f2;
-                temp_f28 = (sp248[0][2] * var_s7->unk_20.x + sp248[1][2] * var_s7->unk_20.y + sp248[2][2] * var_s7->unk_20.z + sp248[3][2]) * temp_f2;
+                temp_f14 = (sp248[0][1] * var_s7->pos.x + sp248[1][1] * var_s7->pos.y + sp248[2][1] * var_s7->pos.z + sp248[3][1]) * temp_f2;
+                temp_f28 = (sp248[0][2] * var_s7->pos.x + sp248[1][2] * var_s7->pos.y + sp248[2][2] * var_s7->pos.z + sp248[3][2]) * temp_f2;
 
                 if (temp_f12 < -1.0f || temp_f12 > 1.0f || temp_f14 < -1.0f || temp_f14 > 1.0f || temp_f28 < -1.0f || temp_f28 > 1.0f) {
                     continue;
                 }
 
-                var_f16 = (temp_f2 * var_s7->unk_40 * sp220 + temp_f12) * sp218 + sp214;
+                var_f16 = (temp_f2 * var_s7->size * sp220 + temp_f12) * sp218 + sp214;
                 temp_f12 = temp_f12 * sp218 + sp214;
                 if (var_f16 > temp_f12) {
                     var_f24 = temp_f12 - (var_f16 - temp_f12);
@@ -1047,7 +1047,7 @@ void fx_draw(GObj* camObj) {
                     var_f16 = temp_f12 - (var_f16 - temp_f12);
                 }
 
-                var_f18 = (temp_f2 * var_s7->unk_40 * temp_f0 + temp_f14) * sp210 + sp20C;
+                var_f18 = (temp_f2 * var_s7->size * temp_f0 + temp_f14) * sp210 + sp20C;
                 temp_f14 = temp_f14 * sp210 + sp20C;
                 if (var_f18 > temp_f14) {
                     var_f26 = temp_f14 - (var_f18 - temp_f14);
@@ -1056,17 +1056,17 @@ void fx_draw(GObj* camObj) {
                     var_f18 = temp_f14 - (var_f18 - temp_f14);
                 }
 
-                v0 = fx_SpriteBanks[var_s7->unk_08 & 7][var_s7->unk_0A];
-                temp_fp = v0->unk_04;
-                temp_t4 = v0->unk_08;
-                temp_s3 = v0->unk_0C;
-                temp_s5 = v0->unk_10;
-                sp1C8 = v0->unk_18[var_s7->unk_0B];
+                v0 = fx_SpriteBanks[var_s7->bankID & 7][var_s7->textureID];
+                temp_fp = v0->fmt;
+                temp_t4 = v0->siz;
+                temp_s3 = v0->width;
+                temp_s5 = v0->height;
+                sp1C8 = v0->data[var_s7->dataID];
                 if (temp_fp == 2) {
                     if (!(var_s7->flags & 0x10)) {
-                        sp1C4 = v0->unk_18[v0->unk_00 + var_s7->unk_0B];
+                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
                     } else {
-                        sp1C4 = v0->unk_18[v0->unk_00];
+                        sp1C4 = v0->data[v0->numFrames];
                     }
                 }
 
@@ -1191,9 +1191,9 @@ void fx_draw(GObj* camObj) {
                     var_s2 = sp1C8;
                 }
 
-                gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, var_s7->unk_48.r, var_s7->unk_48.g, var_s7->unk_48.b, var_s7->unk_48.a);
+                gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, var_s7->primColor.r, var_s7->primColor.g, var_s7->primColor.b, var_s7->primColor.a);
                 if (var_s7->flags & 0x80) {
-                    gDPSetEnvColor(gMainGfxPos[0]++, var_s7->unk_50.r, var_s7->unk_50.g, var_s7->unk_50.b, var_s7->unk_50.a);
+                    gDPSetEnvColor(gMainGfxPos[0]++, var_s7->envColor.r, var_s7->envColor.g, var_s7->envColor.b, var_s7->envColor.a);
                     gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                                       PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                                       PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
@@ -1212,7 +1212,7 @@ void fx_draw(GObj* camObj) {
                 } else {
                     var_a1_2 = 1;
                     if (var_s7->flags & 0x200) {
-                        var_a0 = var_s7->unk_50.a;
+                        var_a0 = var_s7->envColor.a;
                     } else {
                         var_a0 = 8;
                     }
