@@ -175,8 +175,7 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
                                                 s_lod, t_lod);
                     } else {
                         if (b->LUToffset != 0) { /* Split Y and UV areas */
-                            unsigned char* uv;
-                            unsigned char* addr;
+                            unsigned char *uv, *addr;
                             int j;
                             s32 tmem, siz;
 
