@@ -339,9 +339,11 @@ void func_80003530(u16* data, u8* outBuffer) {
     s32 numBits;
     s32 offStackSize;
     s32 lenStackSize;
+    s32 unused2[2];
     s32 value;
+    s32 unused3[3];
     s32 sampleAdjust;
-    s32 unusedPad;
+    s32 unused;
 
     u16* header = data;
 
