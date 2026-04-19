@@ -2,6 +2,7 @@
 #define _EFFECT_H_
 
 #include "types.h"
+#include "ultralib/include/macros.h"
 #include "common_structs.h"
 
 #define PARTICLE_BANKS_MAX 8
@@ -31,6 +32,9 @@ typedef struct ParticleScriptDesc {
     /* 0x04 */ EffectScript* scripts[1]; // variable length
 } ParticleScriptDesc;                    // size > 0x4
 
+typedef char fx_assert_particle_script_desc_count_at_0[(offsetof(ParticleScriptDesc, count) == 0) ? 1 : -1];
+typedef char fx_assert_particle_script_desc_scripts_at_4[(offsetof(ParticleScriptDesc, scripts) == sizeof(s32)) ? 1 : -1];
+
 typedef struct EffectSprites {
     /* 0x00 */ u32 numFrames;
     /* 0x04 */ s32 fmt;
@@ -45,6 +49,9 @@ typedef struct ParticleSpritesDesc {
     /* 0x00 */ s32 count;
     /* 0x04 */ EffectSprites* sprites[1]; // variable length
 } ParticleSpritesDesc;                    // size > 0x4
+
+typedef char fx_assert_particle_sprites_desc_count_at_0[(offsetof(ParticleSpritesDesc, count) == 0) ? 1 : -1];
+typedef char fx_assert_particle_sprites_desc_sprites_at_4[(offsetof(ParticleSpritesDesc, sprites) == sizeof(s32)) ? 1 : -1];
 
 typedef struct Particle {
     /* 0x00 */ struct Particle* next;
