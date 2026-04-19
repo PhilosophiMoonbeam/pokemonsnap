@@ -916,7 +916,7 @@ void fx_structFuncRun(GObj* obj) {
     }
 }
 
-#if 0
+#ifdef NON_MATCHING
 static s32 fx_draw_pickMask(s32 dimension) {
     switch (dimension) {
         case 2:
