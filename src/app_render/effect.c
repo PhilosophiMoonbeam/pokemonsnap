@@ -945,13 +945,13 @@ static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32*
     s32 nextBlendColorA;
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, particle->primColor.r, particle->primColor.g, particle->primColor.b, particle->primColor.a);
-    if (particle->flags & 0x80) {
+    if (particle->flags & PARTICLE_FLAG_ENV_COMBINE) {
         gDPSetEnvColor(gMainGfxPos[0]++, particle->envColor.r, particle->envColor.g, particle->envColor.b, particle->envColor.a);
         gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
-    } else if (particle->flags & 0x100) {
+    } else if (particle->flags & PARTICLE_FLAG_NOISE_COMBINE) {
         gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
                           TEXEL0, 0, PRIMITIVE, 0,
                           NOISE, 0, TEXEL0, 0,
@@ -960,11 +960,11 @@ static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32*
         gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
     }
 
-    if (particle->flags & 0x400) {
+    if (particle->flags & PARTICLE_FLAG_ALPHA_DITHER) {
         nextAlphaCompare = G_AC_DITHER;
     } else {
         nextAlphaCompare = G_AC_THRESHOLD;
-        if (particle->flags & 0x200) {
+        if (particle->flags & PARTICLE_FLAG_ENV_ALPHA_THRESHOLD) {
             nextBlendColorA = particle->envColor.a;
         } else {
             nextBlendColorA = 8;
