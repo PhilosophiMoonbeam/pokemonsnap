@@ -413,6 +413,9 @@ UIElement* UIElement_Create(s32 x, s32 y, s32 width, s32 height, s32 flags) {
     el->sprite.startTLUT = 0;
     el->sprite.nTLUT = 0;
     el->sprite.LUT = 0;
+    /* window draw still supports generalized istart/istep traversal, but
+     * the default element path initializes donor-style full-array walking.
+     */
     el->sprite.istart = 0;
     el->sprite.istep = 1;
     el->sprite.nbitmaps = numTiles2;
