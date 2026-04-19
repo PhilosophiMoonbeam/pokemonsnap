@@ -119,52 +119,51 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
 #ifdef NON_MATCHING
 
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
-    Bitmap* bitmap;
     WindowPhotoBuffer* src;
-    s32 texelCount;
-    s32 y;
-    s32 x;
-    s32 rowInBitmap;
-    s32 tileHeight;
 
-    if (photo == NULL) {
-        src = NULL;
-    } else {
+    if (photo != NULL) {
         src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo);
+    } else {
+        src = NULL;
     }
 
-    bitmap = sprite->bitmap;
     if (src == NULL) {
-        u16* dst;
+        Bitmap* bitmap = sprite->bitmap;
+        u16* dst = bitmap->buf;
+        s32 texelCount = bitmap->width_img * sprite->height;
+        s32 i;
 
-        texelCount = bitmap->width_img * sprite->height;
-        dst = bitmap->buf;
-        for (y = 0; y < texelCount; y++) {
-            dst[y] = 0;
+        for (i = 0; i < texelCount; i++) {
+            dst[i] = 0;
         }
         osWritebackDCache(bitmap->buf, texelCount);
         return 1;
     }
 
-    rowInBitmap = 0;
-    tileHeight = bitmap->actualHeight;
-    for (y = 0; y < sprite->height; y++) {
-        u16* srcRow0;
-        u16* srcRow1;
-        u16* dst;
+    {
+        Bitmap* bitmap = sprite->bitmap;
+        s32 rowInBitmap = 0;
+        s32 tileHeight = bitmap->actualHeight;
+        s32 y;
+        s32 x;
 
-        if (rowInBitmap >= tileHeight) {
-            rowInBitmap = 0;
-            bitmap++;
-            tileHeight = bitmap->actualHeight;
-        }
+        for (y = 0; y < sprite->height; y++) {
+            u16* srcRow0;
+            u16* srcRow1;
+            u16* dst;
 
-        srcRow0 = src->buf + ((y * src->width) * 2);
-        srcRow1 = srcRow0 + src->width;
-        dst = (u16*) bitmap->buf + (rowInBitmap * bitmap->width_img);
+            if (rowInBitmap >= tileHeight) {
+                rowInBitmap = 0;
+                bitmap++;
+                tileHeight = bitmap->actualHeight;
+            }
 
-        x = 0;
-        if (sprite->width & 1) {
+            srcRow0 = src->buf + ((y * src->width) * 2);
+            srcRow1 = srcRow0 + src->width;
+            dst = (u16*) bitmap->buf + (rowInBitmap * bitmap->width_img);
+
+            x = 0;
+            if (sprite->width & 1) {
             s32 r;
             s32 g;
             s32 bl;
@@ -229,7 +228,8 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
             }
         }
 
-        rowInBitmap++;
+            rowInBitmap++;
+        }
     }
 
     osWritebackDCache(sprite->bitmap->buf, sprite->bitmap->width_img * sprite->height);
