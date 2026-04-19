@@ -1101,7 +1101,35 @@ void fx_draw(GObj* camObj) {
                 if (var_s7->flags & 0x20) {
                     sp200 *= 2;
                     sp1F4 = G_TX_MIRROR;
-                    var_s1 = fx_draw_pickMask(temp_s3);
+                    switch (temp_s3) {
+                        case 2:
+                            var_s1 = 1;
+                            break;
+                        case 4:
+                            var_s1 = 2;
+                            break;
+                        case 8:
+                            var_s1 = 3;
+                            break;
+                        case 16:
+                            var_s1 = 4;
+                            break;
+                        case 32:
+                            var_s1 = 5;
+                            break;
+                        case 64:
+                            var_s1 = 6;
+                            break;
+                        case 128:
+                            var_s1 = 7;
+                            break;
+                        case 256:
+                            var_s1 = 8;
+                            break;
+                        default:
+                            var_s1 = G_TX_NOMASK;
+                            break;
+                    }
                 } else {
                     sp1F4 = G_TX_CLAMP;
                     var_s1 = G_TX_NOMASK;
