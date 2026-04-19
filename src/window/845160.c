@@ -50,6 +50,10 @@ void func_80371C0C_8453BC(GObj* gobj) {
     func_80371F30_8456E0(0, SCREEN_WIDTH * 2 - 1, 0, SCREEN_HEIGHT * 2 - 1);
 }
 
+/* Window layout users reach func_80373670_846E20 through these constructors.
+ * The Sprite template is copied verbatim here; current live layout callers do
+ * not patch istart/istep after construction.
+ */
 GObj* func_80371C68_845418(void (*func)(GObj*), s32 link, Sprite* sprite) {
     GObj* obj;
 
