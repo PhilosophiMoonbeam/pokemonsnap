@@ -148,7 +148,7 @@ Particle* fx_createParticle(
     ret->bytecodePos = ret->returnPtr = 0;
 
     if (argF) {
-        ret->flags |= 0x10;
+        ret->flags |= PARTICLE_FLAG_CI_SHARED_PALETTE;
     }
 
     if (bytecode != NULL) {
@@ -1127,7 +1127,7 @@ void fx_draw(GObj* camObj) {
                 temp_s5 = v0->height;
                 sp1C8 = v0->data[var_s7->dataID];
                 if (temp_fp == G_IM_FMT_CI) {
-                    if (!(var_s7->flags & 0x10)) {
+                    if (!(var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE)) {
                         sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
                     } else {
                         sp1C4 = v0->data[v0->numFrames];
@@ -1608,7 +1608,7 @@ Effect* fx_createEffect(s32 bankID, s32 scriptID) {
         ret->unk_40 = fx_ScriptBanks[id][scriptID]->unk_28;
         ret->unk_44 = 0.0f;
         if (fx_SpriteBanks[id][fx_ScriptBanks[id][scriptID]->textureID]->flags != 0) {
-            ret->flags |= 0x10;
+            ret->flags |= PARTICLE_FLAG_CI_SHARED_PALETTE;
         }
         ret->dobj = NULL;
 
