@@ -71,6 +71,10 @@ typedef struct EffectSprites {
     /* 0x18 */ u8* data[1]; // variable length
 } EffectSprites;
 
+enum EffectSpriteFlags {
+    EFFECT_SPRITE_FLAG_CI_SHARED_PALETTE = 1
+};
+
 typedef char fx_assert_effect_sprites_num_frames_at_0[(offsetof(EffectSprites, numFrames) == 0x0) ? 1 : -1];
 typedef char fx_assert_effect_sprites_fmt_at_4[(offsetof(EffectSprites, fmt) == 0x4) ? 1 : -1];
 typedef char fx_assert_effect_sprites_siz_at_8[(offsetof(EffectSprites, siz) == 0x8) ? 1 : -1];

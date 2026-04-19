@@ -50,7 +50,7 @@ void fx_setupBankID(s32 bankID, s32* scriptDesc, s32* spritesDesc) { // TODO str
         }
 
         if (fx_SpriteBanks[bankID][i]->fmt == G_IM_FMT_CI) {
-            if (fx_SpriteBanks[bankID][i]->flags & 1) {
+            if (fx_SpriteBanks[bankID][i]->flags & EFFECT_SPRITE_FLAG_CI_SHARED_PALETTE) {
                 j = fx_SpriteBanks[bankID][i]->numFrames;
                 fx_SpriteBanks[bankID][i]->data[j] += (u32) spritesDesc;
             } else {
