@@ -140,6 +140,35 @@ typedef struct Particle {
     /* 0x58 */ Effect* fx;
 } Particle; // size = 0x5C
 
+typedef char fx_assert_particle_next_at_0[(offsetof(Particle, next) == 0x0) ? 1 : -1];
+typedef char fx_assert_particle_effect_id_at_4[(offsetof(Particle, effectID) == 0x4) ? 1 : -1];
+typedef char fx_assert_particle_flags_at_6[(offsetof(Particle, flags) == 0x6) ? 1 : -1];
+typedef char fx_assert_particle_bank_id_at_8[(offsetof(Particle, bankID) == 0x8) ? 1 : -1];
+typedef char fx_assert_particle_loop_count_at_9[(offsetof(Particle, loopCount) == 0x9) ? 1 : -1];
+typedef char fx_assert_particle_texture_id_at_a[(offsetof(Particle, textureID) == 0xA) ? 1 : -1];
+typedef char fx_assert_particle_data_id_at_b[(offsetof(Particle, dataID) == 0xB) ? 1 : -1];
+typedef char fx_assert_particle_bytecode_timer_at_c[(offsetof(Particle, bytecodeTimer) == 0xC) ? 1 : -1];
+typedef char fx_assert_particle_size_target_length_at_e[(offsetof(Particle, sizeTargetLength) == 0xE) ? 1 : -1];
+typedef char fx_assert_particle_target_prim_color_length_at_10[(offsetof(Particle, targetPrimColorLength) == 0x10) ? 1 : -1];
+typedef char fx_assert_particle_target_env_color_length_at_12[(offsetof(Particle, targetEnvColorLength) == 0x12) ? 1 : -1];
+typedef char fx_assert_particle_bytecode_at_14[(offsetof(Particle, bytecode) == 0x14) ? 1 : -1];
+typedef char fx_assert_particle_bytecode_pos_at_18[(offsetof(Particle, bytecodePos) == 0x18) ? 1 : -1];
+typedef char fx_assert_particle_return_ptr_at_1a[(offsetof(Particle, returnPtr) == 0x1A) ? 1 : -1];
+typedef char fx_assert_particle_loop_ptr_at_1c[(offsetof(Particle, loopPtr) == 0x1C) ? 1 : -1];
+typedef char fx_assert_particle_lifetime_at_1e[(offsetof(Particle, lifetime) == 0x1E) ? 1 : -1];
+typedef char fx_assert_particle_pos_at_20[(offsetof(Particle, pos) == 0x20) ? 1 : -1];
+typedef char fx_assert_particle_vel_at_2c[(offsetof(Particle, vel) == 0x2C) ? 1 : -1];
+typedef char fx_assert_particle_gravity_at_38[(offsetof(Particle, gravity) == 0x38) ? 1 : -1];
+typedef char fx_assert_particle_friction_at_3c[(offsetof(Particle, friction) == 0x3C) ? 1 : -1];
+typedef char fx_assert_particle_size_at_40[(offsetof(Particle, size) == 0x40) ? 1 : -1];
+typedef char fx_assert_particle_size_target_at_44[(offsetof(Particle, sizeTarget) == 0x44) ? 1 : -1];
+typedef char fx_assert_particle_prim_color_at_48[(offsetof(Particle, primColor) == 0x48) ? 1 : -1];
+typedef char fx_assert_particle_target_prim_color_at_4c[(offsetof(Particle, targetPrimColor) == 0x4C) ? 1 : -1];
+typedef char fx_assert_particle_env_color_at_50[(offsetof(Particle, envColor) == 0x50) ? 1 : -1];
+typedef char fx_assert_particle_target_env_color_at_54[(offsetof(Particle, targetEnvColor) == 0x54) ? 1 : -1];
+typedef char fx_assert_particle_fx_at_58[(offsetof(Particle, fx) == 0x58) ? 1 : -1];
+typedef char fx_assert_particle_sizeof_5c[(sizeof(Particle) == 0x5C) ? 1 : -1];
+
 extern Particle* D_800BE1A8[16];
 extern s32 fx_ScriptBanksNum[PARTICLE_BANKS_MAX];
 extern s32 fx_SpriteBanksNum[PARTICLE_BANKS_MAX];
