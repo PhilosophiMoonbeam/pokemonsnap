@@ -940,6 +940,47 @@ static s32 fx_draw_pickMask(s32 dimension) {
     }
 }
 
+static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32* blendColorA) {
+    s32 nextAlphaCompare;
+    s32 nextBlendColorA;
+
+    gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, particle->primColor.r, particle->primColor.g, particle->primColor.b, particle->primColor.a);
+    if (particle->flags & 0x80) {
+        gDPSetEnvColor(gMainGfxPos[0]++, particle->envColor.r, particle->envColor.g, particle->envColor.b, particle->envColor.a);
+        gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
+    } else if (particle->flags & 0x100) {
+        gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
+                          TEXEL0, 0, PRIMITIVE, 0,
+                          NOISE, 0, TEXEL0, 0,
+                          TEXEL0, 0, PRIMITIVE, 0);
+    } else {
+        gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+    }
+
+    if (particle->flags & 0x400) {
+        nextAlphaCompare = G_AC_DITHER;
+    } else {
+        nextAlphaCompare = G_AC_THRESHOLD;
+        if (particle->flags & 0x200) {
+            nextBlendColorA = particle->envColor.a;
+        } else {
+            nextBlendColorA = 8;
+        }
+        if (*blendColorA != nextBlendColorA) {
+            gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);
+            *blendColorA = nextBlendColorA;
+        }
+    }
+
+    if (*alphaCompare != nextAlphaCompare) {
+        gDPSetAlphaCompare(gMainGfxPos[0]++, nextAlphaCompare);
+        *alphaCompare = nextAlphaCompare;
+    }
+}
+
 void fx_draw(GObj* camObj) {
     Particle* var_s7;
     EffectSprites* v0;
@@ -1186,41 +1227,7 @@ void fx_draw(GObj* camObj) {
                     var_s2 = sp1C8;
                 }
 
-                gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, var_s7->primColor.r, var_s7->primColor.g, var_s7->primColor.b, var_s7->primColor.a);
-                if (var_s7->flags & 0x80) {
-                    gDPSetEnvColor(gMainGfxPos[0]++, var_s7->envColor.r, var_s7->envColor.g, var_s7->envColor.b, var_s7->envColor.a);
-                    gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
-                } else if (var_s7->flags & 0x100) {
-                    gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
-                                      TEXEL0, 0, PRIMITIVE, 0,
-                                      NOISE, 0, TEXEL0, 0,
-                                      TEXEL0, 0, PRIMITIVE, 0);
-                } else {
-                    gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-                }
-
-                if (var_s7->flags & 0x400) {
-                    var_a1_2 = G_AC_DITHER;
-                } else {
-                    var_a1_2 = G_AC_THRESHOLD;
-                    if (var_s7->flags & 0x200) {
-                        var_a0 = var_s7->envColor.a;
-                    } else {
-                        var_a0 = 8;
-                    }
-                    if (sp2CC != var_a0) {
-                        gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, var_a0);
-                        sp2CC = var_a0;
-                    }
-                }
-
-                if (sp2D0 != var_a1_2) {
-                    gDPSetAlphaCompare(gMainGfxPos[0]++, var_a1_2);
-                    sp2D0 = var_a1_2;
-                }
+                fx_draw_applyRenderState(var_s7, &sp2D0, &sp2CC);
 
                 gDPSetPrimDepth(gMainGfxPos[0]++, (s32) ((sp204 + temp_f28 * sp208) * 32.0f), 0);
                 gSPScisTextureRectangle(gMainGfxPos[0]++, (s32) var_f24, (s32) var_f26, (s32) var_f16, (s32) var_f18, G_TX_RENDERTILE, 0, 0, sp200, sp1FC);
