@@ -161,7 +161,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
         srcRow0 = src->buf + ((y * src->width) * 2);
         srcRow1 = srcRow0 + src->width;
-        dst = bitmap->buf + (rowInBitmap * bitmap->width_img);
+        dst = (u16*) bitmap->buf + (rowInBitmap * bitmap->width_img);
 
         x = 0;
         if (sprite->width & 1) {
