@@ -15,7 +15,7 @@ void func_80371F30_8456E0(s32 xMin, s32 xMax, s32 yMin, s32 yMax) {
 }
 
 #ifdef NON_MATCHING
-static void
+void
 func_80371F54_845704(Gfx** glp, Sprite* s, Bitmap* b,
                      s32 x, s32 y, s32 xx, s32 yy, s32 fs, s32 ft, s32 sx, s32 sy) {
     s32 rs, rt;
