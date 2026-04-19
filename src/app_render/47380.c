@@ -1378,13 +1378,13 @@ static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, EffectSpri
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
 
-    if (playbackFlags & 0x80) {
+    if (playbackFlags & PARTICLE_FLAG_ENV_COMBINE) {
         gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a);
         gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
-    } else if (playbackFlags & 0x100) {
+    } else if (playbackFlags & PARTICLE_FLAG_NOISE_COMBINE) {
         gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
                           TEXEL0, 0, PRIMITIVE, 0,
                           NOISE, 0, TEXEL0, 0,
@@ -1393,7 +1393,7 @@ static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, EffectSpri
         gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
     }
 
-    if (playbackFlags & 0x400) {
+    if (playbackFlags & PARTICLE_FLAG_ALPHA_DITHER) {
         if (*alphaCompare != G_AC_DITHER) {
             gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_DITHER);
             *alphaCompare = G_AC_DITHER;
@@ -1567,7 +1567,7 @@ void func_8009E3D0(GObj* gobj) {
         height = sprites->height;
         sStep = (width * 4096.0f) / (right - left);
         tStep = (height * 4096.0f) / (bottom - top);
-        if (playbackFlags & 0x20) {
+        if (playbackFlags & PARTICLE_FLAG_MIRROR_S) {
             sStep *= 2;
             sFlags = G_TX_MIRROR;
             sMask = func_8009E3D0_pickMask(width);
@@ -1575,7 +1575,7 @@ void func_8009E3D0(GObj* gobj) {
             sFlags = G_TX_CLAMP;
             sMask = G_TX_NOMASK;
         }
-        if (playbackFlags & 0x40) {
+        if (playbackFlags & PARTICLE_FLAG_MIRROR_T) {
             tStep *= 2;
             tFlags = G_TX_MIRROR;
             tMask = func_8009E3D0_pickMask(height);
@@ -1587,7 +1587,7 @@ void func_8009E3D0(GObj* gobj) {
         textureData = sprites->data[effect->dataID];
         tlutData = NULL;
         if (sprites->fmt == G_IM_FMT_CI) {
-            if (playbackFlags & 0x10) {
+            if (playbackFlags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
                 tlutData = sprites->data[sprites->numFrames];
             } else {
                 tlutData = sprites->data[sprites->numFrames + effect->dataID];

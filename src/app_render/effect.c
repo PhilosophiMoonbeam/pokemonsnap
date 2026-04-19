@@ -421,7 +421,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     u8 temp_a0;
     f32 sp44;
 
-    if (arg0->flags & 0x800) {
+    if (arg0->flags & PARTICLE_FLAG_PAUSE) {
         return arg0->next;
     }
 
@@ -603,36 +603,36 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             }
                             break;
                         case 0xAD:
-                            arg0->flags |= 0x80;
+                            arg0->flags |= PARTICLE_FLAG_ENV_COMBINE;
                             break;
                         case 0xAE:
-                            arg0->flags &= ~0x60;
+                            arg0->flags &= ~(PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T);
                             break;
                         case 0xAF:
-                            arg0->flags &= ~0x40;
-                            arg0->flags |= 0x20;
+                            arg0->flags &= ~PARTICLE_FLAG_MIRROR_T;
+                            arg0->flags |= PARTICLE_FLAG_MIRROR_S;
                             break;
                         case 0xB0:
-                            arg0->flags &= ~0x20;
-                            arg0->flags |= 0x40;
+                            arg0->flags &= ~PARTICLE_FLAG_MIRROR_S;
+                            arg0->flags |= PARTICLE_FLAG_MIRROR_T;
                             break;
                         case 0xB1:
-                            arg0->flags |= 0x60;
+                            arg0->flags |= PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T;
                             break;
                         case 0xB2:
-                            arg0->flags |= 0x200;
+                            arg0->flags |= PARTICLE_FLAG_ENV_ALPHA_THRESHOLD;
                             break;
                         case 0xB3:
-                            arg0->flags &= ~0x400;
+                            arg0->flags &= ~PARTICLE_FLAG_ALPHA_DITHER;
                             break;
                         case 0xB4:
-                            arg0->flags |= 0x400;
+                            arg0->flags |= PARTICLE_FLAG_ALPHA_DITHER;
                             break;
                         case 0xB5:
-                            arg0->flags |= 0x100;
+                            arg0->flags |= PARTICLE_FLAG_NOISE_COMBINE;
                             break;
                         case 0xB6:
-                            arg0->flags &= ~0x100;
+                            arg0->flags &= ~PARTICLE_FLAG_NOISE_COMBINE;
                             break;
                         case 0xB7:
                             temp_s0 = *var_s1++;
@@ -1137,7 +1137,7 @@ void fx_draw(GObj* camObj) {
                 sp200 = (temp_s3 * 4096.0f) / (var_f16 - var_f24);
                 sp1FC = (temp_s5 * 4096.0f) / (var_f18 - var_f26);
 
-                if (var_s7->flags & 0x20) {
+                if (var_s7->flags & PARTICLE_FLAG_MIRROR_S) {
                     sp200 *= 2;
                     sp1F4 = G_TX_MIRROR;
                     switch (temp_s3) {
@@ -1174,7 +1174,7 @@ void fx_draw(GObj* camObj) {
                     var_s1 = G_TX_NOMASK;
                 }
 
-                if (var_s7->flags & 0x40) {
+                if (var_s7->flags & PARTICLE_FLAG_MIRROR_T) {
                     sp1FC *= 2;
                     var_s6 = G_TX_MIRROR;
                     var_t2 = fx_draw_pickMask(temp_s5);
@@ -1390,7 +1390,7 @@ void fx_effectFuncRun(GObj* obj) {
             ptr = ptr->next;
             continue;
         }
-        if (ptr->flags & 0x800) {
+        if (ptr->flags & PARTICLE_FLAG_PAUSE) {
             D_800BE2B0 = ptr;
             ptr = ptr->next;
             continue;
