@@ -959,9 +959,7 @@ void fx_draw(GObj* camObj) {
     f32 temp_f28;
 
     f32 temp_f0;
-    f32 temp_f22;
     f32 sp220;
-    f32 sp21C;
     f32 sp218;
     f32 sp214;
     f32 sp210;
