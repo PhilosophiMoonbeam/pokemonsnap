@@ -917,6 +917,29 @@ void fx_structFuncRun(GObj* obj) {
 }
 
 #if 0
+static s32 fx_draw_pickMask(s32 dimension) {
+    switch (dimension) {
+        case 2:
+            return 1;
+        case 4:
+            return 2;
+        case 8:
+            return 3;
+        case 16:
+            return 4;
+        case 32:
+            return 5;
+        case 64:
+            return 6;
+        case 128:
+            return 7;
+        case 256:
+            return 8;
+        default:
+            return G_TX_NOMASK;
+    }
+}
+
 void fx_draw(GObj* camObj) {
     Particle* var_s7;
     EffectSprites* v0;
@@ -924,7 +947,7 @@ void fx_draw(GObj* camObj) {
     u8* sp2D4;
     s32 sp2D0;
     s32 sp2CC;
-    s32 sp2C8;
+    s32 sp2C8 = 0;
     Mtx4f sp288;
     Mtx4f sp248;
     f32 var_f24;
@@ -1078,35 +1101,7 @@ void fx_draw(GObj* camObj) {
                 if (var_s7->flags & 0x20) {
                     sp200 *= 2;
                     sp1F4 = G_TX_MIRROR;
-                    switch (temp_s3) {
-                        case 2:
-                            var_s1 = 1;
-                            break;
-                        case 4:
-                            var_s1 = 2;
-                            break;
-                        case 8:
-                            var_s1 = 3;
-                            break;
-                        case 16:
-                            var_s1 = 4;
-                            break;
-                        case 32:
-                            var_s1 = 5;
-                            break;
-                        case 64:
-                            var_s1 = 6;
-                            break;
-                        case 128:
-                            var_s1 = 7;
-                            break;
-                        case 256:
-                            var_s1 = 8;
-                            break;
-                        default:
-                            var_s1 = G_TX_NOMASK;
-                            break;
-                    }
+                    var_s1 = fx_draw_pickMask(temp_s3);
                 } else {
                     sp1F4 = G_TX_CLAMP;
                     var_s1 = G_TX_NOMASK;
@@ -1115,35 +1110,7 @@ void fx_draw(GObj* camObj) {
                 if (var_s7->flags & 0x40) {
                     sp1FC *= 2;
                     var_s6 = G_TX_MIRROR;
-                    switch (temp_s5) {
-                        case 2:
-                            var_t2 = 1;
-                            break;
-                        case 4:
-                            var_t2 = 2;
-                            break;
-                        case 8:
-                            var_t2 = 3;
-                            break;
-                        case 16:
-                            var_t2 = 4;
-                            break;
-                        case 32:
-                            var_t2 = 5;
-                            break;
-                        case 64:
-                            var_t2 = 6;
-                            break;
-                        case 128:
-                            var_t2 = 7;
-                            break;
-                        case 256:
-                            var_t2 = 8;
-                            break;
-                        default:
-                            var_t2 = G_TX_NOMASK;
-                            break;
-                    }
+                    var_t2 = fx_draw_pickMask(temp_s5);
                 } else {
                     var_s6 = G_TX_CLAMP;
                     var_t2 = G_TX_NOMASK;
