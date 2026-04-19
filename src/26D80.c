@@ -418,6 +418,9 @@ Gfx* spDraw(Sprite* s) {
     ogl = gl;
 #endif
 
+    /* donor spDraw walks bitmap[] from 0 with b++, unlike the window variant
+     * that starts at istart and advances by istep.
+     */
     b = s->bitmap;
     ex = 0;
     ey = 0;
