@@ -712,7 +712,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             break;
                         case 0xBF:
                             temp_s0 = *var_s1++ - 1;
-                            arg0->flags = arg0->flags | 0x8000 | (temp_s0 << 0xC);
+                            arg0->flags = arg0->flags | PARTICLE_FLAG_ATTACH_DOBJ | PARTICLE_PACK_ATTACH_DOBJ_INDEX(temp_s0);
                             break;
                         case 0xC0:
                             var_s1 = func_800A27E8(var_s1, &arg0->targetPrimColorLength);
@@ -875,8 +875,8 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
         arg0->pos.y += arg0->vel.y;
         arg0->pos.z += arg0->vel.z;
     }
-    if (arg0->flags & 0x8000) {
-        temp_s0 = (arg0->flags & 0x7000) >> 12;
+    if (arg0->flags & PARTICLE_FLAG_ATTACH_DOBJ) {
+        temp_s0 = PARTICLE_GET_ATTACH_DOBJ_INDEX(arg0->flags);
         if (D_800BE208[temp_s0] != NULL) {
             D_800BE208[temp_s0]->position.v.x = arg0->pos.x;
             D_800BE208[temp_s0]->position.v.y = arg0->pos.y;
