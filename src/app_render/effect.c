@@ -246,7 +246,7 @@ void fx_ejectStruct(Particle* particle) {
                 prev->next = it->next;
             }
 
-            if (particle->fx != NULL && (particle->flags & 4) && particle->fx->kind == 2) {
+            if (particle->fx != NULL && (particle->flags & PARTICLE_FLAG_KIND2_CHILD) && particle->fx->kind == 2) {
                 particle->fx->effectVars.data2.unk_04--;
             }
 
@@ -821,7 +821,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
             arg1->next = arg0->next;
         }
         next = arg0->next;
-        if ((arg0->fx != NULL) && (arg0->flags & 4) && (arg0->fx->kind == 2)) {
+        if ((arg0->fx != NULL) && (arg0->flags & PARTICLE_FLAG_KIND2_CHILD) && (arg0->fx->kind == 2)) {
             arg0->fx->effectVars.data2.unk_04--;
         }
 
@@ -830,7 +830,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
         return next;
     }
 
-    if (arg0->flags & 4) {
+    if (arg0->flags & PARTICLE_FLAG_KIND2_CHILD) {
         pinkRat = arg0->fx;
 
         SINCOS(arg0->gravity, sp5C, sp54);
@@ -1511,7 +1511,7 @@ void fx_effectFuncRun(GObj* obj) {
                         spDC = randFloat() * 6.2831855f;
                     }
                     ptr->effectVars.data2.unk_00 = sp108;
-                    if (fx_makeParam(ptr->bankID, ptr->flags | 4, ptr->textureID, ptr->bytecode, ptr->particleLifetime,
+                    if (fx_makeParam(ptr->bankID, ptr->flags | PARTICLE_FLAG_KIND2_CHILD, ptr->textureID, ptr->bytecode, ptr->particleLifetime,
                                      0, 0, 0,
                                      spDC, var_f24, 0, ptr->size, angle1, angle2, 0, ptr) != NULL) {
                         ptr->effectVars.data2.unk_04++;
@@ -1693,7 +1693,7 @@ void fx_ejectStructID(u16 effectID, s32 linkID) {
             } else {
                 prev->next = it->next;
             }
-            if (it->fx != NULL && (it->flags & 4) && it->fx->kind == 2) {
+            if (it->fx != NULL && (it->flags & PARTICLE_FLAG_KIND2_CHILD) && it->fx->kind == 2) {
                 it->fx->effectVars.data2.unk_04--;
             }
             it->next = D_800BE1A0;
