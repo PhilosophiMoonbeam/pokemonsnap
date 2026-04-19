@@ -1121,13 +1121,13 @@ void fx_draw(GObj* camObj) {
                         gDPLoadTLUT_pal256(gMainGfxPos[0]++, sp1C4);
                         sp2D4 = sp1C4;
                     }
-                    if (sp2C8 != 1) {
+                    if (sp2C8 != G_TT_RGBA16) {
                         gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_RGBA16);
-                        sp2C8 = 1;
+                        sp2C8 = G_TT_RGBA16;
                     }
-                } else if (sp2C8 != 0) {
+                } else if (sp2C8 != G_TT_NONE) {
                     gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_NONE);
-                    sp2C8 = 0;
+                    sp2C8 = G_TT_NONE;
                 }
 
                 if (sp1C8 != var_s2) {
@@ -1202,7 +1202,7 @@ void fx_draw(GObj* camObj) {
         }
     }
 
-    if (sp2C8 != 0) {
+    if (sp2C8 != G_TT_NONE) {
         gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_NONE);
     }
 }
