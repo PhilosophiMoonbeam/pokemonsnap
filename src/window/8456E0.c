@@ -332,6 +332,9 @@ Gfx* func_80373670_846E20(Sprite* s) {
     ogl = gl;
 #endif
 
+    /* window spDraw intentionally starts from istart and advances by istep,
+     * unlike the donor sprite.c path that walks bitmap[] from 0 with b++.
+     */
     b = s->bitmap + s->istart;
     b_end = b + s->nbitmaps;
     ex = 0;
