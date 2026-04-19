@@ -3,6 +3,7 @@
 
 #include "ultra64.h"
 #include "types.h"
+#include "ultralib/include/macros.h"
 #include "sys/om.h"
 #include "sys/anim.h"
 #include "sys/cont.h"
@@ -270,11 +271,22 @@ typedef struct PhotoData {
     /* 0x1A0 */ EffectPhotoData effects[32];
 } PhotoData; // size = 0x3A0
 
+typedef char common_assert_pokemon_photo_data_size[(sizeof(PokemonPhotoData) == 0x18) ? 1 : -1];
+typedef char common_assert_item_photo_data_size[(sizeof(ItemPhotoData) == 0x10) ? 1 : -1];
+typedef char common_assert_effect_photo_data_size[(sizeof(EffectPhotoData) == 0x10) ? 1 : -1];
+typedef char common_assert_photo_data_pokemons_at_20[(offsetof(PhotoData, pokemons) == 0x20) ? 1 : -1];
+typedef char common_assert_photo_data_items_at_140[(offsetof(PhotoData, items) == 0x140) ? 1 : -1];
+typedef char common_assert_photo_data_effects_at_1a0[(offsetof(PhotoData, effects) == 0x1A0) ? 1 : -1];
+typedef char common_assert_photo_data_size[(sizeof(PhotoData) == 0x3A0) ? 1 : -1];
+
 typedef struct UnkThing {
     /* 0x000 */ PhotoData main;
     /* 0x3A0 */ GObj* pokemonInFocus;
     /* 0x3A4 */ GObj* pokemonObjects[12];
 } UnkThing;
+
+typedef char common_assert_unkthing_pokemon_in_focus_at_3a0[(offsetof(UnkThing, pokemonInFocus) == 0x3A0) ? 1 : -1];
+typedef char common_assert_unkthing_pokemon_objects_at_3a4[(offsetof(UnkThing, pokemonObjects) == 0x3A4) ? 1 : -1];
 
 typedef struct UIButton {
     s32 id;
@@ -329,6 +341,9 @@ typedef struct AlbumPhotoData {
     /* 0x000 */ PhotoData photoData;
     /* 0x3A0 */ AlbumComment comment;
 } AlbumPhotoData; // size = 0x3E0
+
+typedef char common_assert_album_photo_data_comment_at_3a0[(offsetof(AlbumPhotoData, comment) == 0x3A0) ? 1 : -1];
+typedef char common_assert_album_photo_data_size[(sizeof(AlbumPhotoData) == 0x3E0) ? 1 : -1];
 
 typedef struct UIFrame {
     /* 0x00 */ GObj* sprites[9];

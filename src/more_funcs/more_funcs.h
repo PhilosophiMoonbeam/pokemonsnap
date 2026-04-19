@@ -64,6 +64,11 @@ typedef struct UnkBigBoy {
     } data;
 } UnkBigBoy; // size = 0x1F2A4
 
+typedef char more_funcs_assert_unkbigboy_data_unk_180_at_180[(offsetof(UnkBigBoy, data.unk_180) == 0x180) ? 1 : -1];
+typedef char more_funcs_assert_unkbigboy_data_unk_fba0_at_fba0[(offsetof(UnkBigBoy, data.unk_FBA0) == 0xFBA0) ? 1 : -1];
+typedef char more_funcs_assert_unkbigboy_data_album_photos_at_10a20[(offsetof(UnkBigBoy, data.albumPhotos) == 0x10A20) ? 1 : -1];
+typedef char more_funcs_assert_unkbigboy_size[(sizeof(UnkBigBoy) == 0x1F2A4) ? 1 : -1];
+
 void func_800BF954_5C7F4(s32, PhotoData*, AlbumComment*);
 s32 func_800C0224_5D0C4(s32);
 void func_800C0254_5D0F4(s32, s32);
