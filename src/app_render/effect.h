@@ -87,6 +87,29 @@ typedef struct ParticleSpritesDesc {
 typedef char fx_assert_particle_sprites_desc_count_at_0[(offsetof(ParticleSpritesDesc, count) == 0) ? 1 : -1];
 typedef char fx_assert_particle_sprites_desc_sprites_at_4[(offsetof(ParticleSpritesDesc, sprites) == sizeof(s32)) ? 1 : -1];
 
+typedef char fx_assert_effect_vars_size[(sizeof(EffectVars) == 0xC) ? 1 : -1];
+typedef char fx_assert_effect_next_at_0[(offsetof(Effect, next) == 0x0) ? 1 : -1];
+typedef char fx_assert_effect_effect_id_at_4[(offsetof(Effect, effectID) == 0x4) ? 1 : -1];
+typedef char fx_assert_effect_flags_at_6[(offsetof(Effect, flags) == 0x6) ? 1 : -1];
+typedef char fx_assert_effect_kind_at_8[(offsetof(Effect, kind) == 0x8) ? 1 : -1];
+typedef char fx_assert_effect_bank_id_at_9[(offsetof(Effect, bankID) == 0x9) ? 1 : -1];
+typedef char fx_assert_effect_texture_id_at_a[(offsetof(Effect, textureID) == 0xA) ? 1 : -1];
+typedef char fx_assert_effect_particle_lifetime_at_c[(offsetof(Effect, particleLifetime) == 0xC) ? 1 : -1];
+typedef char fx_assert_effect_effect_lifetime_at_e[(offsetof(Effect, effectLifetime) == 0xE) ? 1 : -1];
+typedef char fx_assert_effect_bytecode_at_10[(offsetof(Effect, bytecode) == 0x10) ? 1 : -1];
+typedef char fx_assert_effect_pos_at_14[(offsetof(Effect, pos) == 0x14) ? 1 : -1];
+typedef char fx_assert_effect_vel_at_20[(offsetof(Effect, vel) == 0x20) ? 1 : -1];
+typedef char fx_assert_effect_gravity_at_2c[(offsetof(Effect, gravity) == 0x2C) ? 1 : -1];
+typedef char fx_assert_effect_friction_at_30[(offsetof(Effect, friction) == 0x30) ? 1 : -1];
+typedef char fx_assert_effect_size_at_34[(offsetof(Effect, size) == 0x34) ? 1 : -1];
+typedef char fx_assert_effect_unk_38_at_38[(offsetof(Effect, unk_38) == 0x38) ? 1 : -1];
+typedef char fx_assert_effect_unk_3c_at_3c[(offsetof(Effect, unk_3C) == 0x3C) ? 1 : -1];
+typedef char fx_assert_effect_unk_40_at_40[(offsetof(Effect, unk_40) == 0x40) ? 1 : -1];
+typedef char fx_assert_effect_unk_44_at_44[(offsetof(Effect, unk_44) == 0x44) ? 1 : -1];
+typedef char fx_assert_effect_dobj_at_48[(offsetof(Effect, dobj) == 0x48) ? 1 : -1];
+typedef char fx_assert_effect_effect_vars_at_4c[(offsetof(Effect, effectVars) == 0x4C) ? 1 : -1];
+typedef char fx_assert_effect_sizeof_58[(sizeof(Effect) == 0x58) ? 1 : -1];
+
 typedef struct Particle {
     /* 0x00 */ struct Particle* next;
     /* 0x04 */ u16 effectID;
