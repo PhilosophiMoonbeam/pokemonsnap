@@ -27,6 +27,20 @@ typedef struct EffectScript {
     /* 0x30 */ u8 bytecode[1]; // variable length
 } EffectScript;                // size > 0x30
 
+typedef char fx_assert_effect_script_kind_at_0[(offsetof(EffectScript, kind) == 0x0) ? 1 : -1];
+typedef char fx_assert_effect_script_texture_id_at_2[(offsetof(EffectScript, textureID) == 0x2) ? 1 : -1];
+typedef char fx_assert_effect_script_effect_lifetime_at_4[(offsetof(EffectScript, effectLifetime) == 0x4) ? 1 : -1];
+typedef char fx_assert_effect_script_particle_lifetime_at_6[(offsetof(EffectScript, particleLifetime) == 0x6) ? 1 : -1];
+typedef char fx_assert_effect_script_flags_at_8[(offsetof(EffectScript, flags) == 0x8) ? 1 : -1];
+typedef char fx_assert_effect_script_gravity_at_c[(offsetof(EffectScript, gravity) == 0xC) ? 1 : -1];
+typedef char fx_assert_effect_script_friction_at_10[(offsetof(EffectScript, friction) == 0x10) ? 1 : -1];
+typedef char fx_assert_effect_script_vel_at_14[(offsetof(EffectScript, vel) == 0x14) ? 1 : -1];
+typedef char fx_assert_effect_script_unk_20_at_20[(offsetof(EffectScript, unk_20) == 0x20) ? 1 : -1];
+typedef char fx_assert_effect_script_unk_24_at_24[(offsetof(EffectScript, unk_24) == 0x24) ? 1 : -1];
+typedef char fx_assert_effect_script_unk_28_at_28[(offsetof(EffectScript, unk_28) == 0x28) ? 1 : -1];
+typedef char fx_assert_effect_script_size_at_2c[(offsetof(EffectScript, size) == 0x2C) ? 1 : -1];
+typedef char fx_assert_effect_script_bytecode_at_30[(offsetof(EffectScript, bytecode) == 0x30) ? 1 : -1];
+
 typedef struct ParticleScriptDesc {
     /* 0x00 */ s32 count;
     /* 0x04 */ EffectScript* scripts[1]; // variable length
@@ -44,6 +58,14 @@ typedef struct EffectSprites {
     /* 0x14 */ s32 flags;
     /* 0x18 */ u8* data[1]; // variable length
 } EffectSprites;
+
+typedef char fx_assert_effect_sprites_num_frames_at_0[(offsetof(EffectSprites, numFrames) == 0x0) ? 1 : -1];
+typedef char fx_assert_effect_sprites_fmt_at_4[(offsetof(EffectSprites, fmt) == 0x4) ? 1 : -1];
+typedef char fx_assert_effect_sprites_siz_at_8[(offsetof(EffectSprites, siz) == 0x8) ? 1 : -1];
+typedef char fx_assert_effect_sprites_width_at_c[(offsetof(EffectSprites, width) == 0xC) ? 1 : -1];
+typedef char fx_assert_effect_sprites_height_at_10[(offsetof(EffectSprites, height) == 0x10) ? 1 : -1];
+typedef char fx_assert_effect_sprites_flags_at_14[(offsetof(EffectSprites, flags) == 0x14) ? 1 : -1];
+typedef char fx_assert_effect_sprites_data_at_18[(offsetof(EffectSprites, data) == 0x18) ? 1 : -1];
 
 typedef struct ParticleSpritesDesc {
     /* 0x00 */ s32 count;
