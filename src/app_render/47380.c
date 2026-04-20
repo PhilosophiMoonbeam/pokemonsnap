@@ -1372,6 +1372,7 @@ static s32 func_8009E3D0_pickMask(s32 dim) {
 }
 
 static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, u32 playbackFlags, s32* alphaCompare, s32* blendColorA) {
+    s32 nextBlendColorA;
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
 
@@ -1396,9 +1397,10 @@ static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, u32 playba
             *alphaCompare = G_AC_DITHER;
         }
     } else {
-        if (*blendColorA != 8) {
-            gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, 8);
-            *blendColorA = 8;
+        nextBlendColorA = 8;
+        if (*blendColorA != nextBlendColorA) {
+            gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);
+            *blendColorA = nextBlendColorA;
         }
         if (*alphaCompare != G_AC_THRESHOLD) {
             gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_THRESHOLD);
