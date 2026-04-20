@@ -1123,6 +1123,9 @@ void fx_draw(GObj* camObj) {
                     var_f26 = var_f18;
                     var_f18 = temp_f14 - (var_f18 - temp_f14);
                 }
+                if (var_f24 == var_f16 || var_f26 == var_f18) {
+                    continue;
+                }
 
                 v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
                 temp_fp = v0->fmt;
