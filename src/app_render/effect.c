@@ -1199,6 +1199,8 @@ void fx_draw(GObj* camObj) {
                                 sp2D4 = NULL;
                             }
                             break;
+                        default:
+                            continue;
                     }
                     var_s2 = sp1C8;
                 }
