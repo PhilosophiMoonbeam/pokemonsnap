@@ -1090,6 +1090,25 @@ void fx_draw(GObj* camObj) {
                 if (var_s7->size == 0.0f) {
                     continue;
                 }
+                if (var_s7->textureID < 0 || var_s7->textureID >= fx_SpriteBanksNum[FX_GET_BANK_INDEX(var_s7->bankID)]) {
+                    continue;
+                }
+                v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
+                if (v0 == NULL || var_s7->dataID >= v0->numFrames) {
+                    continue;
+                }
+                temp_fp = v0->fmt;
+                temp_t4 = v0->siz;
+                temp_s3 = v0->width;
+                temp_s5 = v0->height;
+                sp1C8 = v0->data[var_s7->dataID];
+                if (temp_fp == G_IM_FMT_CI) {
+                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
+                        sp1C4 = v0->data[v0->numFrames];
+                    } else {
+                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
+                    }
+                }
                 temp_f12 = (sp248[0][0] * var_s7->pos.x + sp248[1][0] * var_s7->pos.y + sp248[2][0] * var_s7->pos.z + sp248[3][0]);
                 temp_f20 = sp248[0][3] * var_s7->pos.x + sp248[1][3] * var_s7->pos.y + sp248[2][3] * var_s7->pos.z + sp248[3][3];
 
@@ -1125,26 +1144,6 @@ void fx_draw(GObj* camObj) {
                 }
                 if (var_f24 == var_f16 || var_f26 == var_f18) {
                     continue;
-                }
-
-                if (var_s7->textureID < 0 || var_s7->textureID >= fx_SpriteBanksNum[FX_GET_BANK_INDEX(var_s7->bankID)]) {
-                    continue;
-                }
-                v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
-                if (v0 == NULL || var_s7->dataID >= v0->numFrames) {
-                    continue;
-                }
-                temp_fp = v0->fmt;
-                temp_t4 = v0->siz;
-                temp_s3 = v0->width;
-                temp_s5 = v0->height;
-                sp1C8 = v0->data[var_s7->dataID];
-                if (temp_fp == G_IM_FMT_CI) {
-                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
-                        sp1C4 = v0->data[v0->numFrames];
-                    } else {
-                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
-                    }
                 }
 
                 sp200 = (temp_s3 * 4096.0f) / (var_f16 - var_f24);
