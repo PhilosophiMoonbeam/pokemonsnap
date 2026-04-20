@@ -1353,44 +1353,44 @@ void func_8009E1CC(PhotoData* photoData) {
      ((dim) == 128) ? 7 :            \
      ((dim) == 256) ? 8 : G_TX_NOMASK)
 
-static void func_8009E3D0_applyRenderState(EffectPhotoData* effect, u32 playbackFlags, s32* alphaCompare, s32* blendColorA) {
-    s32 nextBlendColorA;
-
-    gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
-
-    if (playbackFlags & PARTICLE_FLAG_ENV_COMBINE) {
-        gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a);
-        gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
-                          PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
-    } else if (playbackFlags & PARTICLE_FLAG_NOISE_COMBINE) {
-        gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
-                          TEXEL0, 0, PRIMITIVE, 0,
-                          NOISE, 0, TEXEL0, 0,
-                          TEXEL0, 0, PRIMITIVE, 0);
-    } else {
-        gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    }
-
-    if (playbackFlags & PARTICLE_FLAG_ALPHA_DITHER) {
-        if (*alphaCompare != G_AC_DITHER) {
-            gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_DITHER);
-            *alphaCompare = G_AC_DITHER;
-        }
-    } else {
-        nextBlendColorA = 8;
-        if (*blendColorA != nextBlendColorA) {
-            gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);
-            *blendColorA = nextBlendColorA;
-        }
-        if (*alphaCompare != G_AC_THRESHOLD) {
-            gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_THRESHOLD);
-            *alphaCompare = G_AC_THRESHOLD;
-        }
-    }
-
-}
+#define FUNC_8009E3D0_APPLY_RENDER_STATE(effect, playbackFlags, alphaCompare, blendColorA) \
+    do {                                                                                     \
+        s32 nextBlendColorA;                                                                  \
+                                                                                              \
+        gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, (effect)->primColor.r, (effect)->primColor.g, (effect)->primColor.b, (effect)->primColor.a); \
+                                                                                              \
+        if ((playbackFlags) & PARTICLE_FLAG_ENV_COMBINE) {                                    \
+            gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a); \
+            gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, \
+                              PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,                    \
+                              PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,                    \
+                              PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);                   \
+        } else if ((playbackFlags) & PARTICLE_FLAG_NOISE_COMBINE) {                           \
+            gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,                          \
+                              TEXEL0, 0, PRIMITIVE, 0,                                        \
+                              NOISE, 0, TEXEL0, 0,                                            \
+                              TEXEL0, 0, PRIMITIVE, 0);                                       \
+        } else {                                                                              \
+            gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM); \
+        }                                                                                     \
+                                                                                              \
+        if ((playbackFlags) & PARTICLE_FLAG_ALPHA_DITHER) {                                   \
+            if (*(alphaCompare) != G_AC_DITHER) {                                             \
+                gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_DITHER);                            \
+                *(alphaCompare) = G_AC_DITHER;                                                 \
+            }                                                                                 \
+        } else {                                                                              \
+            nextBlendColorA = 8;                                                              \
+            if (*(blendColorA) != nextBlendColorA) {                                          \
+                gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);                \
+                *(blendColorA) = nextBlendColorA;                                             \
+            }                                                                                 \
+            if (*(alphaCompare) != G_AC_THRESHOLD) {                                          \
+                gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_THRESHOLD);                         \
+                *(alphaCompare) = G_AC_THRESHOLD;                                              \
+            }                                                                                 \
+        }                                                                                     \
+    } while (0)
 
 void func_8009E3D0(GObj* gobj) {
     EffectPhotoData* effect;
@@ -1622,7 +1622,7 @@ void func_8009E3D0(GObj* gobj) {
             loadedTexture = textureData;
         }
 
-        func_8009E3D0_applyRenderState(effect, playbackFlags, &alphaCompare, &blendColorA);
+        FUNC_8009E3D0_APPLY_RENDER_STATE(effect, playbackFlags, &alphaCompare, &blendColorA);
 
         depth = (s32) ((vpTransZ + clipZ * vpScaleZ) * 32.0f);
         gDPSetPrimDepth(gMainGfxPos[0]++, depth, 0);
