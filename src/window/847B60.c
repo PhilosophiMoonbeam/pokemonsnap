@@ -142,12 +142,15 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
     {
         Bitmap* bitmap = sprite->bitmap;
+        s32 width = sprite->width;
+        s32 height = sprite->height;
+        s32 dstWidth = bitmap->width_img;
         s32 rowInBitmap = 0;
         s32 tileHeight = bitmap->actualHeight;
         s32 y;
         s32 x;
 
-        for (y = 0; y < sprite->height; y++) {
+        for (y = 0; y < height; y++) {
             u16* srcRow0;
             u16* srcRow1;
             u16* dst;
@@ -155,15 +158,16 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
             if (rowInBitmap >= tileHeight) {
                 rowInBitmap = 0;
                 bitmap++;
+                dstWidth = bitmap->width_img;
                 tileHeight = bitmap->actualHeight;
             }
 
             srcRow0 = src->buf + ((y * src->width) * 2);
             srcRow1 = srcRow0 + src->width;
-            dst = (u16*) bitmap->buf + (rowInBitmap * bitmap->width_img);
+            dst = (u16*) bitmap->buf + (rowInBitmap * dstWidth);
 
             x = 0;
-            if (sprite->width & 1) {
+            if (width & 1) {
             s32 r;
             s32 g;
             s32 bl;
@@ -183,7 +187,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
         }
 
         if (rowInBitmap & 1) {
-            for (; x < sprite->width; x += 2) {
+            for (; x < width; x += 2) {
                 s32 r;
                 s32 g;
                 s32 bl;
@@ -205,7 +209,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
                 dst++;
             }
         } else {
-            for (; x < sprite->width; x += 2) {
+            for (; x < width; x += 2) {
                 s32 r;
                 s32 g;
                 s32 bl;
