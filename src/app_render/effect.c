@@ -945,7 +945,6 @@ static s32 fx_draw_pickMask(s32 dimension) {
 }
 
 static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32* blendColorA) {
-    s32 nextAlphaCompare;
     s32 nextBlendColorA;
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, particle->primColor.r, particle->primColor.g, particle->primColor.b, particle->primColor.a);
@@ -965,9 +964,11 @@ static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32*
     }
 
     if (particle->flags & PARTICLE_FLAG_ALPHA_DITHER) {
-        nextAlphaCompare = G_AC_DITHER;
+        if (*alphaCompare != G_AC_DITHER) {
+            gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_DITHER);
+            *alphaCompare = G_AC_DITHER;
+        }
     } else {
-        nextAlphaCompare = G_AC_THRESHOLD;
         if (particle->flags & PARTICLE_FLAG_ENV_ALPHA_THRESHOLD) {
             nextBlendColorA = particle->envColor.a;
         } else {
@@ -977,11 +978,10 @@ static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32*
             gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);
             *blendColorA = nextBlendColorA;
         }
-    }
-
-    if (*alphaCompare != nextAlphaCompare) {
-        gDPSetAlphaCompare(gMainGfxPos[0]++, nextAlphaCompare);
-        *alphaCompare = nextAlphaCompare;
+        if (*alphaCompare != G_AC_THRESHOLD) {
+            gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_THRESHOLD);
+            *alphaCompare = G_AC_THRESHOLD;
+        }
     }
 }
 
