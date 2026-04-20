@@ -290,7 +290,7 @@ s32 func_801E5030_994AA0(void) {
     s32 loopEnd;
     UNUSED s32 pad2;
     s32 sp34;
-    Unk803A6C18* sp30;
+    PhotoScoreBundle* sp30;
     Photo* photo;
     UNUSED s32 pad3;
     Foo2* sp24;

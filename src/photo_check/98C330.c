@@ -847,7 +847,7 @@ void func_801DE02C_98DA9C(GObj* arg0) {
 }
 
 s32 func_801DE204_98DC74(Photo* photo) {
-    Unk803A6C18* sp25C;
+    PhotoScoreBundle* sp25C;
     UIElement* sp258;
     UIElement* sp254;
     char sp214[0x40];

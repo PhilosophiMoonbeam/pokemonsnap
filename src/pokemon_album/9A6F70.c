@@ -85,7 +85,7 @@ SObj* album_PhotoDescBackground;
 GObj* album_DraggedPhotoGObj;
 SObj* album_DraggedPhotoSObj;
 s32 album_AlbumPage;
-Unk803A6C18* album_D_802500B8_A1A308;
+PhotoScoreBundle* album_D_802500B8_A1A308;
 u8 album_CharGridId;
 s16 album_CommentCursorPos;
 AlbumPhoto album_Photos[6];
@@ -187,7 +187,7 @@ char* func_801DD0E8_9A7338(bool* arg0) {
     }
 }
 
-char* album_GetPhotoParam(Unk803A6C18* arg0, u32 paramId) {
+char* album_GetPhotoParam(PhotoScoreBundle* arg0, u32 paramId) {
     switch (paramId) {
         case 0:
             D_80208B88_9D2DD8 = false;
@@ -892,7 +892,7 @@ void func_801DF2E0_9A9530(void) {
 }
 
 void album_PrintPhotoDescription(s32 descType, s32 entryIndex) {
-    Unk803A6C18* sp4C;
+    PhotoScoreBundle* sp4C;
     s32 i;
     char str[32];
 

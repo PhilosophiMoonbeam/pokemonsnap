@@ -754,7 +754,7 @@ void func_camera_check_801E3CE8(void) {
 }
 
 void func_camera_check_801E3D8C(PhotoData* arg0, UnkIndigoHalibut* arg1) {
-    Unk803A6C18* temp_v0;
+    PhotoScoreBundle* temp_v0;
     UNK_TYPE sp28;
 
     temp_v0 = func_8037452C_847CDC(arg0);

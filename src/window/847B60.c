@@ -25,7 +25,7 @@ extern WindowPhotoBuffer D_803A6684_879E34;
 
 static u16* D_803A6C10_87A3C0;
 static u16* D_803A6C14_87A3C4;
-static Unk803A6C18 D_803A6C18_87A3C8;
+static PhotoScoreBundle D_803A6C18_87A3C8;
 
 void func_803743B0_847B60(f32 arg0) {
     D_803A6668_879E18 = arg0;
@@ -66,7 +66,7 @@ void func_803743BC_847B6C(GObj* camGobj) {
     }
 }
 
-Unk803A6C18* func_8037452C_847CDC(PhotoData* arg0) {
+PhotoScoreBundle* func_8037452C_847CDC(PhotoData* arg0) {
     ScoreData* temp_v0;
 
     if (arg0 == NULL) {

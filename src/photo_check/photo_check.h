@@ -45,12 +45,12 @@ typedef struct ScoreData {
     /* 0x14 */ u8 specialID;
 } ScoreData; // size = 0x18
 
-typedef struct Unk803A6C18 {
+typedef struct PhotoScoreBundle {
     /* 0x000 */ PhotoData photo;
     /* 0x3A0 */ ScoreData score;
-} Unk803A6C18; // size = 0x3B8
+} PhotoScoreBundle; // size = 0x3B8
 
-Unk803A6C18* func_8037452C_847CDC(PhotoData*);
+PhotoScoreBundle* func_8037452C_847CDC(PhotoData*);
 
 s32 func_801E41FC_993C6C(UnkStruct800BEDF8* arg0, s32* arg1);
 Photo* func_801E459C_99400C(s32 idx);
