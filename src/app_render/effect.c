@@ -843,8 +843,8 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
 
         arg0->vel.z += pinkRat->effectVars.data2.unk_00;
 
-        sp70 = ABS(pinkRat->unk_38);
-        var_f2 = ABS(pinkRat->unk_3C);
+        sp70 = ABS(pinkRat->emitRadius);
+        var_f2 = ABS(pinkRat->emitAngle);
 
         SINCOS(var_f2, var_f18, sp44);
 
@@ -1396,13 +1396,13 @@ void fx_effectFuncRun(GObj* obj) {
             continue;
         }
 
-        if (ptr->unk_40 < 0.0f) {
-            ptr->unk_44 -= ptr->unk_40;
+        if (ptr->emitRate < 0.0f) {
+            ptr->emitAccumulator -= ptr->emitRate;
         } else {
-            ptr->unk_44 += randFloat() * ptr->unk_40;
+            ptr->emitAccumulator += randFloat() * ptr->emitRate;
         }
 
-        if (ptr->unk_44 >= 1.0f) {
+        if (ptr->emitAccumulator >= 1.0f) {
             sp11C.x = ptr->vel.x;
             sp11C.y = ptr->vel.y;
             sp11C.z = ptr->vel.z;
@@ -1413,10 +1413,10 @@ void fx_effectFuncRun(GObj* obj) {
                 ptr->pos.z = sp128.z;
             }
             spDC = randFloat() * TAU;
-            spB8 = TAU / (s32) ptr->unk_44;
+            spB8 = TAU / (s32) ptr->emitAccumulator;
         }
 
-        while (ptr->unk_44 >= 1.0f) {
+        while (ptr->emitAccumulator >= 1.0f) {
             switch (ptr->kind) {
                 case 0:
                 case 3:
@@ -1435,23 +1435,23 @@ void fx_effectFuncRun(GObj* obj) {
 
                     sp108 = sqrtf(SQ(x) + SQ(y) + SQ(z));
 
-                    if (ptr->unk_38 < 0.0f) {
+                    if (ptr->emitRadius < 0.0f) {
                         spB4 = var_f24 = 1.0f;
-                        var_f20 = -ptr->unk_38;
+                        var_f20 = -ptr->emitRadius;
                     } else {
                         spB4 = var_f24 = randFloat();
                         if (ptr->kind != 0) {
                             spB4 = var_f24 = sqrtf(var_f24);
                         }
-                        var_f20 = ptr->unk_38 * spB4;
+                        var_f20 = ptr->emitRadius * spB4;
                     }
 
-                    if (ptr->unk_3C < 0.0f) {
+                    if (ptr->emitAngle < 0.0f) {
                         spDC += spB8;
-                        var_f24 = -ptr->unk_3C;
+                        var_f24 = -ptr->emitAngle;
                     } else {
                         spDC = randFloat() * TAU;
-                        var_f24 *= ptr->unk_3C;
+                        var_f24 *= ptr->emitAngle;
                     }
 
                     spEC = __cosf(spDC) * var_f20;
@@ -1500,12 +1500,12 @@ void fx_effectFuncRun(GObj* obj) {
                     spF8 = __cosf(angle1);
                     angle2 = atan2f(x, y * spFC + z * spF8);
                     sp108 = sqrtf(SQ(x) + SQ(y) + SQ(z));
-                    if (ptr->unk_38 < 0.0f) {
+                    if (ptr->emitRadius < 0.0f) {
                         var_f24 = 1.0f;
                     } else {
                         var_f24 = randFloat();
                     }
-                    if (ptr->unk_3C < 0.0f) {
+                    if (ptr->emitAngle < 0.0f) {
                         spDC += spB8;
                     } else {
                         spDC = randFloat() * 6.2831855f;
@@ -1524,7 +1524,7 @@ void fx_effectFuncRun(GObj* obj) {
                     break;
             }
 
-            ptr->unk_44 -= 1.0f;
+            ptr->emitAccumulator -= 1.0f;
         }
         // FAKE
         if (spDC) {
@@ -1533,7 +1533,7 @@ void fx_effectFuncRun(GObj* obj) {
         if (ptr->effectLifetime != 0 && --ptr->effectLifetime == 0) {
             if (ptr->kind == 2 && ptr->effectVars.data2.unk_04 != 0) {
                 ptr->effectLifetime = 1;
-                ptr->unk_40 = 0.0f;
+                ptr->emitRate = 0.0f;
                 goto END;
             } else {
                 if (D_800BE2B0 == NULL) {
@@ -1603,10 +1603,10 @@ Effect* fx_createEffect(s32 bankID, s32 scriptID) {
         ret->friction = fx_ScriptBanks[id][scriptID]->friction;
         ret->size = fx_ScriptBanks[id][scriptID]->size;
         ret->bytecode = fx_ScriptBanks[id][scriptID]->bytecode;
-        ret->unk_38 = fx_ScriptBanks[id][scriptID]->unk_20;
-        ret->unk_3C = fx_ScriptBanks[id][scriptID]->unk_24;
-        ret->unk_40 = fx_ScriptBanks[id][scriptID]->unk_28;
-        ret->unk_44 = 0.0f;
+        ret->emitRadius = fx_ScriptBanks[id][scriptID]->emitRadius;
+        ret->emitAngle = fx_ScriptBanks[id][scriptID]->emitAngle;
+        ret->emitRate = fx_ScriptBanks[id][scriptID]->emitRate;
+        ret->emitAccumulator = 0.0f;
         if (fx_SpriteBanks[id][fx_ScriptBanks[id][scriptID]->textureID]->flags != 0) {
             ret->flags |= PARTICLE_FLAG_CI_SHARED_PALETTE;
         }
@@ -1643,7 +1643,7 @@ void fx_ejectEffect(Effect* fx) {
         if (it == fx) {
             if (fx->kind == 2 && fx->effectVars.data2.unk_04 != 0) {
                 fx->effectLifetime = 1;
-                fx->unk_40 = 0.0f;
+                fx->emitRate = 0.0f;
                 return;
             }
             if (prev == NULL) {
@@ -1708,7 +1708,7 @@ void fx_ejectStructID(u16 effectID, s32 linkID) {
         next2 = it2->next;
         if (it2->effectID == effectID) {
             if (it2->kind == 2 && it2->effectVars.data2.unk_04 != 0) {
-                it2->unk_40 = 0.0f;
+                it2->emitRate = 0.0f;
                 it2->effectLifetime = 1;
                 prev2 = it2;
             } else {

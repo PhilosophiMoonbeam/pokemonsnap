@@ -317,10 +317,10 @@ typedef struct Effect {
     /* 0x2C */ f32 gravity;
     /* 0x30 */ f32 friction;
     /* 0x34 */ f32 size;
-    /* 0x38 */ f32 unk_38;
-    /* 0x3C */ f32 unk_3C;
-    /* 0x40 */ f32 unk_40;
-    /* 0x44 */ f32 unk_44;
+    /* 0x38 */ f32 emitRadius;
+    /* 0x3C */ f32 emitAngle;
+    /* 0x40 */ f32 emitRate;
+    /* 0x44 */ f32 emitAccumulator;
     /* 0x48 */ DObj* dobj;
     /* 0x4C */ EffectVars effectVars;
 } Effect; // size = 0x58

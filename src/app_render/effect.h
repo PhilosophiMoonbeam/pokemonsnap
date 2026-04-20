@@ -44,9 +44,9 @@ typedef struct EffectScript {
     /* 0x0C */ f32 gravity;
     /* 0x10 */ f32 friction;
     /* 0x14 */ Vec3f vel;
-    /* 0x20 */ f32 unk_20;
-    /* 0x24 */ f32 unk_24;
-    /* 0x28 */ f32 unk_28;
+    /* 0x20 */ f32 emitRadius;
+    /* 0x24 */ f32 emitAngle;
+    /* 0x28 */ f32 emitRate;
     /* 0x2C */ f32 size;
     /* 0x30 */ u8 bytecode[1]; // variable length
 } EffectScript;                // size > 0x30
@@ -59,9 +59,9 @@ typedef char fx_assert_effect_script_flags_at_8[(offsetof(EffectScript, flags) =
 typedef char fx_assert_effect_script_gravity_at_c[(offsetof(EffectScript, gravity) == 0xC) ? 1 : -1];
 typedef char fx_assert_effect_script_friction_at_10[(offsetof(EffectScript, friction) == 0x10) ? 1 : -1];
 typedef char fx_assert_effect_script_vel_at_14[(offsetof(EffectScript, vel) == 0x14) ? 1 : -1];
-typedef char fx_assert_effect_script_unk_20_at_20[(offsetof(EffectScript, unk_20) == 0x20) ? 1 : -1];
-typedef char fx_assert_effect_script_unk_24_at_24[(offsetof(EffectScript, unk_24) == 0x24) ? 1 : -1];
-typedef char fx_assert_effect_script_unk_28_at_28[(offsetof(EffectScript, unk_28) == 0x28) ? 1 : -1];
+typedef char fx_assert_effect_script_emit_radius_at_20[(offsetof(EffectScript, emitRadius) == 0x20) ? 1 : -1];
+typedef char fx_assert_effect_script_emit_angle_at_24[(offsetof(EffectScript, emitAngle) == 0x24) ? 1 : -1];
+typedef char fx_assert_effect_script_emit_rate_at_28[(offsetof(EffectScript, emitRate) == 0x28) ? 1 : -1];
 typedef char fx_assert_effect_script_size_at_2c[(offsetof(EffectScript, size) == 0x2C) ? 1 : -1];
 typedef char fx_assert_effect_script_bytecode_at_30[(offsetof(EffectScript, bytecode) == 0x30) ? 1 : -1];
 
@@ -118,10 +118,10 @@ typedef char fx_assert_effect_vel_at_20[(offsetof(Effect, vel) == 0x20) ? 1 : -1
 typedef char fx_assert_effect_gravity_at_2c[(offsetof(Effect, gravity) == 0x2C) ? 1 : -1];
 typedef char fx_assert_effect_friction_at_30[(offsetof(Effect, friction) == 0x30) ? 1 : -1];
 typedef char fx_assert_effect_size_at_34[(offsetof(Effect, size) == 0x34) ? 1 : -1];
-typedef char fx_assert_effect_unk_38_at_38[(offsetof(Effect, unk_38) == 0x38) ? 1 : -1];
-typedef char fx_assert_effect_unk_3c_at_3c[(offsetof(Effect, unk_3C) == 0x3C) ? 1 : -1];
-typedef char fx_assert_effect_unk_40_at_40[(offsetof(Effect, unk_40) == 0x40) ? 1 : -1];
-typedef char fx_assert_effect_unk_44_at_44[(offsetof(Effect, unk_44) == 0x44) ? 1 : -1];
+typedef char fx_assert_effect_emit_radius_at_38[(offsetof(Effect, emitRadius) == 0x38) ? 1 : -1];
+typedef char fx_assert_effect_emit_angle_at_3c[(offsetof(Effect, emitAngle) == 0x3C) ? 1 : -1];
+typedef char fx_assert_effect_emit_rate_at_40[(offsetof(Effect, emitRate) == 0x40) ? 1 : -1];
+typedef char fx_assert_effect_emit_accumulator_at_44[(offsetof(Effect, emitAccumulator) == 0x44) ? 1 : -1];
 typedef char fx_assert_effect_dobj_at_48[(offsetof(Effect, dobj) == 0x48) ? 1 : -1];
 typedef char fx_assert_effect_effect_vars_at_4c[(offsetof(Effect, effectVars) == 0x4C) ? 1 : -1];
 typedef char fx_assert_effect_sizeof_58[(sizeof(Effect) == 0x58) ? 1 : -1];
