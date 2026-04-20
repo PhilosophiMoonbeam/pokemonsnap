@@ -120,8 +120,8 @@ Particle* fx_createParticle(
     D_800BE1A0 = ret->next;
 
     if (arg0 == NULL) {
-        ret->next = D_800BE1A8[bankID >> 3];
-        D_800BE1A8[bankID >> 3] = ret;
+        ret->next = D_800BE1A8[FX_GET_BANK_GROUP(bankID)];
+        D_800BE1A8[FX_GET_BANK_GROUP(bankID)] = ret;
     } else {
         ret->next = arg0->next;
         arg0->next = ret;
@@ -169,7 +169,7 @@ Particle* fx_createParticle(
 
 Particle* fx_makeChildScriptID(Particle* particle, s32 bankID, s32 scriptID) {
     EffectScript* script;
-    s32 id = bankID & 7; // TODO mod 8?
+    s32 id = FX_GET_BANK_INDEX(bankID);
 
     if (id >= PARTICLE_BANKS_MAX) {
         return NULL;
@@ -194,7 +194,7 @@ Particle* fx_makeParam(s32 bankID, s32 flags, u16 textureID, u8* bytecode, s32 l
                             velY, velZ, size,
                             gravity, friction, argE, fx);
     if (ret != NULL) {
-        fx_updateStruct(ret, 0, bankID >> 3);
+        fx_updateStruct(ret, 0, FX_GET_BANK_GROUP(bankID));
     }
     return ret;
 }
@@ -204,7 +204,7 @@ Particle* fx_makeCommon(s32 bankID, s32 scriptID) {
 
     ret = fx_makeChildScriptID(NULL, bankID, scriptID);
     if (ret != NULL) {
-        fx_updateStruct(ret, 0, bankID >> 3);
+        fx_updateStruct(ret, 0, FX_GET_BANK_GROUP(bankID));
     }
     return ret;
 }
@@ -212,7 +212,7 @@ Particle* fx_makeCommon(s32 bankID, s32 scriptID) {
 Particle* fx_makePosVel(s32 bankID, s32 scriptID, f32 posX, f32 posY, f32 posZ, f32 velX, f32 velY, f32 velZ) {
     Particle* ret;
     EffectScript* script;
-    s32 id = bankID & 7;
+    s32 id = FX_GET_BANK_INDEX(bankID);
 
     if (id >= PARTICLE_BANKS_MAX) {
         return NULL;
@@ -227,7 +227,7 @@ Particle* fx_makePosVel(s32 bankID, s32 scriptID, f32 posX, f32 posY, f32 posZ, 
                             posX, posY, posZ, velX, velY, velZ, script->size, script->gravity,
                             script->friction, fx_SpriteBanks[id][script->textureID]->flags, NULL);
     if (ret != NULL) {
-        fx_updateStruct(ret, 0, bankID >> 3);
+        fx_updateStruct(ret, 0, FX_GET_BANK_GROUP(bankID));
     }
     return ret;
 }
@@ -235,7 +235,7 @@ Particle* fx_makePosVel(s32 bankID, s32 scriptID, f32 posX, f32 posY, f32 posZ, 
 void fx_ejectStruct(Particle* particle) {
     Particle* it;
     Particle* prev;
-    s32 id = particle->bankID >> 3;
+    s32 id = FX_GET_BANK_GROUP(particle->bankID);
 
     prev = NULL;
     for (it = D_800BE1A8[id]; it != NULL; it = it->next) {
@@ -527,7 +527,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                                 temp_v0->pos.z = arg0->pos.z;
                                 temp_v0->effectID = arg0->effectID;
                                 temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, (s32) arg0->bankID >> 3);
+                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
                             }
                             break;
                         case 0xA5:
@@ -585,7 +585,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                                 temp_v0->pos.z = arg0->pos.z;
                                 temp_v0->effectID = arg0->effectID;
                                 temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, arg0->bankID >> 3);
+                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
                             }
                             break;
                         case 0xAB:
@@ -657,7 +657,7 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                                 temp_v0->vel.z = arg0->vel.z;
                                 temp_v0->effectID = arg0->effectID;
                                 temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, arg0->bankID >> 3);
+                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
                             }
                             break;
                         case 0xBA:
@@ -1120,7 +1120,7 @@ void fx_draw(GObj* camObj) {
                     var_f18 = temp_f14 - (var_f18 - temp_f14);
                 }
 
-                v0 = fx_SpriteBanks[var_s7->bankID & 7][var_s7->textureID];
+                v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
                 temp_fp = v0->fmt;
                 temp_t4 = v0->siz;
                 temp_s3 = v0->width;
@@ -1385,7 +1385,7 @@ void fx_effectFuncRun(GObj* obj) {
     f32 temp_fv1;
 
     for (ptr = D_800BE1EC, D_800BE2B0 = NULL; ptr != NULL;) {
-        if (obj->flags & (1 << (16 + (ptr->bankID >> 3)))) {
+        if (obj->flags & (1 << (16 + FX_GET_BANK_GROUP(ptr->bankID)))) {
             D_800BE2B0 = ptr;
             ptr = ptr->next;
             continue;
@@ -1575,7 +1575,7 @@ Effect* fx_getEffect(void) {
 
 Effect* fx_createEffect(s32 bankID, s32 scriptID) {
     Effect* ret;
-    s32 id = bankID & 7;
+    s32 id = FX_GET_BANK_INDEX(bankID);
     s32 unused;
 
     if (id >= PARTICLE_BANKS_MAX) {
@@ -1727,11 +1727,11 @@ void fx_ejectStructID(u16 effectID, s32 linkID) {
 }
 
 void fx_ejectStructSelf(Particle* particle) {
-    fx_ejectStructID(particle->effectID, particle->bankID >> 3);
+    fx_ejectStructID(particle->effectID, FX_GET_BANK_GROUP(particle->bankID));
 }
 
 void fx_ejectStructEffect(Effect* fx) {
-    fx_ejectStructID(fx->effectID, fx->bankID >> 3);
+    fx_ejectStructID(fx->effectID, FX_GET_BANK_GROUP(fx->bankID));
 }
 
 void fx_ejectEffectDObj(GObj* obj) {

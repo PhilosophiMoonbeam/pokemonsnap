@@ -702,7 +702,7 @@ void func_8009C604(UnkThing* arg0) {
         arg0->main.effects[i].textureID = particle->textureID;
         arg0->main.effects[i].dataID = particle->dataID;
         arg0->main.effects[i].unk_03 = (particle->flags >> 4) & 0xFF;
-        arg0->main.effects[i].bankID = particle->bankID & 7;
+        arg0->main.effects[i].bankID = FX_GET_BANK_INDEX(particle->bankID);
         arg0->main.effects[i].posX = particle->pos.x * 8.0f;
         arg0->main.effects[i].posY = particle->pos.y * 8.0f;
         arg0->main.effects[i].posZ = particle->pos.z * 8.0f;
