@@ -918,26 +918,30 @@ void fx_structFuncRun(GObj* obj) {
 
 #ifdef NON_MATCHING
 static s32 fx_draw_pickMask(s32 dimension) {
-    switch (dimension) {
-        case 2:
-            return 1;
-        case 4:
-            return 2;
-        case 8:
-            return 3;
-        case 16:
-            return 4;
-        case 32:
-            return 5;
-        case 64:
-            return 6;
-        case 128:
-            return 7;
-        case 256:
-            return 8;
-        default:
-            return G_TX_NOMASK;
+    if (dimension < 0x21) {
+        switch (dimension) {
+            case 2:
+                return 1;
+            case 4:
+                return 2;
+            case 8:
+                return 3;
+            case 16:
+                return 4;
+            case 32:
+                return 5;
+        }
+    } else {
+        switch (dimension) {
+            case 64:
+                return 6;
+            case 128:
+                return 7;
+            case 256:
+                return 8;
+        }
     }
+    return G_TX_NOMASK;
 }
 
 static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32* blendColorA) {
