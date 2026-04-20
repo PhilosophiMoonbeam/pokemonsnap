@@ -1101,15 +1101,6 @@ void fx_draw(GObj* camObj) {
                 temp_t4 = v0->siz;
                 temp_s3 = v0->width;
                 temp_s5 = v0->height;
-                sp1C8 = v0->data[var_s7->dataID];
-                sp1C4 = NULL;
-                if (temp_fp == G_IM_FMT_CI) {
-                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
-                        sp1C4 = v0->data[v0->numFrames];
-                    } else {
-                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
-                    }
-                }
                 temp_f12 = (sp248[0][0] * var_s7->pos.x + sp248[1][0] * var_s7->pos.y + sp248[2][0] * var_s7->pos.z + sp248[3][0]);
                 temp_f20 = sp248[0][3] * var_s7->pos.x + sp248[1][3] * var_s7->pos.y + sp248[2][3] * var_s7->pos.z + sp248[3][3];
 
@@ -1166,6 +1157,16 @@ void fx_draw(GObj* camObj) {
                 } else {
                     var_s6 = G_TX_CLAMP;
                     var_t2 = G_TX_NOMASK;
+                }
+
+                sp1C8 = v0->data[var_s7->dataID];
+                sp1C4 = NULL;
+                if (temp_fp == G_IM_FMT_CI) {
+                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
+                        sp1C4 = v0->data[v0->numFrames];
+                    } else {
+                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
+                    }
                 }
 
                 if (temp_fp == G_IM_FMT_CI) {
