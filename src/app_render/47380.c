@@ -1343,33 +1343,15 @@ void func_8009E1CC(PhotoData* photoData) {
 }
 
 #ifdef NON_MATCHING
-static s32 func_8009E3D0_pickMask(s32 dim) {
-    if (dim < 0x21) {
-        switch (dim) {
-            case 2:
-                return 1;
-            case 4:
-                return 2;
-            case 8:
-                return 3;
-            case 16:
-                return 4;
-            case 32:
-                return 5;
-        }
-    } else {
-        switch (dim) {
-            case 64:
-                return 6;
-            case 128:
-                return 7;
-            case 256:
-                return 8;
-        }
-    }
-
-    return G_TX_NOMASK;
-}
+#define FUNC_8009E3D0_PICK_MASK(dim) \
+    (((dim) == 2)   ? 1 :            \
+     ((dim) == 4)   ? 2 :            \
+     ((dim) == 8)   ? 3 :            \
+     ((dim) == 16)  ? 4 :            \
+     ((dim) == 32)  ? 5 :            \
+     ((dim) == 64)  ? 6 :            \
+     ((dim) == 128) ? 7 :            \
+     ((dim) == 256) ? 8 : G_TX_NOMASK)
 
 static void func_8009E3D0_applyRenderState(EffectPhotoData* effect, u32 playbackFlags, s32* alphaCompare, s32* blendColorA) {
     s32 nextBlendColorA;
@@ -1568,7 +1550,7 @@ void func_8009E3D0(GObj* gobj) {
         if (playbackFlags & PARTICLE_FLAG_MIRROR_S) {
             sStep *= 2;
             sFlags = G_TX_MIRROR;
-            sMask = func_8009E3D0_pickMask(width);
+            sMask = FUNC_8009E3D0_PICK_MASK(width);
         } else {
             sFlags = G_TX_CLAMP;
             sMask = G_TX_NOMASK;
@@ -1576,7 +1558,7 @@ void func_8009E3D0(GObj* gobj) {
         if (playbackFlags & PARTICLE_FLAG_MIRROR_T) {
             tStep *= 2;
             tFlags = G_TX_MIRROR;
-            tMask = func_8009E3D0_pickMask(height);
+            tMask = FUNC_8009E3D0_PICK_MASK(height);
         } else {
             tFlags = G_TX_CLAMP;
             tMask = G_TX_NOMASK;
