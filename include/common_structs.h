@@ -273,6 +273,15 @@ typedef struct PhotoData {
 
 typedef char common_assert_pokemon_photo_data_size[(sizeof(PokemonPhotoData) == 0x18) ? 1 : -1];
 typedef char common_assert_item_photo_data_size[(sizeof(ItemPhotoData) == 0x10) ? 1 : -1];
+typedef char common_assert_effect_photo_data_texture_id_at_0[(offsetof(EffectPhotoData, textureID) == 0x0) ? 1 : -1];
+typedef char common_assert_effect_photo_data_data_id_at_1[(offsetof(EffectPhotoData, dataID) == 0x1) ? 1 : -1];
+typedef char common_assert_effect_photo_data_bank_id_at_2[(offsetof(EffectPhotoData, bankID) == 0x2) ? 1 : -1];
+typedef char common_assert_effect_photo_data_packed_playback_flags_at_3[(offsetof(EffectPhotoData, packedPlaybackFlags) == 0x3) ? 1 : -1];
+typedef char common_assert_effect_photo_data_pos_x_at_4[(offsetof(EffectPhotoData, posX) == 0x4) ? 1 : -1];
+typedef char common_assert_effect_photo_data_pos_y_at_6[(offsetof(EffectPhotoData, posY) == 0x6) ? 1 : -1];
+typedef char common_assert_effect_photo_data_pos_z_at_8[(offsetof(EffectPhotoData, posZ) == 0x8) ? 1 : -1];
+typedef char common_assert_effect_photo_data_size_at_a[(offsetof(EffectPhotoData, size) == 0xA) ? 1 : -1];
+typedef char common_assert_effect_photo_data_prim_color_at_c[(offsetof(EffectPhotoData, primColor) == 0xC) ? 1 : -1];
 typedef char common_assert_effect_photo_data_size[(sizeof(EffectPhotoData) == 0x10) ? 1 : -1];
 typedef char common_assert_photo_data_pokemons_at_20[(offsetof(PhotoData, pokemons) == 0x20) ? 1 : -1];
 typedef char common_assert_photo_data_items_at_140[(offsetof(PhotoData, items) == 0x140) ? 1 : -1];
