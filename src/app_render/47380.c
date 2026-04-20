@@ -701,7 +701,7 @@ void func_8009C604(UnkThing* arg0) {
         particle = sp60[count - i - 1].particle;
         arg0->main.effects[i].textureID = particle->textureID;
         arg0->main.effects[i].dataID = particle->dataID;
-        arg0->main.effects[i].unk_03 = (particle->flags >> 4) & 0xFF;
+        arg0->main.effects[i].packedPlaybackFlags = (particle->flags >> 4) & 0xFF;
         arg0->main.effects[i].bankID = FX_GET_BANK_INDEX(particle->bankID);
         arg0->main.effects[i].posX = particle->pos.x * 8.0f;
         arg0->main.effects[i].posY = particle->pos.y * 8.0f;
@@ -1374,7 +1374,7 @@ static s32 func_8009E3D0_pickMask(s32 dim) {
 static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, EffectSprites* sprites, s32* alphaCompare, s32* blendColorA) {
     u32 playbackFlags;
 
-    playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->unk_03);
+    playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
 
@@ -1562,7 +1562,7 @@ void func_8009E3D0(GObj* gobj) {
             continue;
         }
 
-        playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->unk_03);
+        playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
         width = sprites->width;
         height = sprites->height;
         sStep = (width * 4096.0f) / (right - left);

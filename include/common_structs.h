@@ -247,7 +247,7 @@ typedef struct EffectPhotoData {
     /* 0x00 */ s8 textureID;
     /* 0x01 */ s8 dataID;
     /* 0x02 */ s8 bankID;
-    /* 0x03 */ u8 unk_03;
+    /* 0x03 */ u8 packedPlaybackFlags;
     /* 0x04 */ s16 posX;
     /* 0x06 */ s16 posY;
     /* 0x08 */ s16 posZ;
