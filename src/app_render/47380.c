@@ -1374,7 +1374,7 @@ static s32 func_8009E3D0_pickMask(s32 dim) {
 static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, EffectSprites* sprites, s32* alphaCompare, s32* blendColorA) {
     u32 playbackFlags;
 
-    playbackFlags = effect->unk_03 << 4;
+    playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->unk_03);
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
 
@@ -1562,7 +1562,7 @@ void func_8009E3D0(GObj* gobj) {
             continue;
         }
 
-        playbackFlags = effect->unk_03 << 4;
+        playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->unk_03);
         width = sprites->width;
         height = sprites->height;
         sStep = (width * 4096.0f) / (right - left);
