@@ -1131,10 +1131,10 @@ void fx_draw(GObj* camObj) {
                 temp_s5 = v0->height;
                 sp1C8 = v0->data[var_s7->dataID];
                 if (temp_fp == G_IM_FMT_CI) {
-                    if (!(var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE)) {
-                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
-                    } else {
+                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
                         sp1C4 = v0->data[v0->numFrames];
+                    } else {
+                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
                     }
                 }
 
