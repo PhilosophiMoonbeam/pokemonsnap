@@ -1127,7 +1127,13 @@ void fx_draw(GObj* camObj) {
                     continue;
                 }
 
+                if (var_s7->textureID < 0 || var_s7->textureID >= fx_SpriteBanksNum[FX_GET_BANK_INDEX(var_s7->bankID)]) {
+                    continue;
+                }
                 v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
+                if (v0 == NULL || var_s7->dataID >= v0->numFrames) {
+                    continue;
+                }
                 temp_fp = v0->fmt;
                 temp_t4 = v0->siz;
                 temp_s3 = v0->width;
