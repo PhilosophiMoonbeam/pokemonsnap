@@ -1371,10 +1371,7 @@ static s32 func_8009E3D0_pickMask(s32 dim) {
     return G_TX_NOMASK;
 }
 
-static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, s32* alphaCompare, s32* blendColorA) {
-    u32 playbackFlags;
-
-    playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
+static void func_8009E3D0_applyPlaybackState(EffectPhotoData* effect, u32 playbackFlags, s32* alphaCompare, s32* blendColorA) {
 
     gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, effect->primColor.r, effect->primColor.g, effect->primColor.b, effect->primColor.a);
 
@@ -1641,7 +1638,7 @@ void func_8009E3D0(GObj* gobj) {
             loadedTexture = textureData;
         }
 
-        func_8009E3D0_applyPlaybackState(effect, &alphaCompare, &blendColorA);
+        func_8009E3D0_applyPlaybackState(effect, playbackFlags, &alphaCompare, &blendColorA);
 
         depth = (s32) ((vpTransZ + clipZ * vpScaleZ) * 32.0f);
         gDPSetPrimDepth(gMainGfxPos[0]++, depth, 0);
