@@ -1,7 +1,7 @@
 #include "types.h"
 
 typedef struct Photo {
-    /* 0x00 */ PhotoData* unk_0;
+    /* 0x00 */ PhotoData* photoData;
     /* 0x04 */ u32 totalScore;
     /* 0x08 */ u8 poseID;
     /* 0x09 */ u8 samePkmnNumber;

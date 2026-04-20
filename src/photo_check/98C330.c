@@ -1859,9 +1859,9 @@ s32 func_801E1FA8_991A18(Photo* arg0, s32 arg1, s32 arg2) {
     sp5C->sprite.x = 431;
     sp5C->sprite.y = 37;
     sp5C->sprite.attr &= ~SP_HIDDEN;
-    func_80374714_847EC4(arg0->unk_0, &D_802290A0_9D8B10[0].sobj->sprite);
+    func_80374714_847EC4(arg0->photoData, &D_802290A0_9D8B10[0].sobj->sprite);
     ohWait(2);
-    func_80374714_847EC4(arg0->unk_0, &D_802290A0_9D8B10[0].sobj->sprite);
+    func_80374714_847EC4(arg0->photoData, &D_802290A0_9D8B10[0].sobj->sprite);
     if (arg1 != 0) {
         sp58 = -239.0f;
     } else {
@@ -1992,7 +1992,7 @@ void func_801E2454_991EC4(void) {
             if (sp54 != 0) {
                 func_801E1FA8_991A18(photo, 0, sp54);
             } else {
-                func_801E242C_991E9C(photo->unk_0, 0, 0);
+                func_801E242C_991E9C(photo->photoData, 0, 0);
             }
             D_801F3E2C_9A389C = 2;
             D_801F3E30_9A38A0 = 2;

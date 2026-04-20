@@ -65,7 +65,7 @@ PhotoData* func_801E452C_993F9C(s32 idx) {
     if (idx < 0 || idx >= func_800BFB84_5CA24()) {
         return 0;
     }
-    return D_802291A0_9D8C10[idx].unk_0;
+    return D_802291A0_9D8C10[idx].photoData;
 }
 
 Photo* func_801E459C_99400C(s32 idx) {
@@ -99,9 +99,9 @@ s32 func_801E4690_994100(const void* arg0, const void* arg1) {
     const Photo* lhs = arg0;
     const Photo* rhs = arg1;
 
-    if (lhs->unk_0 > rhs->unk_0) {
+    if (lhs->photoData > rhs->photoData) {
         return 1;
-    } else if (lhs->unk_0 < rhs->unk_0) {
+    } else if (lhs->photoData < rhs->photoData) {
         return -1;
     }
 
@@ -260,11 +260,11 @@ void func_801E4E04_994874(void) {
 
     for (loop_i = 0, sp28 = &D_802291A0_9D8C10[0]; loop_i < loop_end; sp28++, loop_i++) {
         if (sp28->unk_1A_14 || sp28->unk_1A_13) {
-            func_800BF690_5C530(sp28->pkmnID, sp28->unk_0);
+            func_800BF690_5C530(sp28->pkmnID, sp28->photoData);
             func_800BF7D4_5C674(sp28->pkmnID, sp28->totalScore);
             if (D_80229838_9D92A8 < 3) {
                 // D_80229838_9D92A8 is being pre-incremented here. It seems to match better this way so far. Weird though...
-                func_800BF5D8_5C478(++D_80229838_9D92A8, sp28->unk_0);
+                func_800BF5D8_5C478(++D_80229838_9D92A8, sp28->photoData);
             }
         }
         sp24 = func_800BFB50_5C9F0(loop_i);
@@ -308,7 +308,7 @@ s32 func_801E5030_994AA0(void) {
 
         } else {
             sp30 = func_8037452C_847CDC(sp24->var_0);
-            photo->unk_0 = sp24->var_0;
+            photo->photoData = sp24->var_0;
             if (sp30->score.pokemonInFocus == 0) {
                 photo->totalScore = 0;
                 photo->pkmnID = 9999;
