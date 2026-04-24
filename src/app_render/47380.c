@@ -1490,14 +1490,6 @@ void func_8009E3D0(GObj* gobj) {
         if (effect->textureID < 0) {
             break;
         }
-        if (effect->bankID < 0 || effect->bankID >= ARRAY_COUNT(fx_SpriteBanks) || effect->textureID >= fx_SpriteBanksNum[effect->bankID]) {
-            continue;
-        }
-
-        sprites = fx_SpriteBanks[effect->bankID][effect->textureID];
-        if (sprites == NULL || effect->dataID < 0 || effect->dataID >= sprites->numFrames) {
-            continue;
-        }
 
         pos.x = effect->posX * 0.125f;
         pos.y = effect->posY * 0.125f;
@@ -1543,6 +1535,7 @@ void func_8009E3D0(GObj* gobj) {
         }
 
         playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
+        sprites = fx_SpriteBanks[effect->bankID][effect->textureID];
         width = sprites->width;
         height = sprites->height;
         sStep = (width * 4096.0f) / (right - left);
