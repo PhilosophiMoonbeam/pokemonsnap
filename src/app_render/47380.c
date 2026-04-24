@@ -1415,9 +1415,6 @@ void func_8009E3D0(GObj* gobj) {
 
     cam = omCurrentCamera->data.cam;
     effect = gobj->userData;
-    if (cam == NULL || effect == NULL) {
-        return;
-    }
 
     hal_look_at_f(view,
                   cam->viewMtx.lookAt.eye.x,
