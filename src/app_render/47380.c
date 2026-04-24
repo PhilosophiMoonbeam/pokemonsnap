@@ -1492,9 +1492,6 @@ void func_8009E3D0(GObj* gobj) {
         pos.y = effect->posY * 0.125f;
         pos.z = effect->posZ * 0.125f;
         size = effect->size * (1.0f / 128.0f);
-        if (size == 0.0f) {
-            continue;
-        }
 
         clipX = proj[0][0] * pos.x + proj[1][0] * pos.y + proj[2][0] * pos.z + proj[3][0];
         clipY = proj[0][1] * pos.x + proj[1][1] * pos.y + proj[2][1] * pos.z + proj[3][1];
