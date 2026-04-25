@@ -1502,6 +1502,7 @@ void func_8009E3D0(GObj* gobj) {
         }
 
         invW = 1.0f / clipW;
+        size *= invW;
         clipX *= invW;
         clipY *= invW;
         clipZ *= invW;
@@ -1509,10 +1510,10 @@ void func_8009E3D0(GObj* gobj) {
             continue;
         }
 
-        left = (clipX - invW * size * projScaleX) * vpScaleX + vpTransX;
-        right = (clipX + invW * size * projScaleX) * vpScaleX + vpTransX;
-        top = (clipY - invW * size * projScaleY) * vpScaleY + vpTransY;
-        bottom = (clipY + invW * size * projScaleY) * vpScaleY + vpTransY;
+        left = (clipX - size * projScaleX) * vpScaleX + vpTransX;
+        right = (clipX + size * projScaleX) * vpScaleX + vpTransX;
+        top = (clipY - size * projScaleY) * vpScaleY + vpTransY;
+        bottom = (clipY + size * projScaleY) * vpScaleY + vpTransY;
 
         if (left > right) {
             f32 temp = left;
