@@ -271,7 +271,13 @@ typedef struct PhotoData {
     /* 0x1A0 */ EffectPhotoData effects[32];
 } PhotoData; // size = 0x3A0
 
+typedef char common_assert_pokemon_photo_data_animation_time_at_4[(offsetof(PokemonPhotoData, animationTime) == 0x4) ? 1 : -1];
+typedef char common_assert_pokemon_photo_data_position_at_8[(offsetof(PokemonPhotoData, position) == 0x8) ? 1 : -1];
+typedef char common_assert_pokemon_photo_data_yaw_at_14[(offsetof(PokemonPhotoData, yaw) == 0x14) ? 1 : -1];
 typedef char common_assert_pokemon_photo_data_size[(sizeof(PokemonPhotoData) == 0x18) ? 1 : -1];
+typedef char common_assert_item_photo_data_item_type_at_0[(offsetof(ItemPhotoData, itemType) == 0x0) ? 1 : -1];
+typedef char common_assert_item_photo_data_animation_time_at_1[(offsetof(ItemPhotoData, animationTime) == 0x1) ? 1 : -1];
+typedef char common_assert_item_photo_data_pos_at_4[(offsetof(ItemPhotoData, pos) == 0x4) ? 1 : -1];
 typedef char common_assert_item_photo_data_size[(sizeof(ItemPhotoData) == 0x10) ? 1 : -1];
 typedef char common_assert_effect_photo_data_texture_id_at_0[(offsetof(EffectPhotoData, textureID) == 0x0) ? 1 : -1];
 typedef char common_assert_effect_photo_data_data_id_at_1[(offsetof(EffectPhotoData, dataID) == 0x1) ? 1 : -1];

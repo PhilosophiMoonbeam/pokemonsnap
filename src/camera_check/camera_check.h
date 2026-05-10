@@ -24,6 +24,18 @@ typedef struct UnkIndigoHalibut {
     /* 0x18 */ s32 unk_18_0x01000000 : 1;
 } UnkIndigoHalibut; // size: 0x1C
 
+typedef char camera_check_assert_unk_indigo_halibut_photo_data_at_0[(offsetof(UnkIndigoHalibut, unk_00) == 0x0) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_total_score_at_4[(offsetof(UnkIndigoHalibut, unk_04) == 0x4) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_pokemon_id_at_8[(offsetof(UnkIndigoHalibut, unk_08) == 0x8) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_special_id_at_a[(offsetof(UnkIndigoHalibut, unk_0A) == 0xA) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_is_well_framed_at_c[(offsetof(UnkIndigoHalibut, unk_0C) == 0xC) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_pose_pts_at_e[(offsetof(UnkIndigoHalibut, unk_0E) == 0xE) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_completeness_score_at_10[(offsetof(UnkIndigoHalibut, unk_10) == 0x10) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_proximity_score_at_12[(offsetof(UnkIndigoHalibut, unk_12) == 0x12) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_special_bonus_at_14[(offsetof(UnkIndigoHalibut, unk_14) == 0x14) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_same_pkmn_bonus_at_16[(offsetof(UnkIndigoHalibut, unk_16) == 0x16) ? 1 : -1];
+typedef char camera_check_assert_unk_indigo_halibut_size[(sizeof(UnkIndigoHalibut) == 0x1C) ? 1 : -1];
+
 typedef struct UnkTealFlounder {
     /* 0x00 */ GObj* unk_00;
     /* 0x04 */ SObj* unk_04;
@@ -34,6 +46,16 @@ typedef struct UnkTealFlounder {
     /* 0x18 */ SObj* unk_18;
     /* 0x1C */ SObj* unk_1C;
 } UnkTealFlounder; // size = 0x20
+
+typedef char camera_check_assert_unk_teal_flounder_unk_00_at_0[(offsetof(UnkTealFlounder, unk_00) == 0x0) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_04_at_4[(offsetof(UnkTealFlounder, unk_04) == 0x4) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_08_at_8[(offsetof(UnkTealFlounder, unk_08) == 0x8) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_0c_at_c[(offsetof(UnkTealFlounder, unk_0C) == 0xC) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_10_at_10[(offsetof(UnkTealFlounder, unk_10) == 0x10) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_14_at_14[(offsetof(UnkTealFlounder, unk_14) == 0x14) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_18_at_18[(offsetof(UnkTealFlounder, unk_18) == 0x18) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_unk_1c_at_1c[(offsetof(UnkTealFlounder, unk_1C) == 0x1C) ? 1 : -1];
+typedef char camera_check_assert_unk_teal_flounder_size[(sizeof(UnkTealFlounder) == 0x20) ? 1 : -1];
 
 extern Sprite D_camera_check_801F0560;
 extern Sprite D_camera_check_801FCC58;
