@@ -13,15 +13,15 @@ typedef struct Unk800E1510 {
 extern char D_800C20E0_5EF80[16]; // HAL_SNAP_V1.0-1 in EUC-JP encoding
 extern s32 D_800C20F0_5EF90;      // s32 D_800C20F0_5EF90 = 0;
 extern bool D_800C20F4_5EF94;
-extern UnkBigBoy* D_800C21B0_5F050;
-extern UnkBigBoy* D_800C21B8_5F058[]; // Likely wrong type, but so far it's only being used in one place and it works for now.
+extern SaveFile* D_800C21B0_5F050;
+extern SaveFile* D_800C21B8_5F058[]; // Likely wrong type, but so far it's only being used in one place and it works for now.
 extern u8 D_800E14FC_7E39C[4];
 extern s32 D_800E1500_7E3A0;
 extern s32 D_800E1504_7E3A4;
 extern s32 D_800E1508_7E3A8;
 extern Unk800E1510 D_800E1510_7E3B0[];
 
-UnkBigBoy* func_800BF080_5BF20(void) {
+SaveFile* func_800BF080_5BF20(void) {
     return D_800C21B0_5F050;
 }
 
@@ -84,7 +84,7 @@ void func_800BF1F0_5C090(void) {
 }
 
 s32 func_800BF244_5C0E4(void) {
-    UnkBigBoy* sp24;
+    SaveFile* sp24;
 
     if (contIsPrinterAvailable()) {
         while (contPrinterGetStatus() == 8) {
@@ -114,13 +114,13 @@ s32 func_800BF244_5C0E4(void) {
 }
 
 void func_800BF37C_5C21C(void) {
-    UnkBigBoy* arg0 = D_800C21B0_5F050;
-    func_800C06A8_5D548((uintptr_t) arg0, sizeof(UnkBigBoy));
+    SaveFile* arg0 = D_800C21B0_5F050;
+    func_800C06A8_5D548((uintptr_t) arg0, sizeof(SaveFile));
 }
 
 void func_800BF3A8_5C248(void) {
-    UnkBigBoy* arg0 = D_800C21B0_5F050;
-    func_800C0AB4_5D954((uintptr_t) arg0, sizeof(UnkBigBoy));
+    SaveFile* arg0 = D_800C21B0_5F050;
+    func_800C0AB4_5D954((uintptr_t) arg0, sizeof(SaveFile));
 }
 
 bool func_800BF3D4_5C274(s32 pkmnID) {
@@ -128,10 +128,10 @@ bool func_800BF3D4_5C274(s32 pkmnID) {
     PhotoData* photoData;
 
     photoIdx = func_8009BB4C(pkmnID);
-    if (photoIdx < 0 || (photoIdx >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_180))) {
+    if (photoIdx < 0 || (photoIdx >= ARRAY_COUNT(D_800C21B0_5F050->data.pokemonPhotos))) {
         return false;
     }
-    photoData = (D_800C21B0_5F050->data.unk_180[photoIdx].unk_04.s32 == -1) ? NULL : &D_800C21B0_5F050->data.unk_180[photoIdx];
+    photoData = (D_800C21B0_5F050->data.pokemonPhotos[photoIdx].unk_04.s32 == -1) ? NULL : &D_800C21B0_5F050->data.pokemonPhotos[photoIdx];
     return photoData != NULL;
 }
 
@@ -165,14 +165,14 @@ AlbumComment* getAlbumComment(s32 index) {
 PhotoData* func_800BF574_5C414(s32 arg0) {
     PhotoData* ret;
 
-    if (arg0 < 0 || arg0 >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_FBA0)) {
+    if (arg0 < 0 || arg0 >= ARRAY_COUNT(D_800C21B0_5F050->data.reportPhotos)) {
         return NULL;
     }
 
-    if (D_800C21B0_5F050->data.unk_FBA0[arg0].unk_04.s32 == -1) {
+    if (D_800C21B0_5F050->data.reportPhotos[arg0].unk_04.s32 == -1) {
         ret = NULL;
     } else {
-        ret = &D_800C21B0_5F050->data.unk_FBA0[arg0];
+        ret = &D_800C21B0_5F050->data.reportPhotos[arg0];
     }
 
     return ret;
@@ -187,15 +187,15 @@ void func_800BF5D8_5C478(s32 arg0, PhotoData* arg1) {
         return;
     }
 
-    D_800C21B0_5F050->data.unk_FBA0[arg0] = *arg1;
+    D_800C21B0_5F050->data.reportPhotos[arg0] = *arg1;
 }
 
 void func_800BF650_5C4F0(s32 arg0) {
-    if (arg0 < 0 || arg0 >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_FBA0)) {
+    if (arg0 < 0 || arg0 >= ARRAY_COUNT(D_800C21B0_5F050->data.reportPhotos)) {
         return;
     }
 
-    D_800C21B0_5F050->data.unk_FBA0[arg0].unk_04.s32 = -1;
+    D_800C21B0_5F050->data.reportPhotos[arg0].unk_04.s32 = -1;
 }
 
 void func_800BF690_5C530(s32 arg0, PhotoData* arg1) {
@@ -204,7 +204,7 @@ void func_800BF690_5C530(s32 arg0, PhotoData* arg1) {
         return;
     }
 
-    D_800C21B0_5F050->data.unk_180[temp_v0] = *arg1;
+    D_800C21B0_5F050->data.pokemonPhotos[temp_v0] = *arg1;
 }
 
 PhotoData* func_800BF710_5C5B0(s32 arg0) {
@@ -212,14 +212,14 @@ PhotoData* func_800BF710_5C5B0(s32 arg0) {
     PhotoData* ret;
 
     index = func_8009BB4C(arg0);
-    if ((index < 0) || (index >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_180))) {
+    if ((index < 0) || (index >= ARRAY_COUNT(D_800C21B0_5F050->data.pokemonPhotos))) {
         return NULL;
     }
 
-    if (D_800C21B0_5F050->data.unk_180[index].unk_04.s32 == -1) {
+    if (D_800C21B0_5F050->data.pokemonPhotos[index].unk_04.s32 == -1) {
         ret = NULL;
     } else {
-        ret = &D_800C21B0_5F050->data.unk_180[index];
+        ret = &D_800C21B0_5F050->data.pokemonPhotos[index];
     }
     return ret;
 }
@@ -227,30 +227,30 @@ PhotoData* func_800BF710_5C5B0(s32 arg0) {
 void func_800BF780_5C620(s32 arg0) {
     s32 temp_v0 = func_8009BB4C(arg0);
 
-    if (temp_v0 < 0 || temp_v0 >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_180)) {
+    if (temp_v0 < 0 || temp_v0 >= ARRAY_COUNT(D_800C21B0_5F050->data.pokemonPhotos)) {
         return;
     }
 
-    D_800C21B0_5F050->data.unk_180[temp_v0].unk_04.s32 = -1;
+    D_800C21B0_5F050->data.pokemonPhotos[temp_v0].unk_04.s32 = -1;
 }
 
 void func_800BF7D4_5C674(s32 arg0, s32 arg1) {
     s32 temp_v0;
 
     temp_v0 = func_8009BB4C(arg0);
-    if (temp_v0 >= 0 && temp_v0 < ARRAY_COUNT(D_800C21B0_5F050->data.unk_6C)) {
-        D_800C21B0_5F050->data.unk_6C[temp_v0] = arg1;
+    if (temp_v0 >= 0 && temp_v0 < ARRAY_COUNT(D_800C21B0_5F050->data.pokemonPhotoScores)) {
+        D_800C21B0_5F050->data.pokemonPhotoScores[temp_v0] = arg1;
     }
 }
 
 s32 func_800BF818_5C6B8(s32 idx) {
     idx = func_8009BB4C(idx);
 
-    if (idx < 0 || idx >= ARRAY_COUNT(D_800C21B0_5F050->data.unk_6C)) {
+    if (idx < 0 || idx >= ARRAY_COUNT(D_800C21B0_5F050->data.pokemonPhotoScores)) {
         return 0;
     }
 
-    return D_800C21B0_5F050->data.unk_6C[idx];
+    return D_800C21B0_5F050->data.pokemonPhotoScores[idx];
 }
 
 s32 func_800BF864_5C704(void) {
@@ -278,7 +278,7 @@ PhotoData* func_800BF8BC_5C75C(s32 arg0) {
             continue;
         }
 
-        sp28 = D_800C21B0_5F050->data.unk_180 + func_8009BB4C(i);
+        sp28 = D_800C21B0_5F050->data.pokemonPhotos + func_8009BB4C(i);
         break;
     }
 
@@ -618,12 +618,12 @@ s32 func_800C042C_5D2CC(void) {
     u8* var_v0;
 
     var_v0 = (u8*) D_800C21B0_5F050;
-    for (var_v1 = 0; var_v1 < sizeof(UnkBigBoy); var_v1++) {
+    for (var_v1 = 0; var_v1 < sizeof(SaveFile); var_v1++) {
         *(var_v0++) = 0;
     }
 
     for (var_v1 = 0; var_v1 < 69 + 4; var_v1++) {
-        D_800C21B0_5F050->data.unk_180[var_v1].unk_04.s32 = -1;
+        D_800C21B0_5F050->data.pokemonPhotos[var_v1].unk_04.s32 = -1;
     }
 
     for (var_v1 = 0; var_v1 < 60; var_v1++) {
@@ -643,9 +643,9 @@ s32 func_800C042C_5D2CC(void) {
     D_800C21B0_5F050->data.unk_64_16 = 0x24;
     D_800C20F0_5EF90 = 0;
     D_800C20F4_5EF94 = false;
-    D_800C21B0_5F050->data.unk_20 = (uintptr_t) D_800C21B0_5F050->data.unk_6C - (uintptr_t) D_800C21B0_5F050;
-    D_800C21B0_5F050->data.unk_24 = (uintptr_t) D_800C21B0_5F050->data.unk_180 - (uintptr_t) D_800C21B0_5F050;
-    D_800C21B0_5F050->data.unk_28 = (uintptr_t) D_800C21B0_5F050->data.unk_FBA0 - (uintptr_t) D_800C21B0_5F050;
+    D_800C21B0_5F050->data.unk_20 = (uintptr_t) D_800C21B0_5F050->data.pokemonPhotoScores - (uintptr_t) D_800C21B0_5F050;
+    D_800C21B0_5F050->data.unk_24 = (uintptr_t) D_800C21B0_5F050->data.pokemonPhotos - (uintptr_t) D_800C21B0_5F050;
+    D_800C21B0_5F050->data.unk_28 = (uintptr_t) D_800C21B0_5F050->data.reportPhotos - (uintptr_t) D_800C21B0_5F050;
     D_800C21B0_5F050->data.unk_2C = (uintptr_t) D_800C21B0_5F050->data.albumPhotos - (uintptr_t) D_800C21B0_5F050;
     D_800C21B0_5F050->data.unk_30 = osGetTime();
     func_800BF1F0_5C090();
@@ -656,7 +656,7 @@ s32 func_800C05D4_5D474(void) {
     s32 temp_v0;
 
     // Align to a multiple of 16
-    D_800C21B0_5F050 = (UnkBigBoy*) ((s32) (&D_800C21B8_5F058) + 0xF & ~0xF);
+    D_800C21B0_5F050 = (SaveFile*) ((s32) (&D_800C21B8_5F058) + 0xF & ~0xF);
 
     func_800C0B48_5D9E8();
     func_800BF37C_5C21C();

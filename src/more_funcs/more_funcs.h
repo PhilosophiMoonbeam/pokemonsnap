@@ -15,7 +15,7 @@ typedef struct {
     /* 0x18 */ s32 finalized; // Indicates if the digest is finalized
 } MD4Ctx;                     // size = 0x1C
 
-typedef struct UnkBigBoy {
+typedef struct SaveFile {
     /* 0x000 */ s32 a; // MD4 variable 1
     /* 0x004 */ s32 b; // MD4 variable 2
     /* 0x008 */ s32 c; // MD4 variable 3
@@ -56,18 +56,19 @@ typedef struct UnkBigBoy {
         /* ----- */ u32 unk_68_28 : 1;
         /* ----- */ u32 unk_68_27 : 1;
         /* ----- */ u32 unk_68_26 : 27;
-        /* 0x06C */ s32 unk_6C[69];
-        /* 0x180 */ PhotoData unk_180[69];
-        /* 0xFBA0 */ PhotoData unk_FBA0[4];
+        /* 0x06C */ s32 pokemonPhotoScores[69];
+        /* 0x180 */ PhotoData pokemonPhotos[69];
+        /* 0xFBA0 */ PhotoData reportPhotos[4];
         /* 0x10A20 */ AlbumPhotoData albumPhotos[60];
         /* 0x1f2a0 */ u8 pad_1F2A0[4];
     } data;
-} UnkBigBoy; // size = 0x1F2A4
+} SaveFile; // size = 0x1F2A4
 
-typedef char more_funcs_assert_unkbigboy_data_unk_180_at_180[(offsetof(UnkBigBoy, data.unk_180) == 0x180) ? 1 : -1];
-typedef char more_funcs_assert_unkbigboy_data_unk_fba0_at_fba0[(offsetof(UnkBigBoy, data.unk_FBA0) == 0xFBA0) ? 1 : -1];
-typedef char more_funcs_assert_unkbigboy_data_album_photos_at_10a20[(offsetof(UnkBigBoy, data.albumPhotos) == 0x10A20) ? 1 : -1];
-typedef char more_funcs_assert_unkbigboy_size[(sizeof(UnkBigBoy) == 0x1F2A4) ? 1 : -1];
+typedef char more_funcs_assert_save_file_data_pokemon_photo_scores_at_6c[(offsetof(SaveFile, data.pokemonPhotoScores) == 0x6C) ? 1 : -1];
+typedef char more_funcs_assert_save_file_data_pokemon_photos_at_180[(offsetof(SaveFile, data.pokemonPhotos) == 0x180) ? 1 : -1];
+typedef char more_funcs_assert_save_file_data_report_photos_at_fba0[(offsetof(SaveFile, data.reportPhotos) == 0xFBA0) ? 1 : -1];
+typedef char more_funcs_assert_save_file_data_album_photos_at_10a20[(offsetof(SaveFile, data.albumPhotos) == 0x10A20) ? 1 : -1];
+typedef char more_funcs_assert_save_file_size[(sizeof(SaveFile) == 0x1F2A4) ? 1 : -1];
 
 void func_800BF954_5C7F4(s32, PhotoData*, AlbumComment*);
 s32 func_800C0224_5D0C4(s32);
