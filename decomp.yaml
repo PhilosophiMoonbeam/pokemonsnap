@@ -108,7 +108,7 @@ tools:
         - id: "1F5E70"
           name: "1F5E70"
           paths:
-            - "1F5E70"
+            - "cave/1F5E70"
         - id: "29A190"
           name: "29A190"
           paths:
@@ -291,8 +291,8 @@ tools:
         - id: "segment_.cave_assets"
           name: "Segment .cave_assets"
           paths:
-            - "1F5E70"
-            - "assets/1F5E80"
+            - "cave/1F5E70"
+            - "assets/cave/1F5E80"
         - id: "segment_.cave_extra"
           name: "Segment .cave_extra"
           paths:
