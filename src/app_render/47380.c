@@ -41,17 +41,27 @@ typedef struct UnkV0 {
     void (*unk_10)(GObj*);
 } UnkV0; // substruct of Unk1C?
 
-typedef struct Unkfunc_8009BDDCSub {
-    /* 0x00 */ f32 unk_00;
+typedef struct PhotoPokemonAnimEntry {
+    /* 0x00 */ f32 poseID;
     /* 0x04 */ AnimCmd** modelAnims;
     /* 0x08 */ AnimCmd*** matAnims;
-} Unkfunc_8009BDDCSub; // size = 0xC
+} PhotoPokemonAnimEntry; // size = 0xC
 
-typedef struct Unkfunc_8009BDDC {
+typedef char assert_photo_pokemon_anim_entry_pose_id_at_0[(offsetof(PhotoPokemonAnimEntry, poseID) == 0x0) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_entry_model_anims_at_4[(offsetof(PhotoPokemonAnimEntry, modelAnims) == 0x4) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_entry_mat_anims_at_8[(offsetof(PhotoPokemonAnimEntry, matAnims) == 0x8) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_entry_size[(sizeof(PhotoPokemonAnimEntry) == 0xC) ? 1 : -1];
+
+typedef struct PhotoPokemonAnimSet {
     /* 0x00 */ u32 pokemonID;
-    /* 0x04 */ Unkfunc_8009BDDCSub* unk_04;
-    /* 0x08 */ s32 unk_08; // number of unk_04 records?
-} Unkfunc_8009BDDC;        // size = 0xC
+    /* 0x04 */ PhotoPokemonAnimEntry* entries;
+    /* 0x08 */ s32 entryCount;
+} PhotoPokemonAnimSet; // size = 0xC
+
+typedef char assert_photo_pokemon_anim_set_pokemon_id_at_0[(offsetof(PhotoPokemonAnimSet, pokemonID) == 0x0) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_set_entries_at_4[(offsetof(PhotoPokemonAnimSet, entries) == 0x4) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_set_entry_count_at_8[(offsetof(PhotoPokemonAnimSet, entryCount) == 0x8) ? 1 : -1];
+typedef char assert_photo_pokemon_anim_set_size[(sizeof(PhotoPokemonAnimSet) == 0xC) ? 1 : -1];
 
 typedef struct Struct_800ACD9C {
     /* 0x00 */ UNK_TYPE* unk_00;
@@ -63,8 +73,8 @@ extern MovementState D_800AC0F4;
 extern Struct_800ACD9C D_800ACD9C[];
 extern Struct_800ACD9C D_800AD444[];
 extern Struct_800ACD9C D_800AD474[];
-extern Unkfunc_8009BDDC D_800AD4B8[67];
-extern Unkfunc_8009BDDC D_800AD9A4[16];
+extern PhotoPokemonAnimSet D_800AD4B8[67];
+extern PhotoPokemonAnimSet D_800AD9A4[16];
 extern Unk1C D_800ADA64[];
 extern UnkV0 D_800ADBEC[];
 extern s32 D_800AE27C;
@@ -432,16 +442,16 @@ s32 func_8009BCC4(UnkThing* arg0) {
     return ret;
 }
 
-s8 func_8009BD4C(s16 arg0, AnimCmd** anims, Unkfunc_8009BDDC* arg2, s32 arg3) {
-    Unkfunc_8009BDDCSub* sub;
+s8 func_8009BD4C(s16 arg0, AnimCmd** anims, PhotoPokemonAnimSet* arg2, s32 arg3) {
+    PhotoPokemonAnimEntry* entries;
     s32 i;
     s32 j;
 
     for (i = 0; i < arg3; i++) {
         if (arg0 == arg2[i].pokemonID) {
-            sub = arg2[i].unk_04;
-            for (j = 0; j < arg2[i].unk_08; j++) {
-                if (anims == sub[j].modelAnims) {
+            entries = arg2[i].entries;
+            for (j = 0; j < arg2[i].entryCount; j++) {
+                if (anims == entries[j].modelAnims) {
                     return j;
                 }
             }
@@ -456,7 +466,7 @@ f32 func_8009BDDC(s16 pokemonID, s8 arg1) {
 
     for (i = 0; i < ARRAY_COUNT(D_800AD4B8); i++) {
         if (D_800AD4B8[i].pokemonID == pokemonID) {
-            return D_800AD4B8[i].unk_04[arg1].unk_00;
+            return D_800AD4B8[i].entries[arg1].poseID;
         }
     }
     return -1.0f;
@@ -1139,7 +1149,7 @@ void func_8009D8A8(OMCamera* cam, PhotoData* photoData) {
 
 GObj* func_8009D9A0(PokemonPhotoData* arg0, f32 arg1, UnkEC64Arg3* arg2, Texture*** arg3, void (*arg4)(GObj*)) {
     GObj* gobj;
-    Unkfunc_8009BDDC* v00;
+    PhotoPokemonAnimSet* v00;
     s32 i;
     Mtx4f spB4;
     Mtx4f sp74;
@@ -1169,12 +1179,12 @@ GObj* func_8009D9A0(PokemonPhotoData* arg0, f32 arg1, UnkEC64Arg3* arg2, Texture
 
     for (i = 0; i < sp6C; i++) {
         if (v00[i].pokemonID == arg0->pokemonID) {
-            if (v00[i].unk_04[arg0->unk_00_13].modelAnims != NULL) {
-                animSetModelTreeAnimation(gobj, v00[i].unk_04[arg0->unk_00_13].modelAnims, arg0->animationTime);
+            if (v00[i].entries[arg0->unk_00_13].modelAnims != NULL) {
+                animSetModelTreeAnimation(gobj, v00[i].entries[arg0->unk_00_13].modelAnims, arg0->animationTime);
                 animSetModelAnimationSpeed(gobj, 0.0f);
             }
-            if (v00[i].unk_04[arg0->unk_00_13].matAnims != NULL) {
-                animSetModelTreeTextureAnimation(gobj, v00[i].unk_04[arg0->unk_00_13].matAnims, arg0->animationTime);
+            if (v00[i].entries[arg0->unk_00_13].matAnims != NULL) {
+                animSetModelTreeTextureAnimation(gobj, v00[i].entries[arg0->unk_00_13].matAnims, arg0->animationTime);
                 animSetTextureAnimationSpeed(gobj, 0.0f);
             }
             animUpdateModelTreeAnimation(gobj);
