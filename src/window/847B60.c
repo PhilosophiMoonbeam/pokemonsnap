@@ -143,7 +143,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     {
         Bitmap* bitmap = sprite->bitmap;
         s32 width = sprite->width;
-        s32 height = sprite->height;
+        u32 height = sprite->height;
         s32 dstWidth = bitmap->width_img;
         s32 rowInBitmap = 0;
         s32 tileHeight = bitmap->actualHeight;
