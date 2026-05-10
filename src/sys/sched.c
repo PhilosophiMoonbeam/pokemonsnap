@@ -415,11 +415,11 @@ void func_80000F40(u32 width, u32 height, s32 flags, s16 edgeOffsetLeft, s16 edg
         scViModeNext.comRegs.ctrl |= phi_a0;
     } else {
         // L80001238
-        if (!scViSettings.unk_b04 && scViSettings.pixelSize32 == 1) {
-            scViModeNext.comRegs.ctrl = 0x300; // neither (replicate pixels, no interpolate)
+        if (!scViSettings.unk_b04 && scViSettings.pixelSize32) {
+            scViModeNext.comRegs.ctrl |= 0x300; // neither (replicate pixels, no interpolate)
         } else {
             // L8000126C
-            scViModeNext.comRegs.ctrl = 0x200; // resamp only (treat as all fully covered
+            scViModeNext.comRegs.ctrl |= 0x200; // resamp only (treat as all fully covered
         }
     }
     // L8000127C
@@ -474,25 +474,23 @@ void func_80000F40(u32 width, u32 height, s32 flags, s16 edgeOffsetLeft, s16 edg
     // L80001368
     scViModeNext.comRegs.width = phi_a0 * width;
     // TODO: macros
-    switch (osTvType) {
-        case OS_TV_NTSC:
-            scViModeNext.comRegs.burst = 0x3E52239;
-            scViModeNext.comRegs.vSync = 0x20C;
-            scViModeNext.comRegs.hSync = 0xC15;
-            scViModeNext.comRegs.leap = 0xC150C15;
-            scViModeNext.comRegs.hStart = 0x6C02EC;
-            scViModeNext.fldRegs[0].vStart = 0x2501FFU;
-            scViModeNext.fldRegs[0].vBurst = 0xE0204;
-            break;
-        case OS_TV_MPAL:
-            scViModeNext.comRegs.burst = 0x4651E39;
-            scViModeNext.comRegs.vSync = 0x20C;
-            scViModeNext.comRegs.hSync = 0xC10;
-            scViModeNext.comRegs.leap = 0xC1C0C1C;
-            scViModeNext.comRegs.hStart = 0x6C02EC;
-            scViModeNext.fldRegs[0].vStart = 0x2501FFU;
-            scViModeNext.fldRegs[0].vBurst = 0xE0204;
-            break;
+    if (osTvType == OS_TV_NTSC) {
+        scViModeNext.comRegs.burst = 0x3E52239;
+        scViModeNext.comRegs.vSync = 0x20C;
+        scViModeNext.comRegs.hSync = 0xC15;
+        scViModeNext.comRegs.leap = 0xC150C15;
+        scViModeNext.comRegs.hStart = 0x6C02EC;
+        scViModeNext.fldRegs[0].vStart = 0x2501FFU;
+        scViModeNext.fldRegs[0].vBurst = 0xE0204;
+    }
+    if (osTvType == OS_TV_MPAL) {
+        scViModeNext.comRegs.burst = 0x4651E39;
+        scViModeNext.comRegs.vSync = 0x20C;
+        scViModeNext.comRegs.hSync = 0xC10;
+        scViModeNext.comRegs.leap = 0xC1C0C1C;
+        scViModeNext.comRegs.hStart = 0x6C02EC;
+        scViModeNext.fldRegs[0].vStart = 0x2501FFU;
+        scViModeNext.fldRegs[0].vBurst = 0xE0204;
     }
     // L80001424
     sp00 = scViModeNext.comRegs.hStart;
