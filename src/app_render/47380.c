@@ -12,11 +12,16 @@
 s32 getNumberOfPoses(void);
 void func_800AB050(f32 arg0, s32 arg1, UNK_TYPE* arg2, UNK_TYPE* arg3, UNK_TYPE* arg4);
 
-typedef struct Unk8009C604 {
+typedef struct PhotoEffectSortEntry {
     /* 0x00 */ Particle* particle;
-    /* 0x04 */ f32 unk_04;
-    /* 0x08 */ f32 unk_08;
-} Unk8009C604; // size = 0xC
+    /* 0x04 */ f32 projectedSize;
+    /* 0x08 */ f32 depth;
+} PhotoEffectSortEntry; // size = 0xC
+
+typedef char assert_photo_effect_sort_entry_particle_at_0[(offsetof(PhotoEffectSortEntry, particle) == 0x0) ? 1 : -1];
+typedef char assert_photo_effect_sort_entry_projected_size_at_4[(offsetof(PhotoEffectSortEntry, projectedSize) == 0x4) ? 1 : -1];
+typedef char assert_photo_effect_sort_entry_depth_at_8[(offsetof(PhotoEffectSortEntry, depth) == 0x8) ? 1 : -1];
+typedef char assert_photo_effect_sort_entry_size[(sizeof(PhotoEffectSortEntry) == 0xC) ? 1 : -1];
 
 typedef struct Unk1C {
     /* 0x00 */ u32 id;
@@ -633,12 +638,12 @@ void func_8009C4F4(UnkThing* arg0, MovementState* arg1, OMCamera* arg2) {
 }
 
 s32 func_8009C584(const void* a, const void* b) {
-    const Unk8009C604* a1 = a;
-    const Unk8009C604* b1 = b;
+    const PhotoEffectSortEntry* a1 = a;
+    const PhotoEffectSortEntry* b1 = b;
 
-    if (a1->unk_08 < b1->unk_08) {
+    if (a1->depth < b1->depth) {
         return -1;
-    } else if (b1->unk_08 < a1->unk_08) {
+    } else if (b1->depth < a1->depth) {
         return 1;
     }
 
@@ -646,12 +651,12 @@ s32 func_8009C584(const void* a, const void* b) {
 }
 
 s32 func_8009C5C4(const void* a, const void* b) {
-    const Unk8009C604* a1 = a;
-    const Unk8009C604* b1 = b;
+    const PhotoEffectSortEntry* a1 = a;
+    const PhotoEffectSortEntry* b1 = b;
 
-    if (b1->unk_04 < a1->unk_04) {
+    if (b1->projectedSize < a1->projectedSize) {
         return -1;
-    } else if (a1->unk_04 < b1->unk_04) {
+    } else if (a1->projectedSize < b1->projectedSize) {
         return 1;
     }
 
@@ -666,7 +671,7 @@ void func_8009C604(UnkThing* arg0) {
     Particle* particle;
     f32 x, y, z, s;
     s32 unused;
-    Unk8009C604 sp60[100];
+    PhotoEffectSortEntry sp60[100];
 
     count = 0;
     for (i = 0; i < ARRAY_COUNT(D_800BE1A8); i++) {
@@ -677,8 +682,8 @@ void func_8009C604(UnkThing* arg0) {
                 continue;
             }
             sp60[count].particle = particle;
-            sp60[count].unk_04 = particle->size * s;
-            sp60[count].unk_08 = z;
+            sp60[count].projectedSize = particle->size * s;
+            sp60[count].depth = z;
             count++;
             if (count >= 100) {
                 break;
@@ -692,11 +697,11 @@ void func_8009C604(UnkThing* arg0) {
     particle = sp60[count - i - 1].particle; // TODO fake match
 
     if (count > 32) {
-        qsort2(sp60, count, sizeof(Unk8009C604), func_8009C5C4);
+        qsort2(sp60, count, sizeof(PhotoEffectSortEntry), func_8009C5C4);
         count = 32;
     }
 
-    qsort2(sp60, count, sizeof(Unk8009C604), func_8009C584);
+    qsort2(sp60, count, sizeof(PhotoEffectSortEntry), func_8009C584);
     for (i = 0; i < count; i++) {
         particle = sp60[count - i - 1].particle;
         arg0->main.effects[i].textureID = particle->textureID;
