@@ -20,6 +20,16 @@ struct HeapChunk {
     } v;
 }; // size >= 0x18
 
+typedef char assert_heap_chunk_prev_at_0[(offsetof(HeapChunk, prev) == 0x0) ? 1 : -1];
+typedef char assert_heap_chunk_size_at_4[(offsetof(HeapChunk, size) == 0x4) ? 1 : -1];
+typedef char assert_heap_chunk_allocated_at_8[(offsetof(HeapChunk, allocated) == 0x8) ? 1 : -1];
+typedef char assert_heap_chunk_v_at_10[(offsetof(HeapChunk, v) == 0x10) ? 1 : -1];
+typedef char assert_heap_chunk_link_next_at_10[(offsetof(HeapChunk, v.link.next) == 0x10) ? 1 : -1];
+typedef char assert_heap_chunk_link_prev_at_14[(offsetof(HeapChunk, v.link.prev) == 0x14) ? 1 : -1];
+typedef char assert_heap_chunk_data_at_10[(offsetof(HeapChunk, v.data) == 0x10) ? 1 : -1];
+typedef char assert_heap_chunk_payload_size[(sizeof(((HeapChunk*) 0)->v) == 0x8) ? 1 : -1];
+typedef char assert_heap_chunk_size[(sizeof(HeapChunk) == 0x18) ? 1 : -1];
+
 static HeapChunk* D_803A6900_87A0B0;
 static s32 D_803A6904_87A0B4;
 static HeapChunk* D_803A6908_87A0B8;
