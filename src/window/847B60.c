@@ -121,13 +121,7 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     WindowPhotoBuffer* src;
 
-    if (photo != NULL) {
-        src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo);
-    } else {
-        src = NULL;
-    }
-
-    if (src == NULL) {
+    if (photo == NULL || (src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo)) == NULL) {
         Bitmap* bitmap = sprite->bitmap;
         u16* dst = bitmap->buf;
         s32 texelCount = bitmap->width_img * sprite->height;
@@ -143,7 +137,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     {
         Bitmap* bitmap = sprite->bitmap;
         volatile s32 width = sprite->width;
-        u32 height = sprite->height;
+        volatile u32 height = sprite->height;
         volatile s32 dstWidth = bitmap->width_img;
         s32 rowInBitmap = 0;
         s32 tileHeight = bitmap->actualHeight;
