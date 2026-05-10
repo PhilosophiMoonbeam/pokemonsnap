@@ -239,19 +239,22 @@ tools:
           name: "Segment .magikarp_textures"
           paths:
             - "pokemon_common/magikarp/textures"
-            - "assets/pokemon_common"
+            - "assets/pokemon_common/78260"
         - id: "segment_.pikachu1"
           name: "Segment .pikachu1"
           paths:
-            - "assets/pokemon/pikachu/7D3B0"
+            - "pokemon_common/pikachu/textures"
+            - "assets/pokemon_common/86710"
         - id: "segment_.zubat1"
           name: "Segment .zubat1"
           paths:
-            - "assets/pokemon/zubat/98470"
+            - "pokemon_common/zubat/textures"
+            - "assets/pokemon_common/99700"
         - id: "segment_.bulbasaur1"
           name: "Segment .bulbasaur1"
           paths:
-            - "assets/pokemon/bulbasaur/99F70"
+            - "pokemon_common/bulbasaur/textures"
+            - "assets/pokemon_common/9C4F0"
         - id: "segment_.beach_assets"
           name: "Segment .beach_assets"
           paths:
@@ -260,7 +263,16 @@ tools:
         - id: "segment_.beach_extra"
           name: "Segment .beach_extra"
           paths:
-            - "assets/13C780"
+            - "beach/butterfree/model_hd"
+            - "beach/doduo/model_hd"
+            - "beach/eevee/model_hd"
+            - "beach/kangaskhan/model_hd"
+            - "beach/snorlax/model_hd"
+            - "beach/lapras/model_hd"
+            - "beach/chansey/model_hd"
+            - "beach/meowth/model_hd"
+            - "beach/pidgey/model_hd"
+            - "beach/scyther/model_hd"
         - id: "segment_.tunnel_assets"
           name: "Segment .tunnel_assets"
           paths:
@@ -287,7 +299,15 @@ tools:
         - id: "segment_.tunnel_extra"
           name: "Segment .tunnel_extra"
           paths:
-            - "assets/1D1D90"
+            - "tunnel/kakuna/model_hd"
+            - "tunnel/magnemite/model_hd"
+            - "tunnel/diglett/model_hd"
+            - "tunnel/dugtrio/model_hd"
+            - "tunnel/electabuzz/model_hd"
+            - "tunnel/haunter/model_hd"
+            - "tunnel/electrode/model_hd"
+            - "tunnel/magneton/model_hd"
+            - "tunnel/zapdos/model_hd"
         - id: "segment_.cave_assets"
           name: "Segment .cave_assets"
           paths:
@@ -296,7 +316,15 @@ tools:
         - id: "segment_.cave_extra"
           name: "Segment .cave_extra"
           paths:
-            - "assets/27AB80"
+            - "cave/grimer/model_hd"
+            - "cave/muk/model_hd"
+            - "cave/koffing/model_hd"
+            - "cave/articuno/model_hd"
+            - "cave/ditto/model_hd"
+            - "cave/jigglypuff/model_hd"
+            - "cave/jynx/model_hd"
+            - "cave/weepinbell/model_hd"
+            - "cave/victreebel/model_hd"
         - id: "segment_.river_assets"
           name: "Segment .river_assets"
           paths:
@@ -305,7 +333,16 @@ tools:
         - id: "segment_.river_extra"
           name: "Segment .river_extra"
           paths:
-            - "assets/30AF90"
+            - "river/psyduck/model_hd"
+            - "river/poliwag/model_hd"
+            - "river/cloyster/model_hd"
+            - "river/porygon/model_hd"
+            - "river/vileplume/model_hd"
+            - "river/shellder/model_hd"
+            - "river/shellder2/model_hd"
+            - "river/metapod/model_hd"
+            - "river/slowpoke/model_hd"
+            - "river/slowbro/model_hd"
         - id: "segment_.volcano_assets"
           name: "Segment .volcano_assets"
           paths:
@@ -369,7 +406,15 @@ tools:
         - id: "segment_.volcano_extra"
           name: "Segment .volcano_extra"
           paths:
-            - "assets/3D0560"
+            - "volcano/magmar/model_hd"
+            - "volcano/moltres/model_hd"
+            - "volcano/rapidash/model_hd"
+            - "volcano/growlithe/model_hd"
+            - "volcano/charmander/model_hd"
+            - "volcano/charmeleon/model_hd"
+            - "volcano/charizard/model_hd"
+            - "volcano/vulpix/model_hd"
+            - "volcano/arcanine/model_hd"
         - id: "segment_.valley_assets"
           name: "Segment .valley_assets"
           paths:
@@ -378,7 +423,18 @@ tools:
         - id: "segment_.valley_extra"
           name: "Segment .valley_extra"
           paths:
-            - "assets/47CF30"
+            - "valley/graveler/model_hd"
+            - "valley/gyarados/model_hd"
+            - "valley/staryu/model_hd"
+            - "valley/geodude/model_hd"
+            - "valley/dragonite/model_hd"
+            - "valley/mankey/model_hd"
+            - "valley/dratini/model_hd"
+            - "valley/sandshrew/model_hd"
+            - "valley/sandslash/model_hd"
+            - "valley/starmie/model_hd"
+            - "valley/goldeen/model_hd"
+            - "valley/squirtle/model_hd"
         - id: "segment_.rainbow_assets"
           name: "Segment .rainbow_assets"
           paths:
@@ -387,7 +443,7 @@ tools:
         - id: "segment_.rainbow_extra"
           name: "Segment .rainbow_extra"
           paths:
-            - "assets/4EC000"
+            - "rainbow/mew/model_hd"
         - id: "segment_.app_level"
           name: "Segment .app_level"
           paths:
@@ -399,15 +455,15 @@ tools:
         - id: "segment_.pikachu3"
           name: "Segment .pikachu3"
           paths:
-            - "assets/pokemon/pikachu/54D6A0"
+            - "pokemon_common/pikachu/model"
         - id: "segment_.zubat3"
           name: "Segment .zubat3"
           paths:
-            - "assets/pokemon/zubat/554130"
+            - "pokemon_common/zubat/model"
         - id: "segment_.bulbasaur3"
           name: "Segment .bulbasaur3"
           paths:
-            - "assets/pokemon/bulbasaur/557050"
+            - "pokemon_common/bulbasaur/model"
         - id: "segment_.beach_code"
           name: "Segment .beach_code"
           paths:
@@ -507,19 +563,19 @@ tools:
         - id: "segment_.magikarp2"
           name: "Segment .magikarp2"
           paths:
-            - "assets/pokemon/magikarp/82F8E0"
+            - "pokemon_common/magikarp/model_hd"
         - id: "segment_.pikachu2"
           name: "Segment .pikachu2"
           paths:
-            - "assets/pokemon/pikachu/832960"
+            - "pokemon_common/pikachu/model_hd"
         - id: "segment_.zubat2"
           name: "Segment .zubat2"
           paths:
-            - "assets/pokemon/zubat/837360"
+            - "pokemon_common/zubat/model_hd"
         - id: "segment_.bulbasaur2"
           name: "Segment .bulbasaur2"
           paths:
-            - "assets/pokemon/bulbasaur/83A1E0"
+            - "pokemon_common/bulbasaur/model_hd"
         - id: "segment_.window"
           name: "Segment .window"
           paths:
@@ -827,7 +883,7 @@ tools:
         - id: "segment_.AFDDC8"
           name: "Segment .AFDDC8"
           paths:
-            - "assets/AFDDC8"
+            - "assets/AFEED8"
         - id: "segment_.audio_bank1"
           name: "Segment .audio_bank1"
           paths:
