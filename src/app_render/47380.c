@@ -33,13 +33,20 @@ typedef struct Unk1C {
     /* 0x18 */ AnimCmd*** unk_18;
 } Unk1C; // size = 0x1C
 
-typedef struct UnkV0 {
-    u32 unk_00;
-    f32 unk_04;
-    UnkEC64Arg3* unk_08;
-    Texture*** unk_0C;
-    void (*unk_10)(GObj*);
-} UnkV0; // substruct of Unk1C?
+typedef struct PhotoPokemonRenderEntry {
+    /* 0x00 */ u32 pokemonID;
+    /* 0x04 */ f32 scale;
+    /* 0x08 */ UnkEC64Arg3* model;
+    /* 0x0C */ Texture*** textures;
+    /* 0x10 */ void (*renderFunc)(GObj*);
+} PhotoPokemonRenderEntry; // size = 0x14
+
+typedef char assert_photo_pokemon_render_entry_pokemon_id_at_0[(offsetof(PhotoPokemonRenderEntry, pokemonID) == 0x0) ? 1 : -1];
+typedef char assert_photo_pokemon_render_entry_scale_at_4[(offsetof(PhotoPokemonRenderEntry, scale) == 0x4) ? 1 : -1];
+typedef char assert_photo_pokemon_render_entry_model_at_8[(offsetof(PhotoPokemonRenderEntry, model) == 0x8) ? 1 : -1];
+typedef char assert_photo_pokemon_render_entry_textures_at_c[(offsetof(PhotoPokemonRenderEntry, textures) == 0xC) ? 1 : -1];
+typedef char assert_photo_pokemon_render_entry_render_func_at_10[(offsetof(PhotoPokemonRenderEntry, renderFunc) == 0x10) ? 1 : -1];
+typedef char assert_photo_pokemon_render_entry_size[(sizeof(PhotoPokemonRenderEntry) == 0x14) ? 1 : -1];
 
 typedef struct PhotoPokemonAnimEntry {
     /* 0x00 */ f32 poseID;
@@ -76,7 +83,7 @@ extern Struct_800ACD9C D_800AD474[];
 extern PhotoPokemonAnimSet D_800AD4B8[67];
 extern PhotoPokemonAnimSet D_800AD9A4[16];
 extern Unk1C D_800ADA64[];
-extern UnkV0 D_800ADBEC[];
+extern PhotoPokemonRenderEntry D_800ADBEC[];
 extern s32 D_800AE27C;
 extern s32 D_800AE280;
 extern char* D_800AE284[]; // Pokedex entries
@@ -1258,7 +1265,7 @@ GObj* func_8009D9A0(PokemonPhotoData* arg0, f32 arg1, UnkEC64Arg3* arg2, Texture
 }
 
 void func_8009DEF0(PhotoData* photoData) {
-    UnkV0* it;
+    PhotoPokemonRenderEntry* it;
     GObj* gobj;
     s32 i;
 
@@ -1268,9 +1275,9 @@ void func_8009DEF0(PhotoData* photoData) {
         if (photoData->pokemons[i].pokemonID < 0) {
             return;
         }
-        for (it = D_800ADBEC; it->unk_00 != 0; it++) {
-            if (it->unk_00 == photoData->pokemons[i].pokemonID) {
-                gobj = func_8009D9A0(&photoData->pokemons[i], it->unk_04, it->unk_08, it->unk_0C, it->unk_10);
+        for (it = D_800ADBEC; it->pokemonID != 0; it++) {
+            if (it->pokemonID == photoData->pokemons[i].pokemonID) {
+                gobj = func_8009D9A0(&photoData->pokemons[i], it->scale, it->model, it->textures, it->renderFunc);
                 if ((photoData->pokemons[i].pokemonID > 0 && photoData->pokemons[i].pokemonID <= POKEDEX_MAX) ||
                     photoData->pokemons[i].pokemonID == PokemonID_603 ||
                     photoData->pokemons[i].pokemonID == PokemonID_MOLTRES_EGG ||
