@@ -26,7 +26,6 @@ void spScissor(s32 xmin, s32 xmax, s32 ymin, s32 ymax) {
     scissor_ymax = ymax;
 }
 
-#ifdef NON_MATCHING
 void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
                 s32 x, s32 y, s32 xx, s32 yy, s32 fs, s32 ft, s32 sx, s32 sy) {
     s32 rs, rt;
@@ -152,22 +151,11 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
 
             case G_IM_SIZ_8b:
                 if (s->attr & SP_TEXSHUF) {
-                    gDPSetTextureImage(gl++, s->bmfmt, G_IM_SIZ_8b_LOAD_BLOCK, 1, b->buf);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPLoadSync(gl++);
-                    gDPLoadBlock(gl++, G_TX_LOADTILE, 0, 0,
-                                 (((tex_width * tex_height) + G_IM_SIZ_8b_INCR) >> G_IM_SIZ_8b_SHIFT) - 1, 0);
-                    gDPPipeSync(gl++);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_8b,
-                               (((tex_width * G_IM_SIZ_8b_LINE_BYTES) + 7) >> 3), 0,
-                               G_TX_RENDERTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPSetTileSize(gl++, G_TX_RENDERTILE, 0, 0,
-                                   ((tex_width) - 1) << G_TEXTURE_IMAGE_FRAC,
-                                   ((tex_height) - 1) << G_TEXTURE_IMAGE_FRAC);
+                    gDPLoadTextureBlockS(gl++, b->buf, s->bmfmt, G_IM_SIZ_8b,
+                                         tex_width, tex_height, 0,
+                                         s_clamp, t_clamp,
+                                         s_mask, t_mask,
+                                         s_lod, t_lod);
                 } else {
                     gDPLoadTextureBlock(gl++, b->buf, s->bmfmt, G_IM_SIZ_8b,
                                         tex_width, tex_height, 0,
@@ -179,22 +167,11 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
             case G_IM_SIZ_16b:
                 if (s->bmfmt == G_IM_FMT_YUV) {
                     if (s->attr & SP_TEXSHUF) {
-                        gDPSetTextureImage(gl++, s->bmfmt, G_IM_SIZ_16b_LOAD_BLOCK, 1, b->buf);
-                        gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0,
-                                   t_clamp, t_mask, t_lod,
-                                   s_clamp, s_mask, s_lod);
-                        gDPLoadSync(gl++);
-                        gDPLoadBlock(gl++, G_TX_LOADTILE, 0, 0,
-                                     (((tex_width * tex_height) + G_IM_SIZ_16b_INCR) >> G_IM_SIZ_16b_SHIFT) - 1, 0);
-                        gDPPipeSync(gl++);
-                        gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_16b,
-                                   (((tex_width) * 1) + 7) >> 3, 0,
-                                   G_TX_RENDERTILE, 0,
-                                   t_clamp, t_mask, t_lod,
-                                   s_clamp, s_mask, s_lod);
-                        gDPSetTileSize(gl++, G_TX_RENDERTILE, 0, 0,
-                                       ((tex_width) - 1) << G_TEXTURE_IMAGE_FRAC,
-                                       ((tex_height) - 1) << G_TEXTURE_IMAGE_FRAC);
+                        gDPLoadTextureBlockYuvS(gl++, b->buf, s->bmfmt, G_IM_SIZ_16b,
+                                                tex_width, tex_height, 0,
+                                                s_clamp, t_clamp,
+                                                s_mask, t_mask,
+                                                s_lod, t_lod);
                     } else {
                         if (b->LUToffset != 0) { /* Split Y and UV areas */
                             unsigned char *uv, *addr;
@@ -241,8 +218,8 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
                                        t_clamp, t_mask, t_lod,
                                        s_clamp, s_mask, s_lod);
                             gDPSetTileSize(gl++, G_TX_RENDERTILE, 0, 0,
-                                           ((tex_width) - 1) << G_TEXTURE_IMAGE_FRAC,
-                                           ((tex_height) - 1) << G_TEXTURE_IMAGE_FRAC);
+                                           ((tex_width) -1) << G_TEXTURE_IMAGE_FRAC,
+                                           ((tex_height) -1) << G_TEXTURE_IMAGE_FRAC);
 
                         } else {
                             gDPLoadTextureBlockYuv(gl++, b->buf, s->bmfmt, G_IM_SIZ_16b,
@@ -270,40 +247,17 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
                 break;
             case G_IM_SIZ_32b:
                 if (s->attr & SP_TEXSHUF) {
-                    gDPSetTextureImage(gl++, s->bmfmt, G_IM_SIZ_32b_LOAD_BLOCK, 1, b->buf);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_32b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPLoadSync(gl++);
-                    gDPLoadBlock(gl++, G_TX_LOADTILE, 0, 0,
-                                 (((tex_width * tex_height) + G_IM_SIZ_32b_INCR) >> G_IM_SIZ_32b_SHIFT) - 1, 0);
-                    gDPPipeSync(gl++);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_32b,
-                               (((tex_width * G_IM_SIZ_32b_LINE_BYTES) + 7) >> 3), 0,
-                               G_TX_RENDERTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPSetTileSize(gl++, G_TX_RENDERTILE, 0, 0,
-                                   ((tex_width) - 1) << G_TEXTURE_IMAGE_FRAC,
-                                   ((tex_height) - 1) << G_TEXTURE_IMAGE_FRAC);
+                    gDPLoadTextureBlockS(gl++, b->buf, s->bmfmt, G_IM_SIZ_32b,
+                                         tex_width, tex_height, 0,
+                                         s_clamp, t_clamp,
+                                         s_mask, t_mask,
+                                         s_lod, t_lod);
                 } else {
-                    gDPSetTextureImage(gl++, s->bmfmt, G_IM_SIZ_32b_LOAD_BLOCK, 1, b->buf);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_32b_LOAD_BLOCK, 0, 0, G_TX_LOADTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPLoadSync(gl++);
-                    gDPLoadBlock(gl++, G_TX_LOADTILE, 0, 0,
-                                 (((tex_width * tex_height) + G_IM_SIZ_32b_INCR) >> G_IM_SIZ_32b_SHIFT) - 1,
-                                 CALC_DXT(tex_width, G_IM_SIZ_32b_BYTES));
-                    gDPPipeSync(gl++);
-                    gDPSetTile(gl++, s->bmfmt, G_IM_SIZ_32b,
-                               (((tex_width * G_IM_SIZ_32b_LINE_BYTES) + 7) >> 3), 0,
-                               G_TX_RENDERTILE, 0,
-                               t_clamp, t_mask, t_lod,
-                               s_clamp, s_mask, s_lod);
-                    gDPSetTileSize(gl++, G_TX_RENDERTILE, 0, 0,
-                                   ((tex_width) - 1) << G_TEXTURE_IMAGE_FRAC,
-                                   ((tex_height) - 1) << G_TEXTURE_IMAGE_FRAC);
+                    gDPLoadTextureBlock(gl++, b->buf, s->bmfmt, G_IM_SIZ_32b,
+                                        tex_width, tex_height, 0,
+                                        s_clamp, t_clamp,
+                                        s_mask, t_mask,
+                                        s_lod, t_lod);
                 };
                 break;
         }
@@ -340,11 +294,6 @@ void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
 
     *glp = gl;
 }
-#else
-void drawbitmap(Gfx** glp, Sprite* s, Bitmap* b,
-                s32 x, s32 y, s32 xx, s32 yy, s32 fs, s32 ft, s32 sx, s32 sy);
-#pragma GLOBAL_ASM("asm/nonmatchings/26D80/drawbitmap.s")
-#endif
 
 void spInit(Gfx** glistp) {
     Gfx* gl;
@@ -418,9 +367,6 @@ Gfx* spDraw(Sprite* s) {
     ogl = gl;
 #endif
 
-    /* donor spDraw walks bitmap[] from 0 with b++, unlike the window variant
-     * that starts at istart and advances by istep.
-     */
     b = s->bitmap;
     ex = 0;
     ey = 0;
