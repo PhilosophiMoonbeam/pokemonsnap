@@ -120,117 +120,132 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
 
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     WindowPhotoBuffer* src;
+    Bitmap* bitmap;
+    s16* srcPixels;
+    u16* dst;
+    s32 texelCount;
+    s32 width;
+    volatile s32 height;
+    volatile s32 dstWidth;
+    volatile s32 tileHeight;
+    s32 bitmapRow;
+    s32 y;
+    s32 x;
+    s16 spriteHeight;
 
     if (photo == NULL || (src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo)) == NULL) {
-        Bitmap* bitmap = sprite->bitmap;
-        u16* dst = bitmap->buf;
-        s32 texelCount = bitmap->width_img * sprite->height;
-        s32 i;
-
-        for (i = 0; i < texelCount; i++) {
-            dst[i] = 0;
+        bitmap = sprite->bitmap;
+        dst = bitmap->buf;
+        texelCount = bitmap->width_img * sprite->height;
+        for (y = 0; y < texelCount; y++) {
+            *dst++ = 0;
         }
         osWritebackDCache(bitmap->buf, texelCount);
         return 1;
     }
 
-    {
-        Bitmap* bitmap = sprite->bitmap;
-        volatile s32 width = sprite->width;
-        volatile u32 height = sprite->height;
-        volatile s32 dstWidth = bitmap->width_img;
-        s32 rowInBitmap = 0;
-        s32 tileHeight = bitmap->actualHeight;
-        s32 y;
-        s32 x;
+#define AVERAGE_PIXEL(p0, p1, p2, p3)                                                                                 \
+    (((((p0) & 0xF800) + ((p1) & 0xF800) + ((p2) & 0xF800) + ((p3) & 0xF800)) / 4) & 0xF800) |                   \
+     (((((p0) & 0x07C0) + ((p1) & 0x07C0) + ((p2) & 0x07C0) + ((p3) & 0x07C0)) / 4) & 0x07C0) |                   \
+     (((((p0) & 0x003E) + ((p1) & 0x003E) + ((p2) & 0x003E) + ((p3) & 0x003E)) / 4) & 0x003E) | 1
 
-        for (y = 0; y < height; y++) {
-            u16* srcRow0;
-            u16* srcRow1;
-            u16* dst;
+    height = (spriteHeight = sprite->height);
+    width = sprite->width;
+    bitmapRow = 0;
+    bitmap = sprite->bitmap;
+    y = 0;
+    dstWidth = bitmap->width_img;
+    tileHeight = bitmap->actualHeight;
 
-            if (rowInBitmap >= tileHeight) {
-                rowInBitmap = 0;
-                bitmap++;
-                dstWidth = bitmap->width_img;
-                tileHeight = bitmap->actualHeight;
-            }
-
-            srcRow0 = src->buf + ((y * src->width) * 2);
-            srcRow1 = srcRow0 + src->width;
-            dst = (u16*) bitmap->buf + (rowInBitmap * dstWidth);
-
+    if (height > 0) {
+        do {
             x = 0;
-            if (width & 1) {
-            s32 r;
-            s32 g;
-            s32 bl;
+            dst = (u16*) bitmap->buf + (bitmapRow * dstWidth);
+            srcPixels = (s16*) src->buf + ((y * src->width) * 2);
 
-            r = (srcRow0[0] & 0xF800) + (srcRow0[1] & 0xF800) + (srcRow1[0] & 0xF800) + (srcRow1[1] & 0xF800);
-            g = (srcRow0[0] & 0x07C0) + (srcRow0[1] & 0x07C0) + (srcRow1[0] & 0x07C0) + (srcRow1[1] & 0x07C0);
-            bl = (srcRow0[0] & 0x003E) + (srcRow0[1] & 0x003E) + (srcRow1[0] & 0x003E) + (srcRow1[1] & 0x003E);
-            if (rowInBitmap & 1) {
-                *(u16*) (((uintptr_t) dst) ^ 4) = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
-            } else {
-                dst[0] = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
+            if (width > 0) {
+                if (width & 1) {
+                    s16* srcRow1;
+                    s16 pixel0;
+                    s16 pixel1;
+                    s16 pixel2;
+                    s16 pixel3;
+
+                    srcRow1 = srcPixels + src->width;
+                    pixel0 = srcPixels[0];
+                    pixel1 = srcPixels[1];
+                    pixel2 = srcRow1[0];
+                    pixel3 = srcRow1[1];
+                    if (bitmapRow & 1) {
+                        *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                    } else {
+                        *dst = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                    }
+                    x = 1;
+                    srcPixels += 2;
+                    dst++;
+                }
+
+                if (x != width) {
+                    do {
+                        {
+                            s16* srcRow1;
+                            s16 pixel0;
+                            s16 pixel1;
+                            s16 pixel2;
+                            s16 pixel3;
+
+                            srcRow1 = srcPixels + src->width;
+                            pixel0 = srcPixels[0];
+                            pixel1 = srcPixels[1];
+                            pixel2 = srcRow1[0];
+                            pixel3 = srcRow1[1];
+                            if (bitmapRow & 1) {
+                                *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                            } else {
+                                *dst = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                            }
+                        }
+
+                        srcPixels += 2;
+                        dst++;
+                        {
+                            s16* srcRow1;
+                            s16 pixel0;
+                            s16 pixel1;
+                            s16 pixel2;
+                            s16 pixel3;
+
+                            srcRow1 = srcPixels + src->width;
+                            pixel0 = srcPixels[0];
+                            pixel1 = srcPixels[1];
+                            pixel2 = srcRow1[0];
+                            pixel3 = srcRow1[1];
+                            if (bitmapRow & 1) {
+                                *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                            } else {
+                                *dst = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
+                            }
+                        }
+
+                        x += 2;
+                        srcPixels += 2;
+                        dst++;
+                    } while (x != width);
+                }
             }
-            srcRow0 += 2;
-            srcRow1 += 2;
-            dst++;
-            x = 1;
-        }
 
-        if (rowInBitmap & 1) {
-            for (; x < width; x += 2) {
-                s32 r;
-                s32 g;
-                s32 bl;
-
-                r = (srcRow0[0] & 0xF800) + (srcRow0[1] & 0xF800) + (srcRow1[0] & 0xF800) + (srcRow1[1] & 0xF800);
-                g = (srcRow0[0] & 0x07C0) + (srcRow0[1] & 0x07C0) + (srcRow1[0] & 0x07C0) + (srcRow1[1] & 0x07C0);
-                bl = (srcRow0[0] & 0x003E) + (srcRow0[1] & 0x003E) + (srcRow1[0] & 0x003E) + (srcRow1[1] & 0x003E);
-                *(u16*) (((uintptr_t) dst) ^ 4) = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
-                srcRow0 += 2;
-                srcRow1 += 2;
-                dst++;
-
-                r = (srcRow0[0] & 0xF800) + (srcRow0[1] & 0xF800) + (srcRow1[0] & 0xF800) + (srcRow1[1] & 0xF800);
-                g = (srcRow0[0] & 0x07C0) + (srcRow0[1] & 0x07C0) + (srcRow1[0] & 0x07C0) + (srcRow1[1] & 0x07C0);
-                bl = (srcRow0[0] & 0x003E) + (srcRow0[1] & 0x003E) + (srcRow1[0] & 0x003E) + (srcRow1[1] & 0x003E);
-                *(u16*) (((uintptr_t) dst) ^ 4) = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
-                srcRow0 += 2;
-                srcRow1 += 2;
-                dst++;
+            bitmapRow++;
+            if (bitmapRow >= tileHeight) {
+                bitmapRow = 0;
+                bitmap++;
             }
-        } else {
-            for (; x < width; x += 2) {
-                s32 r;
-                s32 g;
-                s32 bl;
-
-                r = (srcRow0[0] & 0xF800) + (srcRow0[1] & 0xF800) + (srcRow1[0] & 0xF800) + (srcRow1[1] & 0xF800);
-                g = (srcRow0[0] & 0x07C0) + (srcRow0[1] & 0x07C0) + (srcRow1[0] & 0x07C0) + (srcRow1[1] & 0x07C0);
-                bl = (srcRow0[0] & 0x003E) + (srcRow0[1] & 0x003E) + (srcRow1[0] & 0x003E) + (srcRow1[1] & 0x003E);
-                dst[0] = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
-                srcRow0 += 2;
-                srcRow1 += 2;
-                dst++;
-
-                r = (srcRow0[0] & 0xF800) + (srcRow0[1] & 0xF800) + (srcRow1[0] & 0xF800) + (srcRow1[1] & 0xF800);
-                g = (srcRow0[0] & 0x07C0) + (srcRow0[1] & 0x07C0) + (srcRow1[0] & 0x07C0) + (srcRow1[1] & 0x07C0);
-                bl = (srcRow0[0] & 0x003E) + (srcRow0[1] & 0x003E) + (srcRow1[0] & 0x003E) + (srcRow1[1] & 0x003E);
-                dst[0] = ((r / 4) & 0xF800) | ((g / 4) & 0x07C0) | ((bl / 4) & 0x003E) | 1;
-                srcRow0 += 2;
-                srcRow1 += 2;
-                dst++;
-            }
-        }
-
-            rowInBitmap++;
-        }
+            y++;
+        } while (y != height);
     }
 
     osWritebackDCache(sprite->bitmap->buf, sprite->bitmap->width_img * sprite->height);
+#undef AVERAGE_PIXEL
     return 0;
 }
 #else
