@@ -134,29 +134,32 @@ same full-ROM SHA-1 (`e50e6b78190869e4a951381178f7fa11f75f2535`), while the
 decoder's ROM range at `0x4130..0x467B` matches the target byte-for-byte in both
 images.
 
-The same donor search also found SSB's matched `sySchedulerUpdateViMode`, whose
-`0x7A8` size and behavior correspond to `func_80000F40`. Unlike the VPK0
-decoder, however, transplanting its source under Pokémon Snap's types expands
-the output by `0x10` and increases the byte delta. The scheduler implementations
-are therefore related HAL variants, not interchangeable binary donors; exact
-size plus semantic identity is a strong lead, but still requires a direct
-object comparison before replacing a guarded candidate.
+## `func_80000F40`
 
-Further reconstruction of Pokémon Snap's own scheduler candidate reduced its
-direct comparison score from 6,635 to 5,195. The remaining candidate is `0x7A0`
-bytes versus the target's `0x7A8`. The useful findings are:
+The scheduler VI-mode update is an exact match in C. Compiling Super Smash
+Bros. 64's matched `sySchedulerUpdateViMode` with Pokémon Snap's IDO 7.1
+toolchain produced a `0x7A8`-byte function whose raw bytes were identical to
+Pokémon Snap's target. Adapting that shared HAL source exposed four behavioral
+errors in the earlier reconstruction: the anti-alias mode condition was
+inverted, `unk_b04` selected the wrong out-of-bounds mode, horizontal offsets
+used arguments 4/5 instead of 3/4, and the second-field origin inverted the
+in-bounds scale.
 
-- The old candidate inverted the anti-alias mode selected when `unk_b80` is set.
-  The target adds `0x100` only when the dither filter is disabled; correcting
-  this is a behavioral fix, not merely a compiler-matching adjustment.
-- The target extracts `pixelSize32` independently in both anti-alias branches
-  and retains the result for the later scale calculations. Branch-local source
-  assignments recover that lifetime and remove the candidate's late reload.
-- Testing the packed settings word with a signed left shift reproduces the
-  target's `sll`/`bgez` serrate test more closely than accessing the bitfield.
-  This demonstrates another IDO-era case where the original packed-word test
-  need not resemble the modern typed expression.
-- The target materializes `phi_t2 == 0` once and reuses it. An explicit C local
-  recovers that data flow but currently expands the stack frame and function by
-  `0x10`, so the closest source still needs a lifetime-neutral way to induce
-  the comparison reuse.
+The remaining matching details were:
+
+- `ViSettings` uses `u32` bitfields, not `u8` bitfields. Both declarations have
+  the observed packed bit layout, but only the 32-bit base type gives IDO the
+  target's whole-word loads and register lifetimes.
+- The donor's `not_phi_v1` and `not_res_in_bounds` locals induce the target's
+  reused boolean values without expanding the stack frame.
+- Three deliberate `if (1);` statements emit no instructions but affect IDO's
+  control-flow graph and register allocation. Removing them changes the VI
+  origin calculation despite preserving behavior.
+- Parenthesizing the second-field origin as one nested product is decisive.
+  Reassociating the multiplication makes IDO reload `width`, shortens the
+  function by four bytes, and changes the final instruction schedule.
+
+The final direct object comparison score is zero for all `0x7A8` bytes. As with
+the VPK0 decoder, an identical-size routine in another HAL game should be
+compiled and compared directly before attempting a source-level rewrite; type
+declarations and no-op control-flow artifacts may be part of the match.
