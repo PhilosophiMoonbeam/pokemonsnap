@@ -139,22 +139,24 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
     if (photo == NULL || (src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo)) == NULL) {
         Bitmap* clearBitmap;
+        s32 clearIndex;
 
         clearBitmap = sprite->bitmap;
         dst = clearBitmap->buf;
         texelCount = clearBitmap->width_img * sprite->height;
-        for (y = 0; y < texelCount; y++) { *dst++ = 0;
+        for (clearIndex = 0; clearIndex < texelCount; clearIndex++) { *dst++ = 0;
         }
         osWritebackDCache(clearBitmap->buf, texelCount);
         return 1;
     }
 
-    width = sprite->width;
+    bitmapRow = sprite->width;
+    width = bitmapRow;
+    bitmapRow = 0;
     height[1] = (height[0] = sprite->height);
     bitmap = sprite->bitmap;
     y = 0;
     dstWidth = bitmap->width_img;
-    bitmapRow = 0;
     tileHeight = bitmap->actualHeight;
 
     if (height[1] > 0) {
@@ -173,10 +175,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                     srcRow1 = srcPixels;
                     srcRow1 += src->width;
-                    pixel0 = srcPixels[0];
-                    pixel1 = srcPixels[1];
-                    pixel2 = srcRow1[0];
-                    pixel3 = srcRow1[1];
+                    pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
                     if (bitmapRow & 1) {
                         *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                     } else {
@@ -201,10 +200,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                             srcRow1 = srcPixels;
                             srcRow1 += src->width;
-                            pixel0 = srcPixels[0];
-                            pixel1 = srcPixels[1];
-                            pixel2 = srcRow1[0];
-                            pixel3 = srcRow1[1];
+                            pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
                             if (rowParity) {
                                 *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                             } else {
@@ -223,10 +219,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                             srcRow1 = srcPixels;
                             srcRow1 += src->width;
-                            pixel0 = srcPixels[0];
-                            pixel1 = srcPixels[1];
-                            pixel2 = srcRow1[0];
-                            pixel3 = srcRow1[1];
+                            pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
                             if (rowParity) {
                                 *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                             } else {

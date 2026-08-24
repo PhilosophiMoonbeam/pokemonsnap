@@ -49,8 +49,8 @@ use—an unused declaration can still affect historical stack-slot allocation.
 ## `func_80374714_847EC4`
 
 The current guarded candidate for the window photo downsampler is not yet a
-match, but its comparison score was reduced from roughly 28,000 to 2,210. The
-latest pass improved the previous 3,377 baseline without changing the pixel
+match, but its comparison score was reduced from roughly 28,000 to 1,990. The
+latest pass improved the previous 2,030 baseline without changing the pixel
 result.
 Reusable findings from that work are:
 
@@ -78,9 +78,19 @@ Reusable findings from that work are:
 - The target computes bitmap-row parity once and reuses it for both pixels in
   the unrolled pair. An explicit scoped `rowParity` local documents that reuse
   and avoids relying on repeated-condition common-subexpression elimination.
-- The best initialization order found by exhaustive permutation is width,
-  height, bitmap, source row, destination width, bitmap row, then tile height.
-  This places the source-row counter in the target's `ra` register.
+- Keeping the four source-pixel assignments on one source line changes only
+  the second pixel's load schedule in the unrolled pair: IDO loads the two
+  row-1 pixels first, then the two row-0 pixels around the parity branch, as in
+  the target. This reduces the direct comparison score from 2,030 to 1,990.
+- A failure-only clear index prevents the clear loop from perturbing the hot
+  path's source-row counter allocation. Chaining the width through the
+  bitmap-row local before resetting that local gives the best current
+  allocation without changing behavior.
+- Exhaustively permuting plain initialization statements did not change the
+  decisive register cycle. The best current source shape instead copies width
+  through the bitmap-row local, resets that local, and then initializes height,
+  bitmap, source row, destination width, and tile height. This keeps the source
+  row in the target's `ra` register.
 - A two-element height temporary currently supplies the closest allocation,
   but it also explains the remaining extra stack slot. The other principal gap
   is the failure-path cache writeback: the target reloads the sprite bitmap and
