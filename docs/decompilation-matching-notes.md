@@ -141,3 +141,22 @@ the output by `0x10` and increases the byte delta. The scheduler implementations
 are therefore related HAL variants, not interchangeable binary donors; exact
 size plus semantic identity is a strong lead, but still requires a direct
 object comparison before replacing a guarded candidate.
+
+Further reconstruction of Pokémon Snap's own scheduler candidate reduced its
+direct comparison score from 6,635 to 5,195. The remaining candidate is `0x7A0`
+bytes versus the target's `0x7A8`. The useful findings are:
+
+- The old candidate inverted the anti-alias mode selected when `unk_b80` is set.
+  The target adds `0x100` only when the dither filter is disabled; correcting
+  this is a behavioral fix, not merely a compiler-matching adjustment.
+- The target extracts `pixelSize32` independently in both anti-alias branches
+  and retains the result for the later scale calculations. Branch-local source
+  assignments recover that lifetime and remove the candidate's late reload.
+- Testing the packed settings word with a signed left shift reproduces the
+  target's `sll`/`bgez` serrate test more closely than accessing the bitfield.
+  This demonstrates another IDO-era case where the original packed-word test
+  need not resemble the modern typed expression.
+- The target materializes `phi_t2 == 0` once and reuses it. An explicit C local
+  recovers that data flow but currently expands the stack frame and function by
+  `0x10`, so the closest source still needs a lifetime-neutral way to induce
+  the comparison reuse.

@@ -403,19 +403,15 @@ void func_80000F40(u32 width, u32 height, s32 flags, s16 edgeOffsetLeft, s16 edg
     scViModeNext.comRegs.ctrl &= ~VI_CTRL_ANTIALIAS_MASK;
 
     if (scViSettings.unk_b80) {
-        phi_a0 = scViSettings.ditherFilter ? 0x100 : 0;
-
-        // if (viSettings.ditherFilter) {
-        //     phi_a0 = 0x100; // aa & resamp (fetch extra lines if needed)
-        // } else {
-        //     phi_a0 = 0;
-        // }
+        phi_t0 = scViSettings.pixelSize32;
+        phi_a0 = scViSettings.ditherFilter ? 0 : 0x100;
 
         // L80001220
         scViModeNext.comRegs.ctrl |= phi_a0;
     } else {
+        phi_t0 = scViSettings.pixelSize32;
         // L80001238
-        if (!scViSettings.unk_b04 && scViSettings.pixelSize32) {
+        if (!scViSettings.unk_b04 && phi_t0 == 1) {
             scViModeNext.comRegs.ctrl |= 0x300; // neither (replicate pixels, no interpolate)
         } else {
             // L8000126C
@@ -423,10 +419,9 @@ void func_80000F40(u32 width, u32 height, s32 flags, s16 edgeOffsetLeft, s16 edg
         }
     }
     // L8000127C
-    phi_t0 = scViSettings.pixelSize32; // tail expression?
 
     if (phi_t2) {
-        if (scViSettings.serrate) {
+        if ((*(s32*) &scViSettings << 1) < 0) {
             phi_v1 = 0;
         } else {
             phi_v1 = 1;
