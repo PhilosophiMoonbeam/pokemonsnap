@@ -1,5 +1,29 @@
 # Decompilation matching notes
 
+## `func_80371F54_845704`
+
+The window-specific drawbitmap helper now compiles to the target's exact
+`0x171C`-byte size and differs in only one adjacent instruction pair. The
+previous expanded-command candidate differed in 44 bytes across 11 words.
+Wrapping the shared `gDPSetTextureImage`, load-tile, load-sync, load-block, and
+pipe-sync sequence in a local `LOAD_TEX_BLOCK_PREFIX` macro reduces that to 8
+bytes across 2 words.
+
+The important IDO 7.1 finding is that macro-origin boundaries affect final
+instruction scheduling even when the expanded C operations are otherwise the
+same. The prefix macro fixes three independent `G_RDPPIPESYNC` opcode
+load scheduling regions without altering the function's control flow, stack,
+or register allocation. Replacing the whole sequence with
+`gDPLoadTextureBlockS`, as the matched donor drawbitmap does, regresses other
+regions; the window helper requires a different boundary.
+
+The remaining mismatch is confined to the shuffled 32-bit render-tile path:
+the target orders `sw t9, 4(v1)` before `sll t6, t8, 2`, while the candidate
+orders the shift before the store. Equivalent arithmetic, temporary locals,
+statement movement, comma expressions, same-line forcing, local wrapper
+macros, and assembler tuning all preserve that final scheduling choice. The
+`NON_MATCHING` guard therefore remains in place.
+
 ## `UIMem_Reallocate`
 
 `UIMem_Reallocate` was matched by recovering two source-shape details that are

@@ -8,8 +8,9 @@ Current state on `hermes/final-stretch`:
   `NON_MATCHING` candidate whose default build path uses assembly.
 - The helpers implement the same broad sprite-texture operation, but their C
   source is not interchangeable. Upstream's matched donor implementation uses
-  the SDK texture-block macros in several shuffled and 32-bit cases, while the
-  window candidate still spells those command sequences out manually.
+  the complete SDK texture-block macros in several shuffled and 32-bit cases.
+  The window candidate now uses a local macro for only the common load prefix,
+  then emits the render-tile and tile-size commands separately.
 - The surrounding `spDraw` traversal also remains different.
 
 Helper symbol mapping
@@ -36,7 +37,7 @@ Donor path (`src/26D80.c`):
 
 How upstream matched the donor helper
 
-- The former fork candidate manually emitted `gDPSetTextureImage`,
+- The earlier fork candidate manually emitted `gDPSetTextureImage`,
   `gDPSetTile`, load-sync, load-block, pipe-sync, render-tile, and tile-size
   commands for shuffled 8-bit, shuffled YUV 16-bit, and both 32-bit paths.
 - Upstream expressed those paths with `gDPLoadTextureBlockS`,
@@ -47,6 +48,23 @@ How upstream matched the donor helper
   byte-matching, while the fork's expanded version remained only a candidate.
 - Upstream consequently removed the `NON_MATCHING` guard and
   `drawbitmap.s` fallback.
+
+Why the window helper still differs
+
+- Replacing the window helper's expanded commands with the same complete SDK
+  macros does not match its ROM function. The two helpers were compiled from
+  different source shapes despite their shared behavior.
+- Grouping just the first five commands in `LOAD_TEX_BLOCK_PREFIX` reproduces
+  IDO's target scheduling in the shuffled 8-bit, shuffled YUV 16-bit, and
+  shuffled 32-bit paths. This reduces the window candidate from 44 differing
+  bytes in 11 words to 8 differing bytes in 2 adjacent words, while preserving
+  the exact `0x171C`-byte function size.
+- The sole remaining difference is an instruction-order tie in the shuffled
+  32-bit render-tile path. The target stores the second `gDPSetTile` word before
+  shifting `tex_width - 1`; the candidate schedules that shift first. There is
+  no control-flow, stack, or register-allocation difference.
+- The assembly fallback remains authoritative until those last two words
+  match. The partial C improvement does not change the default ROM.
 
 Current live/default context
 
@@ -60,8 +78,8 @@ Implication
 
 - Treat upstream's donor implementation as the proven source-shape reference,
   not merely as a semantically equivalent helper.
-- Window matching work should test whether the same SDK macro choices improve
-  `func_80371F54_845704`, while preserving the window-specific symbols and
-  traversal assumptions.
+- Window matching work should preserve the local load-prefix boundary; using
+  the donor's complete SDK macro regresses three already-solved scheduling
+  regions.
 - Do not copy donor `spDraw` wholesale: the `istart`/`istep` traversal remains a
   real window-specific distinction even when current callers use `0` and `1`.
