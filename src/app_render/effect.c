@@ -377,7 +377,6 @@ void fx_addDistVelMagDObj(Particle* particle, DObj* dobj, f32 magnitude) {
     }
 }
 
-#ifdef NON_MATCHING
 extern u16 sSinTable[];
 #define INTERP(a, b, c) a = ((a << 0x10) + (b - a) * (0x10000 / c)) >> 0x10;
 #define SINCOS(inAngle, sinVal, cosVal)                  \
@@ -392,6 +391,17 @@ extern u16 sSinTable[];
         if (angle & 0x800) {                             \
             cosVal = -cosVal;                            \
         }                                                \
+    }
+#define SINCOS_VAR(inAngle, sinVal, cosVal, angle) \
+    angle = (s32) (inAngle * 651.8986f) & 0xFFF;   \
+    sinVal = sSinTable[angle & 2047];              \
+    if (angle & 0x800) {                           \
+        sinVal = -sinVal;                          \
+    }                                              \
+    angle += 0x400;                                \
+    cosVal = sSinTable[angle & 2047];              \
+    if (angle & 0x800) {                           \
+        cosVal = -cosVal;                          \
     }
 
 Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
@@ -409,18 +419,19 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     f32 sp7C;
     f32 unused3;
     f32 nv;
-    f32 sp70;
-    f32 temp_f16_3;
+    f32 sp70[1];
     f32 temp_f2_2;
     f32 unused4;
+    f32 temp_f16_3;
     Particle* next;
     f32 sp5C;
     f32 sp58;
     f32 sp54;
     f32 sp50;
+    u16 angle_id_2;
     u8 var_v1;
     u8 temp_a0;
-    f32 sp44;
+    f32 unused5[1];
 
     if (arg0->flags & PARTICLE_FLAG_PAUSE) {
         return arg0->next;
@@ -440,321 +451,332 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
                             var_v1 = temp_a0;
                         }
                     }
-                    switch (var_v1) {
-                        case 0x80:
-                            if (temp_a0 & 1) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->pos.x);
-                            }
-                            if (temp_a0 & 2) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->pos.y);
-                            }
-                            if (temp_a0 & 4) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->pos.z);
-                            }
-                            break;
-                        case 0x88:
-                            if (temp_a0 & 1) {
+                    if (var_v1 <= 0xD0) {
+                        goto dispatch_low;
+                    }
+                    switch (var_v1 >= 0xFA && var_v1 <= 0xFF && var_v1 != 0 ? var_v1 : var_v1) {
+                    dispatch_low:
+                        if (var_v1 >= 0x80) {
+                            ;
+                        }
+                        switch (var_v1) {
+                            case 0x80:
+                                if (temp_a0 & 1) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->pos.x);
+                                }
+                                if (temp_a0 & 2) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->pos.y);
+                                }
+                                if (temp_a0 & 4) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->pos.z);
+                                }
+                                break;
+                            case 0x88:
+                                if (temp_a0 & 1) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->pos.x += sp80;
+                                }
+                                if (temp_a0 & 2) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->pos.y += sp80;
+                                }
+                                if (temp_a0 & 4) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->pos.z += sp80;
+                                }
+                                break;
+                            case 0x90:
+                                if (temp_a0 & 1) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->vel.x);
+                                }
+                                if (temp_a0 & 2) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->vel.y);
+                                }
+                                if (temp_a0 & 4) {
+                                    var_s1 = func_800A27B0(var_s1, &arg0->vel.z);
+                                }
+                                break;
+                            case 0x98:
+                                if (temp_a0 & 1) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->vel.x += sp80;
+                                }
+                                if (temp_a0 & 2) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->vel.y += sp80;
+                                }
+                                if (temp_a0 & 4) {
+                                    var_s1 = func_800A27B0(var_s1, &sp80);
+                                    arg0->vel.z += sp80;
+                                }
+                                break;
+                            case 0xA0:
+                                var_s1 = func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget);
+                                if (arg0->sizeTargetLength == 1) {
+                                    arg0->sizeTargetLength = 0;
+                                    arg0->size = arg0->sizeTarget;
+                                }
+                                break;
+                            case 0xA1:
+                                arg0->flags = *var_s1++;
+                                break;
+                            case 0xA2:
+                                var_s1 = func_800A27B0(var_s1, &arg0->gravity);
+                                if (arg0->gravity == 0.0f) {
+                                    arg0->flags &= ~1;
+                                } else {
+                                    arg0->flags |= 1;
+                                }
+                                break;
+                            case 0xA3:
+                                var_s1 = func_800A27B0(var_s1, &arg0->friction);
+                                if (arg0->friction == 1.0f) {
+                                    arg0->flags &= ~2;
+                                } else {
+                                    arg0->flags |= 2;
+                                }
+                                break;
+                            case 0xA4:
+                                temp_s0 = *var_s1++;
+                                temp_s0 <<= 8;
+                                temp_s0 += *var_s1++;
+                                temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
+                                if (temp_v0 != NULL) {
+                                    temp_v0->pos.x = arg0->pos.x;
+                                    temp_v0->pos.y = arg0->pos.y;
+                                    temp_v0->pos.z = arg0->pos.z;
+                                    temp_v0->effectID = arg0->effectID;
+                                    temp_v0->fx = arg0->fx;
+                                    fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
+                                }
+                                break;
+                            case 0xA5:
+                                temp_s0 = *var_s1++;
+                                temp_s0 <<= 8;
+                                temp_s0 += *var_s1++;
+                                pinkRat = fx_createEffect(arg0->bankID, temp_s0);
+                                if (pinkRat != NULL) {
+                                    pinkRat->pos.x = arg0->pos.x;
+                                    pinkRat->pos.y = arg0->pos.y;
+                                    pinkRat->pos.z = arg0->pos.z;
+                                    pinkRat->effectID = arg0->effectID;
+                                }
+                                break;
+                            case 0xA6:
+                                temp_s0 = *var_s1++;
+                                temp_s0 <<= 8;
+                                temp_s0 += *var_s1++;
+                                sp88 = *var_s1++;
+                                sp88 <<= 8;
+                                sp88 += *var_s1++;
+                                arg0->lifetime = temp_s0 + (s32) (randFloat() * sp88);
+                                break;
+                            case 0xA7:
+                                temp_s0 = *var_s1++;
+                                if (temp_s0 >= (s32) (randFloat() * 100.0f)) {
+                                    arg0->lifetime = 1;
+                                    goto EXIT;
+                                }
+                                break;
+                            case 0xA8:
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->pos.x += sp80;
-                            }
-                            if (temp_a0 & 2) {
+                                arg0->pos.x += sp80 * randFloat();
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->pos.y += sp80;
-                            }
-                            if (temp_a0 & 4) {
+                                arg0->pos.y += sp80 * randFloat();
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->pos.z += sp80;
-                            }
-                            break;
-                        case 0x90:
-                            if (temp_a0 & 1) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->vel.x);
-                            }
-                            if (temp_a0 & 2) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->vel.y);
-                            }
-                            if (temp_a0 & 4) {
-                                var_s1 = func_800A27B0(var_s1, &arg0->vel.z);
-                            }
-                            break;
-                        case 0x98:
-                            if (temp_a0 & 1) {
+                                arg0->pos.z += sp80 * randFloat();
+                                break;
+                            case 0xA9:
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->vel.x += sp80;
-                            }
-                            if (temp_a0 & 2) {
+                                fx_rotateVel(arg0, sp80);
+                                break;
+                            case 0xAA:
+                                temp_s0 = *var_s1++;
+                                temp_s0 <<= 8;
+                                temp_s0 += *var_s1++;
+                                sp88 = *var_s1++;
+                                sp88 <<= 8;
+                                sp88 += *var_s1++;
+                                temp_s0 += (s32) (sp88 * randFloat());
+                                temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
+                                if (temp_v0 != NULL) {
+                                    temp_v0->pos.x = arg0->pos.x;
+                                    temp_v0->pos.y = arg0->pos.y;
+                                    temp_v0->pos.z = arg0->pos.z;
+                                    temp_v0->effectID = arg0->effectID;
+                                    temp_v0->fx = arg0->fx;
+                                    fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
+                                }
+                                break;
+                            case 0xAB:
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->vel.y += sp80;
-                            }
-                            if (temp_a0 & 4) {
+                                arg0->vel.x *= sp80;
+                                arg0->vel.y *= sp80;
+                                arg0->vel.z *= sp80;
+                                break;
+                            case 0xAC:
+                                var_s1 = func_800A27B0(func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget), &sp80);
+                                arg0->sizeTarget += sp80 * randFloat();
+                                if (arg0->sizeTargetLength == 1) {
+                                    arg0->sizeTargetLength = 0;
+                                    arg0->size = arg0->sizeTarget;
+                                }
+                                break;
+                            case 0xAD:
+                                arg0->flags |= PARTICLE_FLAG_ENV_COMBINE;
+                                break;
+                            case 0xAE:
+                                arg0->flags &= ~(PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T);
+                                break;
+                            case 0xAF:
+                                arg0->flags &= ~PARTICLE_FLAG_MIRROR_T;
+                                arg0->flags |= PARTICLE_FLAG_MIRROR_S;
+                                break;
+                            case 0xB0:
+                                arg0->flags &= ~PARTICLE_FLAG_MIRROR_S;
+                                arg0->flags |= PARTICLE_FLAG_MIRROR_T;
+                                break;
+                            case 0xB1:
+                                arg0->flags |= PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T;
+                                break;
+                            case 0xB2:
+                                arg0->flags |= PARTICLE_FLAG_ENV_ALPHA_THRESHOLD;
+                                break;
+                            case 0xB3:
+                                arg0->flags &= ~PARTICLE_FLAG_ALPHA_DITHER;
+                                break;
+                            case 0xB4:
+                                arg0->flags |= PARTICLE_FLAG_ALPHA_DITHER;
+                                break;
+                            case 0xB5:
+                                arg0->flags |= PARTICLE_FLAG_NOISE_COMBINE;
+                                break;
+                            case 0xB6:
+                                arg0->flags &= ~PARTICLE_FLAG_NOISE_COMBINE;
+                                break;
+                            case 0xB7:
+                                temp_s0 = *var_s1++;
+                                fx_setDistVelDObj(arg0, (DObj*) D_800BE204[temp_s0]);
+                                break;
+                            case 0xB8:
+                                temp_s0 = *var_s1++;
                                 var_s1 = func_800A27B0(var_s1, &sp80);
-                                arg0->vel.z += sp80;
-                            }
-                            break;
-                        case 0xA0:
-                            var_s1 = func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget);
-                            if (arg0->sizeTargetLength == 1) {
-                                arg0->sizeTargetLength = 0;
-                                arg0->size = arg0->sizeTarget;
-                            }
-                            break;
-                        case 0xA1:
-                            arg0->flags = *var_s1++;
-                            break;
-                        case 0xA2:
-                            var_s1 = func_800A27B0(var_s1, &arg0->gravity);
-                            if (arg0->gravity == 0.0f) {
-                                arg0->flags &= ~1;
-                            } else {
-                                arg0->flags |= 1;
-                            }
-                            break;
-                        case 0xA3:
-                            var_s1 = func_800A27B0(var_s1, &arg0->friction);
-                            if (arg0->friction == 1.0f) {
-                                arg0->flags &= ~2;
-                            } else {
-                                arg0->flags |= 2;
-                            }
-                            break;
-                        case 0xA4:
-                            temp_s0 = *var_s1++;
-                            temp_s0 <<= 8;
-                            temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
-                            if (temp_v0 != NULL) {
-                                temp_v0->pos.x = arg0->pos.x;
-                                temp_v0->pos.y = arg0->pos.y;
-                                temp_v0->pos.z = arg0->pos.z;
-                                temp_v0->effectID = arg0->effectID;
-                                temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
-                            }
-                            break;
-                        case 0xA5:
-                            temp_s0 = *var_s1++;
-                            temp_s0 <<= 8;
-                            temp_s0 += *var_s1++;
-                            pinkRat = fx_createEffect(arg0->bankID, temp_s0);
-                            if (pinkRat != NULL) {
-                                pinkRat->pos.x = arg0->pos.x;
-                                pinkRat->pos.y = arg0->pos.y;
-                                pinkRat->pos.z = arg0->pos.z;
-                                pinkRat->effectID = arg0->effectID;
-                            }
-                            break;
-                        case 0xA6:
-                            temp_s0 = *var_s1++;
-                            temp_s0 <<= 8;
-                            temp_s0 += *var_s1++;
-                            sp88 = *var_s1++;
-                            sp88 <<= 8;
-                            sp88 += *var_s1++;
-                            arg0->lifetime = temp_s0 + (s32) (randFloat() * sp88);
-                            break;
-                        case 0xA7:
-                            temp_s0 = *var_s1++;
-                            if (temp_s0 >= (s32) (randFloat() * 100.0f)) {
-                                arg0->lifetime = 1;
-                                goto EXIT;
-                            }
-                            break;
-                        case 0xA8:
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->pos.x += sp80 * randFloat();
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->pos.y += sp80 * randFloat();
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->pos.z += sp80 * randFloat();
-                            break;
-                        case 0xA9:
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            fx_rotateVel(arg0, sp80);
-                            break;
-                        case 0xAA:
-                            temp_s0 = *var_s1++;
-                            temp_s0 <<= 8;
-                            temp_s0 += *var_s1++;
-                            sp88 = *var_s1++;
-                            sp88 <<= 8;
-                            sp88 += *var_s1++;
-                            temp_s0 += (s32) (sp88 * randFloat());
-                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
-                            if (temp_v0 != NULL) {
-                                temp_v0->pos.x = arg0->pos.x;
-                                temp_v0->pos.y = arg0->pos.y;
-                                temp_v0->pos.z = arg0->pos.z;
-                                temp_v0->effectID = arg0->effectID;
-                                temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
-                            }
-                            break;
-                        case 0xAB:
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->vel.x *= sp80;
-                            arg0->vel.y *= sp80;
-                            arg0->vel.z *= sp80;
-                            break;
-                        case 0xAC:
-                            var_s1 = func_800A27B0(func_800A27B0(func_800A27E8(var_s1, &arg0->sizeTargetLength), &arg0->sizeTarget), &sp80);
-                            arg0->sizeTarget += sp80 * randFloat();
-                            if (arg0->sizeTargetLength == 1) {
-                                arg0->sizeTargetLength = 0;
-                                arg0->size = arg0->sizeTarget;
-                            }
-                            break;
-                        case 0xAD:
-                            arg0->flags |= PARTICLE_FLAG_ENV_COMBINE;
-                            break;
-                        case 0xAE:
-                            arg0->flags &= ~(PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T);
-                            break;
-                        case 0xAF:
-                            arg0->flags &= ~PARTICLE_FLAG_MIRROR_T;
-                            arg0->flags |= PARTICLE_FLAG_MIRROR_S;
-                            break;
-                        case 0xB0:
-                            arg0->flags &= ~PARTICLE_FLAG_MIRROR_S;
-                            arg0->flags |= PARTICLE_FLAG_MIRROR_T;
-                            break;
-                        case 0xB1:
-                            arg0->flags |= PARTICLE_FLAG_MIRROR_S | PARTICLE_FLAG_MIRROR_T;
-                            break;
-                        case 0xB2:
-                            arg0->flags |= PARTICLE_FLAG_ENV_ALPHA_THRESHOLD;
-                            break;
-                        case 0xB3:
-                            arg0->flags &= ~PARTICLE_FLAG_ALPHA_DITHER;
-                            break;
-                        case 0xB4:
-                            arg0->flags |= PARTICLE_FLAG_ALPHA_DITHER;
-                            break;
-                        case 0xB5:
-                            arg0->flags |= PARTICLE_FLAG_NOISE_COMBINE;
-                            break;
-                        case 0xB6:
-                            arg0->flags &= ~PARTICLE_FLAG_NOISE_COMBINE;
-                            break;
-                        case 0xB7:
-                            temp_s0 = *var_s1++;
-                            fx_setDistVelDObj(arg0, D_800BE208[temp_s0 - 1]);
-                            break;
-                        case 0xB8:
-                            temp_s0 = *var_s1++;
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            fx_addDistVelMagDObj(arg0, D_800BE208[temp_s0 - 1], sp80);
-                            break;
-                        case 0xB9:
-                            temp_s0 = *var_s1++;
-                            temp_s0 <<= 8;
-                            temp_s0 += *var_s1++;
-                            temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
-                            if (temp_v0 != NULL) {
-                                temp_v0->pos.x = arg0->pos.x;
-                                temp_v0->pos.y = arg0->pos.y;
-                                temp_v0->pos.z = arg0->pos.z;
-                                temp_v0->vel.x = arg0->vel.x;
-                                temp_v0->vel.y = arg0->vel.y;
-                                temp_v0->vel.z = arg0->vel.z;
-                                temp_v0->effectID = arg0->effectID;
-                                temp_v0->fx = arg0->fx;
-                                fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
-                            }
-                            break;
-                        case 0xBA:
-                            sp80 = *var_s1++;
-                            arg0->targetPrimColor.r += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetPrimColor.g += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetPrimColor.b += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetPrimColor.a += sp80 * randFloat();
+                                fx_addDistVelMagDObj(arg0, (DObj*) D_800BE204[temp_s0], sp80);
+                                break;
+                            case 0xB9:
+                                temp_s0 = *var_s1++;
+                                temp_s0 <<= 8;
+                                temp_s0 += *var_s1++;
+                                temp_v0 = fx_makeChildScriptID(arg0, arg0->bankID, temp_s0);
+                                if (temp_v0 != NULL) {
+                                    temp_v0->pos.x = arg0->pos.x;
+                                    temp_v0->pos.y = arg0->pos.y;
+                                    temp_v0->pos.z = arg0->pos.z;
+                                    temp_v0->vel.x = arg0->vel.x;
+                                    temp_v0->vel.y = arg0->vel.y;
+                                    temp_v0->vel.z = arg0->vel.z;
+                                    temp_v0->effectID = arg0->effectID;
+                                    temp_v0->fx = arg0->fx;
+                                    fx_updateStruct(temp_v0, arg0, FX_GET_BANK_GROUP(arg0->bankID));
+                                }
+                                break;
+                            case 0xBA:
+                                sp80 = *var_s1++;
+                                arg0->targetPrimColor.r += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetPrimColor.g += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetPrimColor.b += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetPrimColor.a += sp80 * randFloat();
 
-                            if (arg0->targetPrimColorLength == 0) {
-                                arg0->primColor = arg0->targetPrimColor;
-                            }
-                            break;
-                        case 0xBB:
-                            sp80 = *var_s1++;
-                            arg0->targetEnvColor.r += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetEnvColor.g += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetEnvColor.b += sp80 * randFloat();
-                            sp80 = *var_s1++;
-                            arg0->targetEnvColor.a += sp80 * randFloat();
-                            if (arg0->targetEnvColorLength == 0) {
-                                arg0->envColor = arg0->targetEnvColor;
-                            }
-                            break;
-                        case 0xBC:
-                            arg0->dataID = *var_s1++;
-                            sp80 = *var_s1++;
-                            arg0->dataID += sp80 * randFloat();
-                            break;
-                        case 0xBD:
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            var_s1 = func_800A27B0(var_s1, &sp7C);
-                            sp80 += sp7C * randFloat();
-                            sp7C = sqrtf(SQ(arg0->vel.x) + SQ(arg0->vel.y) + SQ(arg0->vel.z));
-                            sp80 /= sp7C;
-                            arg0->vel.x *= sp80;
-                            arg0->vel.y *= sp80;
-                            arg0->vel.z *= sp80;
-                            break;
-                        case 0xBE:
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->vel.x *= sp80;
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->vel.y *= sp80;
-                            var_s1 = func_800A27B0(var_s1, &sp80);
-                            arg0->vel.z *= sp80;
-                            break;
-                        case 0xBF:
-                            temp_s0 = *var_s1++ - 1;
-                            arg0->flags = arg0->flags | PARTICLE_FLAG_ATTACH_DOBJ | PARTICLE_PACK_ATTACH_DOBJ_INDEX(temp_s0);
-                            break;
-                        case 0xC0:
-                            var_s1 = func_800A27E8(var_s1, &arg0->targetPrimColorLength);
-                            arg0->targetPrimColor = arg0->primColor;
-                            if (temp_a0 & 1) {
-                                arg0->targetPrimColor.r = *var_s1++;
-                            }
-                            if (temp_a0 & 2) {
-                                arg0->targetPrimColor.g = *var_s1++;
-                            }
-                            if (temp_a0 & 4) {
-                                arg0->targetPrimColor.b = *var_s1++;
-                            }
-                            if (temp_a0 & 8) {
-                                arg0->targetPrimColor.a = *var_s1++;
-                            }
-                            if (arg0->targetPrimColorLength == 1) {
-                                arg0->primColor = arg0->targetPrimColor;
-                                arg0->targetPrimColorLength = 0;
-                            }
-                            break;
-                        case 0xD0:
-                            var_s1 = func_800A27E8(var_s1, &arg0->targetEnvColorLength);
-                            arg0->targetEnvColor = arg0->envColor;
-                            if (temp_a0 & 1) {
-                                arg0->targetEnvColor.r = *var_s1++;
-                            }
-                            if (temp_a0 & 2) {
-                                arg0->targetEnvColor.g = *var_s1++;
-                            }
-                            if (temp_a0 & 4) {
-                                arg0->targetEnvColor.b = *var_s1++;
-                            }
-                            if (temp_a0 & 8) {
-                                arg0->targetEnvColor.a = *var_s1++;
-                            }
-                            if (arg0->targetEnvColorLength == 1) {
-                                arg0->envColor = arg0->targetEnvColor;
-                                arg0->targetEnvColorLength = 0;
-                            }
-                            break;
+                                if (arg0->targetPrimColorLength == 0) {
+                                    arg0->primColor = arg0->targetPrimColor;
+                                }
+                                break;
+                            case 0xBB:
+                                sp80 = *var_s1++;
+                                arg0->targetEnvColor.r += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetEnvColor.g += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetEnvColor.b += sp80 * randFloat();
+                                sp80 = *var_s1++;
+                                arg0->targetEnvColor.a += sp80 * randFloat();
+                                if (arg0->targetEnvColorLength == 0) {
+                                    arg0->envColor = arg0->targetEnvColor;
+                                }
+                                break;
+                            case 0xBC:
+                                arg0->dataID = *var_s1++;
+                                sp80 = *var_s1++;
+                                arg0->dataID += sp80 * randFloat();
+                                break;
+                            case 0xBD:
+                                var_s1 = func_800A27B0(var_s1, &sp80);
+                                var_s1 = func_800A27B0(var_s1, &sp7C);
+                                sp80 += sp7C * randFloat();
+                                temp_f16_3 = arg0->vel.z;
+                                sp7C = sqrtf(SQ(arg0->vel.x) + SQ(arg0->vel.y) + SQ(temp_f16_3));
+                                sp80 /= sp7C;
+                                arg0->vel.x *= sp80;
+                                arg0->vel.y *= sp80;
+                                arg0->vel.z *= sp80;
+                                break;
+                            case 0xBE:
+                                var_s1 = func_800A27B0(var_s1, &sp80);
+                                arg0->vel.x *= sp80;
+                                var_s1 = func_800A27B0(var_s1, &sp80);
+                                arg0->vel.y *= sp80;
+                                var_s1 = func_800A27B0(var_s1, &sp80);
+                                arg0->vel.z *= sp80;
+                                break;
+                            case 0xBF:
+                                temp_s0 = *var_s1++ - 1;
+                                arg0->flags = arg0->flags | PARTICLE_FLAG_ATTACH_DOBJ | PARTICLE_PACK_ATTACH_DOBJ_INDEX(temp_s0);
+                                break;
+                            case 0xC0:
+                                var_s1 = func_800A27E8(var_s1, &arg0->targetPrimColorLength);
+                                arg0->targetPrimColor = arg0->primColor;
+                                if (temp_a0 & 1) {
+                                    arg0->targetPrimColor.r = *var_s1++;
+                                }
+                                if (temp_a0 & 2) {
+                                    arg0->targetPrimColor.g = *var_s1++;
+                                }
+                                if (temp_a0 & 4) {
+                                    arg0->targetPrimColor.b = *var_s1++;
+                                }
+                                if (temp_a0 & 8) {
+                                    arg0->targetPrimColor.a = *var_s1++;
+                                }
+                                if (arg0->targetPrimColorLength == 1) {
+                                    arg0->primColor = arg0->targetPrimColor;
+                                    arg0->targetPrimColorLength = 0;
+                                }
+                                break;
+                            case 0xD0:
+                                var_s1 = func_800A27E8(var_s1, &arg0->targetEnvColorLength);
+                                arg0->targetEnvColor = arg0->envColor;
+                                if (temp_a0 & 1) {
+                                    arg0->targetEnvColor.r = *var_s1++;
+                                }
+                                if (temp_a0 & 2) {
+                                    arg0->targetEnvColor.g = *var_s1++;
+                                }
+                                if (temp_a0 & 4) {
+                                    arg0->targetEnvColor.b = *var_s1++;
+                                }
+                                if (temp_a0 & 8) {
+                                    arg0->targetEnvColor.a = *var_s1++;
+                                }
+                                if (arg0->targetEnvColorLength == 1) {
+                                    arg0->envColor = arg0->targetEnvColor;
+                                    arg0->targetEnvColorLength = 0;
+                                }
+                                break;
+                        }
+                        break;
                         case 0xFA:
                             arg0->loopCount = *var_s1++;
                             arg0->loopPtr = var_s1 - arg0->bytecode;
@@ -832,6 +854,8 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     }
 
     if (arg0->flags & PARTICLE_FLAG_KIND2_CHILD) {
+        f32 sp44[1];
+
         pinkRat = arg0->fx;
 
         SINCOS(arg0->gravity, sp5C, sp54);
@@ -844,25 +868,32 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
 
         arg0->vel.z += pinkRat->effectVars.data2.unk_00;
 
-        sp70 = ABS(pinkRat->emitRadius);
+        sp70[0] = ABS(pinkRat->emitRadius);
         var_f2 = ABS(pinkRat->emitAngle);
 
-        SINCOS(var_f2, var_f18, sp44);
+        SINCOS_VAR(var_f2, var_f18, unused4, angle_id_2);
 
-        sp70 += arg0->vel.z * (var_f18 / sp44);
-        sp70 *= arg0->vel.y;
+        temp_f16_3 = arg0->vel.z;
+        sp70[0] += arg0->vel.z * (var_f18 / unused4);
+        sp70[0] = arg0->vel.y * sp70[0];
         arg0->vel.x += pinkRat->gravity;
 
-        SINCOS(arg0->vel.x, var_f18, sp44);
+        unused2 = (s32) (arg0->vel.x * 651.8986f) & 0xFFF;
+        var_f18 = sSinTable[unused2 & 2047];
+        if (unused2 & 0x800) {
+            var_f18 = -var_f18;
+        }
+        unused2 += 0x400;
+        // clang-format off
+        unused4 = sSinTable[unused2 & 2047]; sp44[0] = unused4; if (unused2 & 0x800) { unused4 = -unused4; sp44[0] = unused4; } sp70[0] *= 1.0f / 0x8000; unused4 = sp44[0] * sp70[0];
+        // clang-format on
 
-        sp70 *= 1.0f / 0x8000;
-        temp_f2_2 = sp70 * sp44;
-        temp_f2_2 = temp_f2_2 + temp_f2_2;
-        nv = sp70 * var_f18;
-
-        arg0->pos.x = temp_f2_2 * sp50 + arg0->vel.z * sp58 + pinkRat->pos.x;
-        arg0->pos.y = -temp_f2_2 * sp5C * sp58 + nv * sp54 + arg0->vel.z * sp5C * sp50 + pinkRat->pos.y;
-        arg0->pos.z = -temp_f2_2 * sp54 * sp58 - nv * sp5C + arg0->vel.z * sp54 * sp50 + pinkRat->pos.z;
+        arg0->pos.x = sp44[0] * sp70[0] * sp50 + temp_f16_3 * sp58 + pinkRat->pos.x;
+        nv = sp70[0] * var_f18;
+        unused3 = -unused4;
+        unused4 = nv;
+        arg0->pos.y = unused3 * sp5C * sp58 + unused4 * sp54 + temp_f16_3 * sp5C * sp50 + pinkRat->pos.y;
+        arg0->pos.z = unused3 * sp54 * sp58 - unused4 * sp5C + temp_f16_3 * sp54 * sp50 + pinkRat->pos.z;
     } else {
         if (arg0->flags & 1) {
             arg0->vel.y -= arg0->gravity;
@@ -886,11 +917,6 @@ Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2) {
     }
     return arg0->next;
 }
-#else
-Particle* fx_updateStruct(Particle* arg0, Particle* arg1, s32 arg2);
-#pragma GLOBAL_ASM("asm/nonmatchings/app_render/effect/fx_updateStruct.s")
-#endif
-
 void fx_structFuncRun(GObj* obj) {
     u32 flags = obj->flags;
     s32 i;
