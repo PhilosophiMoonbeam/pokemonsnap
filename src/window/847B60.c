@@ -124,48 +124,82 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
      (((((p0) & 0x003E) + ((p1) & 0x003E) + ((p2) & 0x003E) + ((p3) & 0x003E)) / 4) & 0x003E) | 1
 
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
-    WindowPhotoBuffer* src;
-    Bitmap* bitmap;
-    s16* srcPixels;
-    u16* dst;
-    s32 texelCount;
     s32 width;
-    s32 height[2];
-    volatile s32 dstWidth;
+    u16* dst;
+    s32 height;
+    s32 initialHeight;
+    WindowPhotoBuffer* src;
+    union {
+        volatile s32 stored;
+        s32 value;
+    } dstWidth;
+    s16* srcPixels;
     volatile s32 tileHeight;
-    s32 bitmapRow;
+    volatile Bitmap* finalBitmap;
     s32 y;
+    s32 texelCount;
+    Bitmap* bitmap;
+    s32 bitmapIndex;
+    s32 bitmapRow;
     s32 x;
 
     if (photo == NULL || (src = func_80374608_847DB8(sprite->width * 2, sprite->height * 2, photo)) == NULL) {
-        Bitmap* clearBitmap;
-        s32 clearIndex;
+        u16* cacheBuf;
+        s32 cacheSize;
+        Bitmap* reloadBitmap;
 
-        clearBitmap = sprite->bitmap;
-        dst = clearBitmap->buf;
-        texelCount = clearBitmap->width_img * sprite->height;
-        for (clearIndex = 0; clearIndex < texelCount; clearIndex++) { *dst++ = 0;
+        bitmap = sprite->bitmap;
+        cacheBuf = bitmap->buf;
+        dst = cacheBuf;
+        texelCount = sprite->height;
+        cacheSize = bitmap->width_img * texelCount;
+        width = cacheSize;
+        (width && width);
+        y = 0;
+        if (cacheSize > 0) {
+            cacheSize = width;
+            do {
+                *dst++ = 0;
+                y++;
+            } while (y != width);
+            reloadBitmap = sprite->bitmap;
+            cacheBuf = reloadBitmap->buf;
+            texelCount = sprite->height;
+            cacheSize = reloadBitmap->width_img * (0, texelCount);
         }
-        osWritebackDCache(clearBitmap->buf, texelCount);
+        osWritebackDCache(cacheBuf, cacheSize);
         return 1;
     }
 
+    ;
     bitmapRow = sprite->width;
     width = bitmapRow;
+    (bitmapRow && bitmapRow);
     bitmapRow = 0;
-    height[1] = (height[0] = sprite->height);
+    ;
+    photo = (PhotoData*) (uintptr_t) sprite->height;
+    height = (initialHeight = (s32) (uintptr_t) photo);
+    ;
     bitmap = sprite->bitmap;
+    (bitmap && bitmap);
+    ;
     y = 0;
-    dstWidth = bitmap->width_img;
+    ;
+    dstWidth.stored = (s32) (uintptr_t) (finalBitmap = (volatile Bitmap*) (uintptr_t) bitmap->width_img);
+    ;
+    bitmapIndex = 0;
     tileHeight = bitmap->actualHeight;
+    ;
 
-    if (height[1] > 0) {
+    if (initialHeight > 0) {
         do {
             x = 0;
-            dst = (u16*) bitmap->buf + (bitmapRow * dstWidth);
+            dst = (u16*) bitmap[bitmapIndex].buf + (bitmapRow * dstWidth.stored);
             srcPixels = (s16*) src->buf + ((y * src->width) * 2);
 
             if (width > 0) {
+                if (!(dstWidth.stored)) {
+                }
                 if (width & 1) {
                     s16* srcRow1;
                     s16 pixel0;
@@ -181,12 +215,14 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
                     } else {
                         *dst = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                     }
-                    x = 1;
+                    x++;
                     srcPixels += 2;
-                    dst++;
+                    if (dst++, x == width) {
+                        goto pixel_row_done;
+                    }
                 }
 
-                if (x != width) {
+                {
                     s32 rowParity;
 
                     rowParity = bitmapRow & 1;
@@ -201,6 +237,8 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
                             srcRow1 = srcPixels;
                             srcRow1 += src->width;
                             pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
+                            if (bitmapRow) {
+                            }
                             if (rowParity) {
                                 *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                             } else {
@@ -232,18 +270,22 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
                         dst++;
                     } while (x != width);
                 }
+            pixel_row_done:;
             }
 
             bitmapRow++;
             if (bitmapRow >= tileHeight) {
                 bitmapRow = 0;
-                bitmap++;
+                bitmapIndex++;
             }
             y++;
-        } while (y != height[1]);
+        } while (y != height);
+        bitmap = sprite->bitmap;
+        photo = (PhotoData*) (uintptr_t) sprite->height;
+        finalBitmap = (volatile Bitmap*) (uintptr_t) bitmap->width_img;
     }
 
-    osWritebackDCache(sprite->bitmap->buf, sprite->bitmap->width_img * sprite->height);
+    osWritebackDCache(bitmap->buf, (0, (s32) (uintptr_t) photo) * (0, (s32) (uintptr_t) finalBitmap));
 #undef AVERAGE_PIXEL
     return 0;
 }

@@ -394,7 +394,7 @@ s32 func_8009BC00(void) {
 }
 
 s32 func_8009BC0C(s32 arg0) {
-    s32 i;
+    u16 i;
 
     for (i = 0; i < D_800AE280 && i < ARRAY_COUNT(D_800BDF20); i++) {
         if (arg0 == D_800BDF20[i]) {
@@ -1365,24 +1365,47 @@ void func_8009E1CC(PhotoData* photoData) {
 }
 
 #ifdef NON_MATCHING
-#define FUNC_8009E3D0_PICK_MASK(dim) \
-    (((dim) == 2)   ? 1 :            \
-     ((dim) == 4)   ? 2 :            \
-     ((dim) == 8)   ? 3 :            \
-     ((dim) == 16)  ? 4 :            \
-     ((dim) == 32)  ? 5 :            \
-     ((dim) == 64)  ? 6 :            \
-     ((dim) == 128) ? 7 :            \
-     ((dim) == 256) ? 8 : G_TX_NOMASK)
+#define FUNC_8009E3D0_PICK_MASK(dim, result) \
+    do {                                         \
+        switch (dim) {                          \
+            case 2:                             \
+                (result) = 1;                   \
+                break;                          \
+            case 4:                             \
+                (result) = 2;                   \
+                break;                          \
+            case 8:                             \
+                (result) = 3;                   \
+                break;                          \
+            case 16:                            \
+                (result) = 4;                   \
+                break;                          \
+            case 32:                            \
+                (result) = 5;                   \
+                break;                          \
+            case 64:                            \
+                (result) = 6;                   \
+                break;                          \
+            case 128:                           \
+                (result) = 7;                   \
+                break;                          \
+            case 256:                           \
+                (result) = 8;                   \
+                break;                          \
+            default:                            \
+                (result) = G_TX_NOMASK;         \
+                break;                          \
+        }                                       \
+    } while (0)
 
 #define FUNC_8009E3D0_APPLY_RENDER_STATE(effect, playbackFlags, alphaCompare, blendColorA) \
     do {                                                                                     \
+        s32 nextAlphaCompare;                                                                 \
         s32 nextBlendColorA;                                                                  \
                                                                                               \
-        gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, (effect)->primColor.r, (effect)->primColor.g, (effect)->primColor.b, (effect)->primColor.a); \
+        gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, (effect)->primColor.r, (effect)->primColor.g, (effect)->primColor.b, (*(effect)).primColor.a); \
                                                                                               \
         if ((playbackFlags) & PARTICLE_FLAG_ENV_COMBINE) {                                    \
-            gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a); \
             gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, \
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,                    \
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,                    \
@@ -1397,46 +1420,82 @@ void func_8009E1CC(PhotoData* photoData) {
         }                                                                                     \
                                                                                               \
         if ((playbackFlags) & PARTICLE_FLAG_ALPHA_DITHER) {                                   \
-            if (*(alphaCompare) != G_AC_DITHER) {                                             \
-                gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_DITHER);                            \
-                *(alphaCompare) = G_AC_DITHER;                                                 \
-            }                                                                                 \
+            nextAlphaCompare = G_AC_DITHER;                                                    \
         } else {                                                                              \
+            nextAlphaCompare = G_AC_THRESHOLD;                                                 \
             nextBlendColorA = 8;                                                              \
             if (*(blendColorA) != nextBlendColorA) {                                          \
                 gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, nextBlendColorA);                \
                 *(blendColorA) = nextBlendColorA;                                             \
             }                                                                                 \
-            if (*(alphaCompare) != G_AC_THRESHOLD) {                                          \
-                gDPSetAlphaCompare(gMainGfxPos[0]++, G_AC_THRESHOLD);                         \
-                *(alphaCompare) = G_AC_THRESHOLD;                                              \
-            }                                                                                 \
+        }                                                                                     \
+        if (*(alphaCompare) != nextAlphaCompare) {                                            \
+            gDPSetAlphaCompare(gMainGfxPos[0]++, nextAlphaCompare);                           \
+            *(alphaCompare) = nextAlphaCompare;                                                \
         }                                                                                     \
     } while (0)
 
 void func_8009E3D0(GObj* gobj) {
-    EffectPhotoData* effect;
-    EffectSprites* sprites;
     OMCamera* cam;
-    Mtx4f view;
-    Mtx4f proj;
-    f32 vpScaleX;
-    f32 vpScaleY;
-    f32 vpScaleZ;
-    f32 vpTransX;
-    f32 vpTransY;
-    f32 vpTransZ;
-    f32 projScaleX;
-    f32 projScaleY;
-    s32 textureLUTState;
+    EffectPhotoData* effects;
+    u8* loadedTexture;
+    f32* new_var2;
+    EffectPhotoData* effect;
+    u8* loadedTLUT;
     s32 alphaCompare;
     s32 blendColorA;
-    u8* loadedTexture;
-    u8* loadedTLUT;
-    s32 i;
+    s32 textureLUTState;
+    Mtx4f view;
+    Mtx4f proj;
+    EffectSprites* sprites;
+    f32 posX;
+    f32 posY;
+    f32 posZ;
+    u8* new_var;
+    f32 size;
+    u16 i;
+    u16 playbackFlags;
+    f32 clipX;
+    f32 clipW;
+    f32 projScaleX;
+    f32 projScaleY;
+    f32 vpScaleX;
+    f32 vpTransX;
+    f32 vpScaleY;
+    f32 vpTransY;
+    f32 vpScaleZ;
+    volatile f32 vpTransZ;
+    s32 sStep;
+    s32 tStep;
+    s32 sFlags;
+    s32 tFlags;
+    s32 sMask;
+    s32 tMask;
+    s32 siz;
+    u8* textureData;
+    f32 invW;
+    f32 clipY;
+    f32 clipZ;
+    f32 right;
+    f32 bottom;
+    f32 left;
+    f32 top;
+    u8* tlutData;
 
+    effects = gobj->userData;
     cam = omCurrentCamera->data.cam;
-    effect = gobj->userData;
+
+    gDPPipeSync(gMainGfxPos[0]++);
+    (cam && cam);
+    gDPSetCycleType(gMainGfxPos[0]++, G_CYC_1CYCLE);
+    gDPSetRenderMode(gMainGfxPos[0]++, G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2);
+    gDPSetColorDither(gMainGfxPos[0]++, G_CD_MAGICSQ);
+    gDPSetAlphaDither(gMainGfxPos[0]++, G_AD_PATTERN);
+    gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a);
+    gDPSetTexturePersp(gMainGfxPos[0]++, G_TP_PERSP);
+    gDPSetDepthSource(gMainGfxPos[0]++, G_ZS_PIXEL);
+    gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_NONE);
+    gtlCombineAllDLists();
 
     hal_look_at_f(view,
                   cam->viewMtx.lookAt.eye.x,
@@ -1457,12 +1516,6 @@ void func_8009E3D0(GObj* gobj) {
                            cam->perspMtx.persp.scale);
     guMtxCatF(view, proj, proj);
 
-    textureLUTState = -1;
-    alphaCompare = -1;
-    blendColorA = -1;
-    loadedTexture = NULL;
-    loadedTLUT = NULL;
-
     vpScaleX = cam->vp.vp.vscale[0];
     vpScaleY = -cam->vp.vp.vscale[1];
     vpScaleZ = cam->vp.vp.vscale[2];
@@ -1477,90 +1530,102 @@ void func_8009E3D0(GObj* gobj) {
     gDPSetRenderMode(gMainGfxPos[0]++, G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2);
     gDPSetTexturePersp(gMainGfxPos[0]++, G_TP_NONE);
     gDPSetDepthSource(gMainGfxPos[0]++, G_ZS_PRIM);
-    gDPSetColorDither(gMainGfxPos[0]++, G_CD_DISABLE);
-    gDPSetAlphaDither(gMainGfxPos[0]++, G_AD_DISABLE);
-    gtlCombineAllDLists();
+    gDPSetColorDither(gMainGfxPos[0]++, G_CD_MAGICSQ);
+    gDPSetAlphaDither(gMainGfxPos[0]++, G_AD_PATTERN);
+    gDPSetEnvColor(gMainGfxPos[0]++, D_800BDF2C.r, D_800BDF2C.g, D_800BDF2C.b, D_800BDF2C.a);
 
-    for (i = 0; i < ARRAY_COUNT(((PhotoData*) NULL)->effects); i++, effect++) {
-        Vec3f pos;
-        f32 size;
-        u32 playbackFlags;
-        f32 clipX;
-        f32 clipY;
-        f32 clipZ;
-        f32 clipW;
-        f32 invW;
-        f32 left;
-        f32 right;
-        f32 top;
-        f32 bottom;
+    loadedTexture = NULL;
+    loadedTLUT = NULL;
+    alphaCompare = -1;
+    blendColorA = -1;
+    textureLUTState = -1;
+
+    {
+        s32 fmt;
         s32 width;
         s32 height;
-        s32 sStep;
-        s32 tStep;
-        s32 sFlags;
-        s32 tFlags;
-        s32 sMask;
-        s32 tMask;
-        s32 depth;
-        u8* textureData;
-        u8* tlutData;
+        u8** paletteData;
 
+        effect = effects;
+        for (i = 0; (i & 0xFFFF) != sizeof(((PhotoData*) NULL)->effects); i = (i & 0xFFFF) + sizeof(EffectPhotoData), effect++) {
         if (effect->textureID < 0) {
-            break;
+            continue;
         }
 
-        pos.x = effect->posX * 0.125f;
-        pos.y = effect->posY * 0.125f;
-        pos.z = effect->posZ * 0.125f;
-        size = effect->size * (1.0f / 128.0f);
+        posX = effect->posX * 0.125f;
+        posZ = effect->posZ * 0.125f;
+        posY = effect->posY * 0.125f;
 
-        clipX = proj[0][0] * pos.x + proj[1][0] * pos.y + proj[2][0] * pos.z + proj[3][0];
-        clipY = proj[0][1] * pos.x + proj[1][1] * pos.y + proj[2][1] * pos.z + proj[3][1];
-        clipZ = proj[0][2] * pos.x + proj[1][2] * pos.y + proj[2][2] * pos.z + proj[3][2];
-        clipW = proj[0][3] * pos.x + proj[1][3] * pos.y + proj[2][3] * pos.z + proj[3][3];
+        clipX = proj[0][0] * posX + proj[1][0] * posY + proj[2][0] * posZ + proj[3][0];
+        clipW = proj[3][3] + (proj[0][3] * posX + proj[1][3] * posY + proj[2][3] * posZ);
+        if (!proj) {
+        }
         if (clipW == 0.0f) {
             continue;
         }
 
         invW = 1.0f / clipW;
-        size *= invW;
         clipX *= invW;
+        new_var2 = proj[1];
+        clipY = proj[0][1] * posX + new_var2[1] * posY + proj[2][1] * posZ + proj[3][1];
         clipY *= invW;
-        clipZ *= invW;
+        clipZ = (proj[0][2] * posX + proj[1][2] * posY + proj[2][2] * posZ + proj[3][2]) * invW;
         if (clipX < -1.0f || clipX > 1.0f || clipY < -1.0f || clipY > 1.0f || clipZ < -1.0f || clipZ > 1.0f) {
             continue;
         }
 
-        left = (clipX - size * projScaleX) * vpScaleX + vpTransX;
-        right = (clipX + size * projScaleX) * vpScaleX + vpTransX;
-        top = (clipY - size * projScaleY) * vpScaleY + vpTransY;
-        bottom = (clipY + size * projScaleY) * vpScaleY + vpTransY;
-
-        if (left > right) {
-            f32 temp = left;
+        size = effect->size * (1.0f / 128.0f);
+        size *= invW;
+        right = size * projScaleX + clipX;
+        bottom = size * projScaleY + clipY;
+        clipX = clipX * vpScaleX + vpTransX;
+        right = right * vpScaleX;
+        right = right + vpTransX;
+        if (clipX < right) {
+            right = right;
+            left = clipX - (right - clipX);
+        } else {
             left = right;
-            right = temp;
+            right = clipX - (right - clipX);
         }
-        if (top > bottom) {
-            f32 temp = top;
+        clipY = clipY * vpScaleY + vpTransY;
+        bottom = bottom * vpScaleY + vpTransY;
+        (vpTransX && vpTransX);
+        if (projScaleX) {
+            ;
+        }
+        if (clipY < bottom) {
+            bottom = bottom;
+            top = clipY - (bottom - clipY);
+        } else {
             top = bottom;
-            bottom = temp;
-        }
-        if (left == right || top == bottom) {
-            continue;
+            bottom = clipY - (bottom - clipY);
         }
 
-        playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
+        clipZ *= vpScaleZ;
         sprites = fx_SpriteBanks[effect->bankID][effect->textureID];
+        fmt = sprites->fmt;
+        siz = sprites->siz;
         width = sprites->width;
         height = sprites->height;
+        clipZ += vpTransZ;
+        playbackFlags = FX_UNPACK_PHOTO_RENDER_FLAGS(effect->packedPlaybackFlags);
+        (playbackFlags && playbackFlags);
+        textureData = sprites->data[effect->dataID];
+        if (fmt == G_IM_FMT_CI) {
+            paletteData = &sprites->data[sprites->numFrames];
+            if (!(playbackFlags & PARTICLE_FLAG_CI_SHARED_PALETTE)) {
+                tlutData = paletteData[effect->dataID];
+            } else {
+                tlutData = paletteData[0];
+            }
+        }
         sStep = (width * 4096.0f) / (right - left);
         tStep = (height * 4096.0f) / (bottom - top);
         if (playbackFlags & PARTICLE_FLAG_MIRROR_S) {
             sStep *= 2;
             sFlags = G_TX_MIRROR;
-            sMask = FUNC_8009E3D0_PICK_MASK(width);
+            FUNC_8009E3D0_PICK_MASK(width, sMask);
         } else {
             sFlags = G_TX_CLAMP;
             sMask = G_TX_NOMASK;
@@ -1568,24 +1633,16 @@ void func_8009E3D0(GObj* gobj) {
         if (playbackFlags & PARTICLE_FLAG_MIRROR_T) {
             tStep *= 2;
             tFlags = G_TX_MIRROR;
-            tMask = FUNC_8009E3D0_PICK_MASK(height);
+            FUNC_8009E3D0_PICK_MASK(height, tMask);
         } else {
             tFlags = G_TX_CLAMP;
             tMask = G_TX_NOMASK;
         }
 
-        textureData = sprites->data[effect->dataID];
-        tlutData = NULL;
-        if (sprites->fmt == G_IM_FMT_CI) {
-            if (playbackFlags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
-                tlutData = sprites->data[sprites->numFrames];
-            } else {
-                tlutData = sprites->data[sprites->numFrames + effect->dataID];
-            }
-
-            if (loadedTLUT != tlutData) {
-                gDPLoadTLUT_pal256(gMainGfxPos[0]++, tlutData);
-                loadedTLUT = tlutData;
+        if (fmt == G_IM_FMT_CI) {
+            if (loadedTLUT != (new_var = tlutData)) {
+                gDPLoadTLUT_pal256(gMainGfxPos[0]++, new_var);
+                loadedTLUT = new_var;
             }
             if (textureLUTState != G_TT_RGBA16) {
                 gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_RGBA16);
@@ -1596,49 +1653,38 @@ void func_8009E3D0(GObj* gobj) {
             textureLUTState = G_TT_NONE;
         }
 
-        if (loadedTexture != textureData) {
-            switch (sprites->siz) {
+        if (textureData != loadedTexture) {
+            switch (siz) {
                 case G_IM_SIZ_4b:
-                    gDPLoadTextureBlock_4b(gMainGfxPos[0]++, textureData, sprites->fmt, width, height, 0, sFlags, tFlags, sMask, tMask,
+                    gDPLoadTextureBlock_4b(gMainGfxPos[0]++, textureData, fmt, width, height, 0, sFlags, tFlags, sMask, tMask,
                                            G_TX_NOLOD, G_TX_NOLOD);
-                    if (width * height >= 0x1000) {
-                        loadedTLUT = NULL;
-                    }
                     break;
                 case G_IM_SIZ_8b:
-                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, sprites->fmt, G_IM_SIZ_8b, width, height, 0, sFlags, tFlags, sMask, tMask,
+                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, fmt, G_IM_SIZ_8b, width, height, 0, sFlags, tFlags, sMask, tMask,
                                         G_TX_NOLOD, G_TX_NOLOD);
-                    if (width * height >= 0x800) {
-                        loadedTLUT = NULL;
-                    }
                     break;
                 case G_IM_SIZ_16b:
-                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, sprites->fmt, G_IM_SIZ_16b, width, height, 0, sFlags, tFlags, sMask, tMask,
+                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, fmt, G_IM_SIZ_16b, width, height, 0, sFlags, tFlags, sMask, tMask,
                                         G_TX_NOLOD, G_TX_NOLOD);
-                    if (width * height >= 0x400) {
-                        loadedTLUT = NULL;
-                    }
                     break;
                 case G_IM_SIZ_32b:
-                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, sprites->fmt, G_IM_SIZ_32b, width, height, 0, sFlags, tFlags, sMask, tMask,
+                    gDPLoadTextureBlock(gMainGfxPos[0]++, textureData, fmt, G_IM_SIZ_32b, width, height, 0, sFlags, tFlags, sMask, tMask,
                                         G_TX_NOLOD, G_TX_NOLOD);
-                    if (width * height >= 0x200) {
-                        loadedTLUT = NULL;
-                    }
                     break;
-                default:
-                    continue;
             }
             loadedTexture = textureData;
         }
 
         FUNC_8009E3D0_APPLY_RENDER_STATE(effect, playbackFlags, &alphaCompare, &blendColorA);
 
-        depth = (s32) ((vpTransZ + clipZ * vpScaleZ) * 32.0f);
-        gDPSetPrimDepth(gMainGfxPos[0]++, depth, 0);
-        gSPScisTextureRectangle(gMainGfxPos[0]++, (s32) left, (s32) top, (s32) right, (s32) bottom, G_TX_RENDERTILE, 0, 0, sStep, tStep);
+            gDPSetPrimDepth(gMainGfxPos[0]++, (s32) (clipZ * 32.0f), 0);
+            gSPScisTextureRectangle(gMainGfxPos[0]++, (s32) left, (s32) top, (s32) right, (s32) bottom, G_TX_RENDERTILE, 0, 0, sStep, tStep);
+        }
     }
 
+    gDPPipeSync(gMainGfxPos[0]++);
+    gDPSetTexturePersp(gMainGfxPos[0]++, G_TP_PERSP);
+    gDPSetDepthSource(gMainGfxPos[0]++, G_ZS_PIXEL);
     if (textureLUTState != G_TT_NONE) {
         gDPSetTextureLUT(gMainGfxPos[0]++, G_TT_NONE);
     }

@@ -1014,27 +1014,30 @@ static void fx_draw_applyRenderState(Particle* particle, s32* alphaCompare, s32*
 
 void fx_draw(GObj* camObj) {
     Particle* var_s7;
-    EffectSprites* v0;
+    u8* var_s2;
     OMCamera* cam;
+    u8* cameraFlags;
     u8* sp2D4;
-    s32 sp2D0;
+    u32 sp2D0;
     s32 sp2CC;
-    s32 sp2C8 = 0;
+    s32 sp2C8;
     Mtx4f sp288;
     Mtx4f sp248;
-    f32 var_f24;
-    f32 var_f16;
-    f32 var_f26;
-    f32 var_f18;
+    Particle** particleLists;
+    u8 var_a1_2;
+    u8 dataID;
+    u8** paletteData;
+    u8 var_a0;
+    s32 j;
     f32 temp_f12;
     f32 temp_f14;
     f32 temp_f28;
-
     f32 temp_f0;
     f32 sp220;
+    f32 temp_f20;
     f32 sp218;
     f32 sp214;
-    f32 sp210;
+    volatile f32 sp210;
     f32 sp20C;
     f32 sp208;
     f32 sp204;
@@ -1042,28 +1045,28 @@ void fx_draw(GObj* camObj) {
     s32 sp1FC;
     s32 sp1F8;
     s32 sp1F4;
-    u8* sp1C8;
-    u8* sp1C4;
-
-    s32 j;
-    u8* var_s2;
-
+    s32 var_s6;
     s32 temp_fp;
     s32 temp_t4;
     s32 temp_s3;
     s32 temp_s5;
-    s32 var_s6;
-    s32 var_s1;
-    s32 var_t2;
-    s32 var_a1_2;
-    s32 var_a0;
-
-    f32 temp_f20;
+    f32 var_f16;
+    f32 var_f18;
+    f32 var_f24;
+    f32 var_f26;
+    EffectSprites* v0;
+    u8* sp1C8;
+    u8* sp1C4;
+    u8 var_s1;
+    u8 var_t2;
     f32 temp_f2;
+
+    particleLists = D_800BE1A8;
 
     for (sp1F8 = 0; sp1F8 < ARRAY_COUNT(D_800BE1F0); sp1F8++) {
         var_s2 = NULL;
         cam = D_800BE1F0[sp1F8];
+        cameraFlags = &D_800BE200[sp1F8];
 
         if (cam == NULL) {
             continue;
@@ -1077,6 +1080,7 @@ void fx_draw(GObj* camObj) {
                            cam->viewMtx.lookAtRoll.zAt,
                            cam->viewMtx.lookAtRoll.roll,
                            0.0f, 1.0f, 0.0f);
+        cam = D_800BE1F0[sp1F8];
         hal_perspective_fast_f(sp248, NULL,
                                cam->perspMtx.persp.fovy,
                                cam->perspMtx.persp.aspect,
@@ -1084,11 +1088,12 @@ void fx_draw(GObj* camObj) {
                                cam->perspMtx.persp.far,
                                cam->perspMtx.persp.scale);
         guMtxCatF(sp288, sp248, sp248);
+        cam = D_800BE1F0[sp1F8];
 
-        sp2C8 = -1;
-        sp2CC = -1;
-        sp2D0 = -1;
         sp2D4 = NULL;
+        sp2D0 = -1;
+        sp2CC = -1;
+        sp2C8 = -1;
 
         sp218 = cam->vp.vp.vscale[0];
         sp210 = -cam->vp.vp.vscale[1];
@@ -1098,11 +1103,13 @@ void fx_draw(GObj* camObj) {
         sp204 = cam->vp.vp.vtrans[2];
 
         sp220 = sqrtf(SQ(sp248[0][0]) + SQ(sp248[1][0]) + SQ(sp248[2][0]));
-        temp_f0 = sqrtf(SQ(sp248[0][1]) + SQ(sp248[1][1]) + SQ(sp248[2][1]));
+        temp_f0 = SQ(sp248[0][1]) + SQ(sp248[1][1]);
+        temp_f0 += SQ(sp248[2][1]);
+        temp_f0 = sqrtf(temp_f0);
 
         gDPPipeSync(gMainGfxPos[0]++);
         gDPSetCycleType(gMainGfxPos[0]++, G_CYC_1CYCLE);
-        if (D_800BE200[sp1F8]) {
+        if (*cameraFlags) {
             gDPSetRenderMode(gMainGfxPos[0]++, G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2);
         } else {
             gDPSetRenderMode(gMainGfxPos[0]++, G_RM_XLU_SURF, G_RM_NOOP2);
@@ -1113,23 +1120,14 @@ void fx_draw(GObj* camObj) {
         gDPSetAlphaDither(gMainGfxPos[0]++, fx_alphaDitherMode);
 
         for (j = 0; j < ARRAY_COUNT(D_800BE1A8); j++) {
-            for (var_s7 = D_800BE1A8[j]; var_s7 != NULL; var_s7 = var_s7->next) {
+            for (var_s7 = particleLists[j]; var_s7 != NULL; var_s7 = var_s7->next) {
                 if (var_s7->size == 0.0f) {
                     continue;
                 }
-                if (var_s7->textureID < 0 || var_s7->textureID >= fx_SpriteBanksNum[FX_GET_BANK_INDEX(var_s7->bankID)]) {
-                    continue;
-                }
-                v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
-                if (v0 == NULL || var_s7->dataID >= v0->numFrames) {
-                    continue;
-                }
-                temp_fp = v0->fmt;
-                temp_t4 = v0->siz;
-                temp_s3 = v0->width;
-                temp_s5 = v0->height;
-                temp_f12 = (sp248[0][0] * var_s7->pos.x + sp248[1][0] * var_s7->pos.y + sp248[2][0] * var_s7->pos.z + sp248[3][0]);
-                temp_f20 = sp248[0][3] * var_s7->pos.x + sp248[1][3] * var_s7->pos.y + sp248[2][3] * var_s7->pos.z + sp248[3][3];
+                var_f24 = var_s7->pos.x;
+                var_f26 = var_s7->pos.y;
+                temp_f12 = (sp248[0][0] * var_f24 + sp248[1][0] * var_f26 + sp248[2][0] * var_s7->pos.z + sp248[3][0]);
+                temp_f20 = sp248[0][3] * var_f24 + sp248[1][3] * var_f26 + sp248[2][3] * var_s7->pos.z + sp248[3][3];
 
                 if (temp_f20 == 0.0f) {
                     continue;
@@ -1137,15 +1135,18 @@ void fx_draw(GObj* camObj) {
 
                 temp_f2 = 1.0f / temp_f20;
                 temp_f12 *= temp_f2;
-                temp_f14 = (sp248[0][1] * var_s7->pos.x + sp248[1][1] * var_s7->pos.y + sp248[2][1] * var_s7->pos.z + sp248[3][1]) * temp_f2;
-                temp_f28 = (sp248[0][2] * var_s7->pos.x + sp248[1][2] * var_s7->pos.y + sp248[2][2] * var_s7->pos.z + sp248[3][2]) * temp_f2;
+                temp_f14 = (sp248[0][1] * var_f24 + sp248[1][1] * var_f26 + sp248[2][1] * var_s7->pos.z + sp248[3][1]) * temp_f2;
+                temp_f28 = (sp248[0][2] * var_f24 + sp248[1][2] * var_f26 + sp248[2][2] * var_s7->pos.z + sp248[3][2]) * temp_f2;
 
                 if (temp_f12 < -1.0f || temp_f12 > 1.0f || temp_f14 < -1.0f || temp_f14 > 1.0f || temp_f28 < -1.0f || temp_f28 > 1.0f) {
                     continue;
                 }
 
-                var_f16 = (temp_f2 * var_s7->size * sp220 + temp_f12) * sp218 + sp214;
+                temp_f2 *= var_s7->size;
+                var_f16 = temp_f2 * sp220 + temp_f12;
+                var_f18 = temp_f2 * temp_f0 + temp_f14;
                 temp_f12 = temp_f12 * sp218 + sp214;
+                var_f16 = var_f16 * sp218 + sp214;
                 if (var_f16 > temp_f12) {
                     var_f24 = temp_f12 - (var_f16 - temp_f12);
                 } else {
@@ -1153,16 +1154,29 @@ void fx_draw(GObj* camObj) {
                     var_f16 = temp_f12 - (var_f16 - temp_f12);
                 }
 
-                var_f18 = (temp_f2 * var_s7->size * temp_f0 + temp_f14) * sp210 + sp20C;
                 temp_f14 = temp_f14 * sp210 + sp20C;
+                var_f18 = var_f18 * sp210 + sp20C;
                 if (var_f18 > temp_f14) {
                     var_f26 = temp_f14 - (var_f18 - temp_f14);
                 } else {
                     var_f26 = var_f18;
                     var_f18 = temp_f14 - (var_f18 - temp_f14);
                 }
-                if (var_f24 == var_f16 || var_f26 == var_f18) {
-                    continue;
+                temp_f28 = temp_f28 * sp208 + sp204;
+                dataID = var_s7->dataID;
+                v0 = fx_SpriteBanks[FX_GET_BANK_INDEX(var_s7->bankID)][var_s7->textureID];
+                temp_fp = v0->fmt;
+                temp_t4 = v0->siz;
+                temp_s3 = v0->width;
+                temp_s5 = v0->height;
+                sp1C8 = v0->data[dataID];
+                if (temp_fp == G_IM_FMT_CI) {
+                    paletteData = &v0->data[v0->numFrames];
+                    if (!(var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE)) {
+                        sp1C4 = paletteData[dataID];
+                    } else {
+                        sp1C4 = *paletteData;
+                    }
                 }
 
                 sp200 = (temp_s3 * 4096.0f) / (var_f16 - var_f24);
@@ -1171,29 +1185,74 @@ void fx_draw(GObj* camObj) {
                 if (var_s7->flags & PARTICLE_FLAG_MIRROR_S) {
                     sp200 *= 2;
                     sp1F4 = G_TX_MIRROR;
-                    var_s1 = fx_draw_pickMask(temp_s3);
+                    switch (temp_s3) {
+                        case 2:
+                            var_s1 = 1;
+                            break;
+                        case 4:
+                            var_s1 = 2;
+                            break;
+                        case 8:
+                            var_s1 = 3;
+                            break;
+                        case 16:
+                            var_s1 = 4;
+                            break;
+                        case 32:
+                            var_s1 = 5;
+                            break;
+                        case 64:
+                            var_s1 = 6;
+                            break;
+                        case 128:
+                            var_s1 = 7;
+                            break;
+                        case 256:
+                            var_s1 = 8;
+                            break;
+                        default:
+                            var_s1 = G_TX_NOMASK;
+                            break;
+                    }
                 } else {
                     sp1F4 = G_TX_CLAMP;
                     var_s1 = G_TX_NOMASK;
                 }
-
                 if (var_s7->flags & PARTICLE_FLAG_MIRROR_T) {
                     sp1FC *= 2;
                     var_s6 = G_TX_MIRROR;
-                    var_t2 = fx_draw_pickMask(temp_s5);
+                    switch (temp_s5) {
+                        case 2:
+                            var_t2 = 1;
+                            break;
+                        case 4:
+                            var_t2 = 2;
+                            break;
+                        case 8:
+                            var_t2 = 3;
+                            break;
+                        case 16:
+                            var_t2 = 4;
+                            break;
+                        case 32:
+                            var_t2 = 5;
+                            break;
+                        case 64:
+                            var_t2 = 6;
+                            break;
+                        case 128:
+                            var_t2 = 7;
+                            break;
+                        case 256:
+                            var_t2 = 8;
+                            break;
+                        default:
+                            var_t2 = G_TX_NOMASK;
+                            break;
+                    }
                 } else {
                     var_s6 = G_TX_CLAMP;
                     var_t2 = G_TX_NOMASK;
-                }
-
-                sp1C8 = v0->data[var_s7->dataID];
-                sp1C4 = NULL;
-                if (temp_fp == G_IM_FMT_CI) {
-                    if (var_s7->flags & PARTICLE_FLAG_CI_SHARED_PALETTE) {
-                        sp1C4 = v0->data[v0->numFrames];
-                    } else {
-                        sp1C4 = v0->data[v0->numFrames + var_s7->dataID];
-                    }
                 }
 
                 if (temp_fp == G_IM_FMT_CI) {
@@ -1236,15 +1295,47 @@ void fx_draw(GObj* camObj) {
                                 sp2D4 = NULL;
                             }
                             break;
-                        default:
-                            continue;
                     }
                     var_s2 = sp1C8;
                 }
 
-                fx_draw_applyRenderState(var_s7, &sp2D0, &sp2CC);
+                gDPSetPrimColor(gMainGfxPos[0]++, 0, 0, var_s7->primColor.r, var_s7->primColor.g, var_s7->primColor.b, var_s7->primColor.a);
+                if (var_s7->flags & PARTICLE_FLAG_ENV_COMBINE) {
+                    gDPSetEnvColor(gMainGfxPos[0]++, var_s7->envColor.r, var_s7->envColor.g, var_s7->envColor.b, var_s7->envColor.a);
+                    gDPSetCombineLERP(gMainGfxPos[0]++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT,
+                                      PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT);
+                } else if (var_s7->flags & PARTICLE_FLAG_NOISE_COMBINE) {
+                    gDPSetCombineLERP(gMainGfxPos[0]++, NOISE, 0, TEXEL0, 0,
+                                      TEXEL0, 0, PRIMITIVE, 0,
+                                      NOISE, 0, TEXEL0, 0,
+                                      TEXEL0, 0, PRIMITIVE, 0);
+                } else {
+                    gDPSetCombineMode(gMainGfxPos[0]++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+                }
 
-                gDPSetPrimDepth(gMainGfxPos[0]++, (s32) ((sp204 + temp_f28 * sp208) * 32.0f), 0);
+                if (var_s7->flags & PARTICLE_FLAG_ALPHA_DITHER) {
+                    var_a1_2 = G_AC_DITHER;
+                } else {
+                    var_a1_2 = G_AC_THRESHOLD;
+                    if (var_s7->flags & PARTICLE_FLAG_ENV_ALPHA_THRESHOLD) {
+                        var_a0 = var_s7->envColor.a;
+                    } else {
+                        var_a0 = 8;
+                    }
+                    if (sp2CC != var_a0) {
+                        gDPSetBlendColor(gMainGfxPos[0]++, 0, 0, 0, var_a0);
+                        sp2CC = var_a0;
+                    }
+                }
+
+                if (sp2D0 != var_a1_2) {
+                    gDPSetAlphaCompare(gMainGfxPos[0]++, var_a1_2);
+                    sp2D0 = var_a1_2;
+                }
+
+                gDPSetPrimDepth(gMainGfxPos[0]++, (s32) (temp_f28 * 32.0f), 0);
                 gSPScisTextureRectangle(gMainGfxPos[0]++, (s32) var_f24, (s32) var_f26, (s32) var_f16, (s32) var_f18, G_TX_RENDERTILE, 0, 0, sp200, sp1FC);
             }
         }
