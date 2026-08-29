@@ -324,10 +324,19 @@ declarations and no-op control-flow artifacts may be part of the match.
 ## Final three-function checkpoint
 
 As of the final-stretch pause, exactly three `GLOBAL_ASM` fallbacks remain:
-`fx_draw`, `func_8009E3D0`, and `func_80374714_847EC4`. All scores below use
-the configured IDO 7.1 compiler, the expected translation-unit object, stack
-differences, `difflib`, ignored branch targets, and the function-specific
-objdump filter in `nonmatchings/`.
+`fx_draw`, `func_8009E3D0`, and `func_80374714_847EC4`. The tracked scorer uses
+the configured IDO 7.1 compiler and repository `diff.py` with the expected
+translation-unit object and `difflib`. Some exploratory scripts use additional
+function-specific objdump filters, so their nonzero scores can differ slightly;
+zero remains zero under either comparison.
+
+Run `python3 tools/score_remaining_asm.py` from the Pokémon Snap repository
+root to compile all three guarded C candidates and reproduce their current
+scores without relying on temporary permuter environments. The full local
+SSB64 decompilation is `/home/bbferko/repos/ssb-decomp-re`; its matched
+`lbParticleDrawTextures` implementation is the primary source-shape donor for
+the two rendering functions. Donor code is evidence, not acceptance: always
+score the Pokémon Snap object independently.
 
 - `func_80374714_847EC4` scores **50**. Its frame, branches, stack slots, and
   instruction schedule match; only ten register operands remain different.
@@ -347,11 +356,14 @@ objdump filter in `nonmatchings/`.
   target slot. The raw permuter score 1636 is invalid because it removes
   `size *= invW`; never adopt it. The interrupted 5,040 late-float declaration
   sweep should be restarted from the committed 1707 source.
-- `fx_draw` scores **4576**. The closest public donor remains SSB64's matched
-  `lbParticleDrawTextures`, but the already-tested donor oddities and all 48
-  `particleLists` declaration placements did not improve the score. Its target
-  frame is `0x2E0` and the current frame is `0x2E8`; the remaining work is
-  predominantly register allocation rather than missing behavior.
+- `fx_draw` scores **4586** with the tracked scorer. The older custom scorer,
+  which normalizes one additional relocation alias through
+  `nonmatchings/fx_draw_objdump_filter.sh`, reports 4576 for the same object.
+  The closest donor remains SSB64's matched `lbParticleDrawTextures`, but the
+  already-tested donor oddities and all 48 `particleLists` declaration
+  placements did not improve it. Its target frame is `0x2E0` and the current
+  frame is `0x2E8`; the remaining work is predominantly register allocation
+  rather than missing behavior.
 
 The research scripts and generated candidates under `nonmatchings/` are local
 scratch artifacts and are intentionally excluded from contribution commits.
