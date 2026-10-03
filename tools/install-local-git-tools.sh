@@ -94,7 +94,7 @@ git config --local alias.pr-preflight '!f() { "$(git rev-parse --path-format=abs
 git config --local remote.pushDefault origin
 exclude_file=$(git rev-parse --path-format=absolute --git-common-dir)/info/exclude
 mkdir -p -- "$(dirname -- "$exclude_file")"
-for pattern in '/AGENTS.md' '/.omp/'; do
+for pattern in '/AGENTS.md' '/.omp/' '/.cpp-linter_cache/' '/tools/cross/' '/tools/local-debs/'; do
     if [[ ! -f $exclude_file ]] || ! grep -Fqx -- "$pattern" "$exclude_file" 2>/dev/null; then
         printf '%s\n' "$pattern" >> "$exclude_file"
     fi
