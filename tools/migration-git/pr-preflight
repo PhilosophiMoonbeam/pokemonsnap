@@ -122,4 +122,3 @@ ninja
 sha1sum -c checksum.sha1
 uv run mapfile_parser objdiff_report report.json --version us >/dev/null
 echo "build preflight: ROM checksum and objdiff report clean"
-

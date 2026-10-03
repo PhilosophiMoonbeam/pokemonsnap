@@ -15,4 +15,3 @@ if [[ $local_oid != $remote_oid ]]; then
 fi
 
 printf 'upstream-main: %s\n' "$local_oid"
-
