@@ -19,3 +19,5 @@ For Python dependencies:
 2. (one-time) Set up tools: `uv run configure.py --setup`
 3. Run extraction and disassembly: `uv run configure.py`
 4. Rebuild the rom: `ninja`
+
+For a fresh server setup, see the [server migration runbook](docs/server-migration.md).

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    echo "usage: $0 <topic> [worktree-path]" >&2
+    echo "example: $0 match-audio-helper /tmp/pokemonsnap-pr-match-audio-helper" >&2
+}
+
+if (( $# == 1 )) && [[ $1 == -h || $1 == --help ]]; then
+    usage
+    exit 0
+fi
+
+if (( $# < 1 || $# > 2 )); then
+    usage
+    exit 2
+fi
+
+topic=$1
+if [[ ! $topic =~ ^[a-z0-9][a-z0-9._-]*$ ]]; then
+    echo "error: topic must match [a-z0-9][a-z0-9._-]*" >&2
+    exit 2
+fi
+
+branch="pr/$topic"
+worktree_path=${2:-"/tmp/pokemonsnap-pr-$topic"}
+
+git rev-parse --git-dir >/dev/null
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+
+if git show-ref --verify --quiet "refs/heads/$branch"; then
+    echo "error: local branch $branch already exists" >&2
+    exit 1
+fi
+if git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+    echo "error: origin/$branch already exists; choose a new topic or resume it explicitly" >&2
+    exit 1
+fi
+if [[ -e $worktree_path ]]; then
+    echo "error: worktree path already exists: $worktree_path" >&2
+    exit 1
+fi
+
+"$common_dir/local-tools/sync-upstream-main"
+
+git worktree add -b "$branch" "$worktree_path" upstream-main
+
+guidance_root=$(git worktree list --porcelain | awk '
+    /^worktree / { path = substr($0, 10) }
+    $0 == "branch refs/heads/hermes/final-stretch" { print path; exit }
+')
+
+if [[ -n $guidance_root && -f $guidance_root/AGENTS.md ]]; then
+    cp -- "$guidance_root/AGENTS.md" "$worktree_path/AGENTS.md"
+fi
+if [[ -n $guidance_root && -f $guidance_root/pokemonsnap.z64 && ! -e $worktree_path/pokemonsnap.z64 ]]; then
+    ln -s -- "$guidance_root/pokemonsnap.z64" "$worktree_path/pokemonsnap.z64"
+fi
+
+printf 'branch:   %s\n' "$branch"
+printf 'base:     %s\n' "$(git rev-parse upstream-main)"
+printf 'worktree: %s\n' "$worktree_path"
+printf 'next:     cd %q\n' "$worktree_path"
+printf 'verify:   git pr-preflight --build\n'

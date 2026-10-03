@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+remote_name=${1:-}
+remote_url=${2:-}
+
+if [[ $remote_name == upstream || $remote_url == *ethteck/pokemonsnap* ]]; then
+    echo "error: direct pushes to upstream are disabled; push PR branches to origin" >&2
+    exit 1
+fi
+
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+head_oid=$(git rev-parse HEAD)
+zero_oid=0000000000000000000000000000000000000000
+
+while read -r local_ref local_oid remote_ref remote_oid; do
+    if [[ $local_oid == $zero_oid ]]; then
+        continue
+    fi
+
+    if git ls-tree -r --name-only "$local_oid" -- AGENTS.md | grep -Fqx 'AGENTS.md'; then
+        echo "error: $local_ref contains local-only AGENTS.md" >&2
+        exit 1
+    fi
+
+    if [[ $local_ref == refs/heads/upstream-main ]]; then
+        echo "error: upstream-main is a read-only local anchor" >&2
+        exit 1
+    fi
+
+    if [[ $local_ref == refs/heads/pr/* ]]; then
+        if [[ $local_oid != $head_oid ]]; then
+            echo "error: check out $local_ref before pushing it" >&2
+            exit 1
+        fi
+        "$common_dir/local-tools/pr-preflight"
+    fi
+done

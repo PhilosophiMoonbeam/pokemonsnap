@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+build=false
+base=upstream/main
+
+usage() {
+    echo "usage: $0 [--build] [--base <revision>]" >&2
+}
+
+while (( $# )); do
+    case $1 in
+        --build)
+            build=true
+            shift
+            ;;
+        --base)
+            if (( $# < 2 )); then
+                usage
+                exit 2
+            fi
+            base=$2
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage
+            exit 2
+            ;;
+    esac
+done
+
+root=$(git rev-parse --show-toplevel)
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+cd "$root"
+
+git rev-parse --verify "$base^{commit}" >/dev/null
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "error: preflight requires a clean tracked worktree" >&2
+    exit 1
+fi
+
+workflow_major=$(awk '$1 == "version:" { print $2; exit }' .github/workflows/format.yml)
+clang_format_version=21.1.8
+cpp_linter_version=1.13.0
+if [[ $workflow_major != ${clang_format_version%%.*} ]]; then
+    echo "error: workflow requests clang-format $workflow_major; update the local pin ($clang_format_version)" >&2
+    exit 1
+fi
+
+set +e
+linter_output=$(uvx \
+    --from "cpp-linter==$cpp_linter_version" \
+    --with "clang-format==$clang_format_version" \
+    cpp-linter \
+    --style=file \
+    --extensions=c,h \
+    --tidy-checks=-\* \
+    --repo-root=. \
+    --version="$workflow_major" \
+    --verbosity=info \
+    --lines-changed-only=false \
+    --files-changed-only=true \
+    --diff-base="$base" \
+    --ignore-index \
+    --thread-comments=false \
+    --no-lgtm=true \
+    --step-summary=false \
+    --ignore=ultralib \
+    --ignore-tidy=.github \
+    --ignore-format=.github \
+    --file-annotations=false \
+    --tidy-review=false \
+    --format-review=false \
+    --passive-reviews=false \
+    --jobs=0 2>&1)
+linter_status=$?
+set -e
+
+printf '%s\n' "$linter_output"
+if (( linter_status != 0 )); then
+    echo "error: cpp-linter invocation failed with status $linter_status" >&2
+    exit "$linter_status"
+fi
+if ! grep -Fqx 'INFO:CPP Linter:0 checks-failed' <<<"$linter_output"; then
+    echo "error: cpp-linter reported failures" >&2
+    exit 1
+fi
+
+git diff --check "$base"...HEAD
+echo "format preflight: clean"
+
+if [[ $build == false ]]; then
+    exit 0
+fi
+
+if [[ ! -f pokemonsnap.z64 ]]; then
+    echo "error: pokemonsnap.z64 is required for the build preflight" >&2
+    exit 1
+fi
+
+binutils_root=$common_dir/local-tools/binutils
+if [[ ! -x $binutils_root/usr/bin/mips-linux-gnu-as ]]; then
+    echo "error: local MIPS binutils are missing under $binutils_root" >&2
+    exit 1
+fi
+
+export PATH="$binutils_root/usr/bin:$PATH"
+export LD_LIBRARY_PATH="$binutils_root/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+printf 'edc7c49cc568c045fe48be0d18011c30f393cbaf  pokemonsnap.z64\n' | sha1sum -c -
+uv sync
+if [[ ! -d tools/ido5.3 || ! -d tools/ido7.1 || ! -d tools/asm_proc ]]; then
+    uv run ./configure.py --setup
+fi
+uv run ./configure.py
+ninja
+sha1sum -c checksum.sha1
+uv run mapfile_parser objdiff_report report.json --version us >/dev/null
+echo "build preflight: ROM checksum and objdiff report clean"
+

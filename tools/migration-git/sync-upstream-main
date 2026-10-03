@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+git rev-parse --git-dir >/dev/null
+git fetch --prune upstream main
+git branch --force upstream-main upstream/main
+git config branch.upstream-main.remote upstream
+git config branch.upstream-main.merge refs/heads/main
+
+local_oid=$(git rev-parse upstream-main)
+remote_oid=$(git rev-parse upstream/main)
+if [[ $local_oid != $remote_oid ]]; then
+    echo "error: upstream-main did not synchronize to upstream/main" >&2
+    exit 1
+fi
+
+printf 'upstream-main: %s\n' "$local_oid"
+
