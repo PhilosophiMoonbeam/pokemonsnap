@@ -30,3 +30,21 @@ venv/
 
 /report.json
 /*_report.zip
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Preserved by the migration bundles; keep raw searches out of source commits.
+/nonmatchings/
+/src/app_render/.search-*/
+/*.B
+/*.G
+/*.O
+/*.T
+/847B60.s
+/847ec4-isolated.s
+/preprocessed_*.s
+/inline_asm_test.s
+/debug_source.c
+/uoptlist
+/[ ]

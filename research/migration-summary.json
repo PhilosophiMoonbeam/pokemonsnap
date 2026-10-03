@@ -1,0 +1,91 @@
+{
+  "schema": "pokemonsnap-migration-20261003",
+  "branch": "hermes/final-stretch",
+  "matching": "paused; exact window C, two renderer ASM fallbacks retained",
+  "initial_inventory": {
+    "modified": 11,
+    "untracked": 14973,
+    "ignored": 22262,
+    "total": 37246
+  },
+  "classification": {
+    "units": 31991,
+    "buckets": {
+      "source": 1985,
+      "research": 6773,
+      "migration": 1569,
+      "generated": 13990,
+      "restricted": 7318,
+      "mixed": 0,
+      "other": 356
+    },
+    "prefilter_counts": {
+      "dependency-cache": 2706,
+      "local-guidance": 1,
+      "build-output": 2546,
+      "rom": 2
+    },
+    "truncations": {
+      "content_cap": 7214,
+      "transport": 18598
+    },
+    "failed_units": 0,
+    "escalated_full_reads": 24376,
+    "confirmed_credential_pattern_hits": 0
+  },
+  "preservation": {
+    "portable_research_files": 5997,
+    "portable_research_uncompressed_bytes": 488675238,
+    "private_members": 23358,
+    "initial_coverage": {
+      "private-state": 16957,
+      "git": 13,
+      "reproducible": 14278,
+      "git-research-bundle": 5997,
+      "private-state-container": 1
+    }
+  },
+  "portable_archive": {
+    "path": "research/portable-research.tar.gz",
+    "sha256": "dbc27fafef63f448344144d740536d59aedaf68cde5f798ac3e84611937e473c",
+    "bytes": 55535843
+  },
+  "private_transfer_files": [
+    "private-state.tar.gz",
+    "local-refs.bundle",
+    "production-checkpoint.tar.gz",
+    "classification.json",
+    "inventory.json",
+    "SHA256SUMS"
+  ],
+  "production_hashes": {
+    "src/app_render/47380.c": "ae96d0d3554c1723d0d85d778dd3f4dc04880e9b17aaf2b1c14125a67cdee523",
+    "src/app_render/effect.c": "6ca0bacc23bdfee09bc1e2d9ddc18366d87373cd2583a78d0c382574fd441b3c",
+    "src/window/847B60.c": "b265de2f9c83569970bbef5c753a83f09f11b0906bbb4d20e3c1154ee9a6e9b0",
+    "tools/ido7.1/cc": "3864adf8b9f66dc5691bef3ed9083c5210217dc003f7460df5bd9386f78b4a5c",
+    "tools/ido7.1/uopt": "859a77fd1097ccb7437f6b41fc6158814671373a19214c1b3a1d312926c31e25",
+    "tools/ido7.1/ugen": "b6289daa79b9439e5d07823fe5ed4cdf947f7c8e7293b7a5a3ae9d38d588cf3e",
+    "configure.py": "3ad01b7a8e76937ec0c886729b1161603926fd746bb380796027d67e3b15f4a5",
+    "tools/score_remaining_asm.py": "8ead0211e52408247b1d207badee64aea6c7d33d795c5a7e5755002a4e9f3c25",
+    "diff.py": "e142f6468e66fe5d954bae34fd678be9d3317fb38647acc59c2886fc32a17fdc"
+  },
+  "verification": {
+    "window_full_function_score": 0,
+    "rom_sha1": "edc7c49cc568c045fe48be0d18011c30f393cbaf",
+    "archive_roundtrip": true,
+    "private_members_hashed": 23358,
+    "ubuntu_server_exercised": false
+  },
+  "overrides_confirmed": [
+    "tools/build/undefined_syms.py is a required build source, not optional research.",
+    "build.ninja, pokemonsnap.ld and automatic symbol files are configure output, not portable source.",
+    "Compiler/runtime licenses are retained alongside copied research code.",
+    "ROM, extracted assets, reference objects and root IDO binary intermediates are not public Git inputs."
+  ],
+  "notes": [
+    "All original files retained in place; ignore rules are not deletion.",
+    "Private archive contains duplicate portable sources to preserve exact original research state.",
+    "Old absolute research links require inventoried relocation before probe use.",
+    "Two guarded renderer sources were formatted; their pre-format checkpoint hashes remain reproducible from production-checkpoint.tar.gz."
+  ]
+}

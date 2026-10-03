@@ -57,11 +57,30 @@ use—an unused declaration can still affect historical stack-slot allocation.
 
 ## `func_80374714_847EC4`
 
-The current guarded candidate for the window photo downsampler is not yet a
-match, but its comparison score was reduced from roughly 28,000 to 1,470. The
-latest pass preserves the pixel result while reproducing the target frame and
-all three long-lived stack slots.
-Reusable findings from that work are:
+The window photo downsampler is now integrated as ordinary C in the production
+translation unit, with its `GLOBAL_ASM` fallback removed. The configured normal
+IDO compiler produces an exact 387-word object (`CURRENT (0)`); this is not a
+forced-register or forced-compiler result.
+
+The minimal change from the prior score-10 source removed the tail
+`texelCount = sprite->height` assignment and computed the reloaded cache size
+directly as:
+
+```c
+cacheSize = (s32) ((u64) reloadBitmap->width_img) *
+            (s32) ((u64) sprite->height);
+```
+
+`clang-format` 21.1.8 was run. Narrow `clang-format off/on` comments preserve
+the same-line four-pixel load statements required for IDO scheduling.
+
+The latest height-graph run evaluated 37 candidates. Its metrics identify
+`reload-width-cast` as the exact candidate; the baseline is the 387-word
+two-register-only near-match. The validated artifacts are
+`nonmatchings/orchestrated-202606/window/height-graph-results/metrics.json`,
+`nonmatchings/orchestrated-202606/window/height-graph-results/exact-match.c`,
+and `nonmatchings/orchestrated-202606/baselines/window-exact.diff`. The
+following bullets preserve the historical search record:
 
 - Loading the four RGBA5551 texels into signed `s16` scalar locals before the
   row-parity branch makes IDO hoist the loads and reproduce the target's channel
@@ -254,6 +273,25 @@ Reusable findings from that work are:
   the remaining blocker is a structural interference-graph shape rather than
   boolean spelling or storage syntax.
 
+Clean-source reconstruction now reproduces the compiler diagnostic: the
+baseline has 387 words and two mismatches; the exact source and a narrowly
+forced build each have 387 words and zero mismatches. The force changes only
+function 7, evaluation 68's desired-register argument from `v1` to `t7`;
+changing `f_ureg` itself also changes parent state and does not match.
+
+The descriptor producer is `f_build_u1`: incoming Ucode word `+12` becomes tree
+word `+44`, value `0x0c`, which `f_ureg` converts to register 3. The readable
+IDO `uoptutil` `coloroffset` table excludes `t6`–`t9`. Thus the old path was
+Uopt global-register metadata consumed by Ugen, not an alternate Uopt global
+color for `t7`. Reconstructed proof logs and parsed metrics are preserved under
+`nonmatchings/orchestrated-202606/compiler/verified-traces/` as
+`reconstruction-final-{baseline,exact,forced}`. Production acceptance uses only
+the normal configured compiler.
+
+The natural-reload and compiler-erased no-op permutations in this section are
+historical evidence, not current work items. The validated 37-candidate
+height-graph run supersedes those stale handoff suggestions.
+
 ## `func_80003530`
 
 The in-memory VPK0 decoder is an exact match in C. Its decisive donor was the
@@ -321,49 +359,165 @@ the VPK0 decoder, an identical-size routine in another HAL game should be
 compiled and compared directly before attempting a source-level rewrite; type
 declarations and no-op control-flow artifacts may be part of the match.
 
-## Final three-function checkpoint
+## Final two-function checkpoint
 
-As of the final-stretch pause, exactly three `GLOBAL_ASM` fallbacks remain:
-`fx_draw`, `func_8009E3D0`, and `func_80374714_847EC4`. The tracked scorer uses
-the configured IDO 7.1 compiler and repository `diff.py` with the expected
-translation-unit object and `difflib`. Some exploratory scripts use additional
-function-specific objdump filters, so their nonzero scores can differ slightly;
-zero remains zero under either comparison.
+The window photo downsampler is complete in C and is no longer a remaining
+fallback. Exactly two production `GLOBAL_ASM` fallbacks remain:
+`func_8009E3D0` and `fx_draw`.
 
-Run `python3 tools/score_remaining_asm.py` from the Pokémon Snap repository
-root to compile all three guarded C candidates and reproduce their current
-scores without relying on temporary permuter environments. The full local
-SSB64 decompilation is `/home/bbferko/repos/ssb-decomp-re`; its matched
-`lbParticleDrawTextures` implementation is the primary source-shape donor for
-the two rendering functions. Donor code is evidence, not acceptance: always
-score the Pokémon Snap object independently.
+The scorer uses the configured IDO 7.1 compiler and repository `diff.py`
+with the expected translation-unit object and `difflib`. The freshly updated
+`python3 tools/score_remaining_asm.py` compiles only those two targets and
+reports:
 
-- `func_80374714_847EC4` scores **50**. Its frame, branches, stack slots, and
-  instruction schedule match; only ten register operands remain different.
-  The residual color cycle is confined to the success initializer and final
-  cache writeback (`a2/t7`, `v0/t8`, and `t6/t9`). Exhaustive declaration,
-  scalar type, initializer order, block-local reuse, failure reload, tile
-  register, erased-liveness, and two separate permuter searches did not beat
-  50. Do not repeat those basins without a new interference-graph hypothesis.
-- `func_8009E3D0` scores **1707**, improved from 1722 by delaying
-  `textureData = sprites->data[effect->dataID]` until after the depth and
-  playback-flag calculations. The target and candidate are instruction-identical
-  before the particle loop except for the `0x2F0` versus `0x300` frame size.
-  The loop's central blocker is a global FPR coloring mismatch coupled to the
-  counter: the target uses an unmasked 32-bit counter at `0x98(sp)`, while the
-  current behavior-preserving candidate uses a masked 16-bit counter at
-  `0x70(sp)`. A fresh 56-position/scope counter sweep could not produce the
-  target slot. The raw permuter score 1636 is invalid because it removes
-  `size *= invW`; never adopt it. The interrupted 5,040 late-float declaration
-  sweep should be restarted from the committed 1707 source.
-- `fx_draw` scores **4586** with the tracked scorer. The older custom scorer,
-  which normalizes one additional relocation alias through
-  `nonmatchings/fx_draw_objdump_filter.sh`, reports 4576 for the same object.
-  The closest donor remains SSB64's matched `lbParticleDrawTextures`, but the
-  already-tested donor oddities and all 48 `particleLists` declaration
-  placements did not improve it. Its target frame is `0x2E0` and the current
-  frame is `0x2E8`; the remaining work is predominantly register allocation
-  rather than missing behavior.
+- `func_8009E3D0`: **1707**.
+- `fx_draw`: **4366**. The earlier **4586** figure is stale.
+
+Neither remaining renderer is an exact C match. Donor code, including SSB64's
+matched `lbParticleDrawTextures`, remains research evidence rather than an
+acceptance claim.
+
+Fresh parent verification restored the production build and reported
+`build/pokemonsnap.z64: OK`. The legacy full-TU splice helper now cuts at the
+next function boundary instead of relying on the removed window fallback; its
+recompiled exact window candidate still reports `CURRENT (0)`.
+
+The local `.omp/compile_commands.json` has corrected clangd include paths.
+Window diagnostics are 0 errors and 1 existing unused-include warning. The
+source renderers remain hash-identical to their recorded entries in
+`nonmatchings/orchestrated-202606/entry-hashes.json`; that manifest is baseline
+evidence, not a reason to rewrite unrelated renderer sources.
+
+The upstream anchor is `1978bb52`, equal to its remote anchor. Only two lockfile
+patches are applied locally, without commits: `gitpython` 3.1.60 and
+`mapfile-parser` 2.13.2.
+
+The completed ordinal-index experiment produces the particle target's unmasked
+compiler-generated counter class (`lw t6` / `addiu t7`). Best ordinal source:
+1716, frame `0x308`, counter `0x94`; removing the projection-row alias reaches
+counter `0x98` at 2052, but still misses frame `0x2f0`. These are structural
+observations, not improvements over the production candidate's full score.
+The old effects-union ordinal family is unsafe: overwriting the effects-base
+storage inside the loop can invalidate later iterations. Do not integrate it.
+Evidence: `nonmatchings/orchestrated-202606/particle/mechanism/ordinal-results-full/metrics.json`.
+
+For `fx_draw`, swapping the first two squared terms of the second matrix norm
+improves the research score to 4334. The full function still has 1375 words and
+frame `0x2e8`, versus target 1374 words and frame `0x2e0`. The 24 scope, 13
+norm-load, and 7 list-loop experiments did not produce an exact match.
+That norm-only source is preserved at
+`nonmatchings/orchestrated-202606/effect/mechanism/norm-rqhp27ag/008-0d38708bd667/candidate.c`.
+Later camera-carrier work reaches 4316 with the exact `0x2e0` frame, still
+1375 words: `effect/camera-carriers/008-14a02f4f6c25/candidate.c` beneath the
+same research root. Removing the erased `if (sp220);` reaches 1374 words but
+worsens the score to 4536. No partial renderer candidate was integrated.
+
+The isolated Uopt allocation diagnostic was verified against four normal
+particle objects with zero changed instruction words. CFE local bytes and
+pre-reemit spill bytes are separate: baseline 620+36, ordinal 624+40,
+no-projection-alias ordinal 620+40, compact carriers 596+40. The first
+current-block `Urlda` snapshots that preallocated space into the final Mmt
+definition. A later `gettemp` does not account for the excess frame.
+
+Callee saves are a third component. The compact reciprocal/radius carrier
+adds an `$f26` save/restore pair, increasing the frame by eight bytes and
+code by two words. The `left`/`top` split radius carriers instead reach
+the exact particle frame `0x2f0`, counter `0x98`, and 1420-word size, but
+remain nonmatches at 9342/9307. Their sources are under
+`particle/compact-float-carriers/runs/{009-left-split,011-top-split}/`.
+Fixed matrix offsets constrain a 20-byte particle declaration prefix and a
+24-byte effect prefix; these are storage constraints, not recovered names.
+
+Allocation logs are under `particle/highwater/trace-probes/alloc-*`.
+Filter spill records by `proc=38`; their `seq` counts allocation events.
+The logger uses big-endian packed VariableLocation fields and must not read
+inactive `temploc` union members for islda/isvar.
+
+Continue mechanism-driven research under `effect/float-probe/` and
+`particle/layout-refinement/`. Earlier mechanism and allocation runners are
+frozen dependencies. This work does not change the completed window checkpoint.
 
 The research scripts and generated candidates under `nonmatchings/` are local
 scratch artifacts and are intentionally excluded from contribution commits.
+
+### Safe candidate scoring
+
+Use the scoring helper with a private output object and a mirrored original
+reference under `expected/`. The helper normalizes absolute output paths to
+repository-relative paths and rejects missing references or candidate/reference
+aliases before compiling. Object-mode `diff.py` also normalizes absolute paths
+before resolving the expected object. Previously, an absolute path discarded
+the reference prefix and produced a false zero by comparing an object to itself.
+
+The blocker audit reproduced 14835 versus false zero for the same object,
+then verified the corrected helper with real normal-IDO builds: the current
+best sources score 1186 and 3472 through both absolute and relative paths.
+Neither renderer is exact. Preserve the source
+hash with each complete diff; a shared scratch object holds only the last
+experiment, not necessarily the best candidate.
+
+Object comparison now asks objdump for the complete named symbol rather than
+everything after its label. A two-function smoke object demonstrated the
+boundary bug: changing only the later function previously scored 5 and now
+scores 0. A difference after the selected function's first return still scores
+5, proving the fix does not truncate multiple-return functions. Both renderer
+scores remain 1186/3472 with the corrected symbol boundaries.
+
+The historical references also use `D_800BE288` where current C uses
+`fx_SpriteBanks`, linked at 0x800BE288. This contributes 10 points without
+an instruction difference. Private canonical references under
+`expected/nonmatchings/orchestrated-202606/blocker-audit-20260927/canonical-reference/`
+rename only that symbol with `objcopy --redefine-sym`. All allocated section
+bytes and all relocation meanings were verified unchanged after that alias.
+Normal best-source scores are 1176/3462 against these references; this is
+metric normalization, not matching progress. Historical scores remain
+1186/3472. Identical canonical objects score zero; changing the array to an
+unrelated symbol still scores 10. See `canonical-reference/manifest.json`
+for hashes and controls. Do not rename production C or ignore arbitrary
+symbols; canonical zero still requires the complete normal-IDO comparison
+and final linked ROM checksum.
+
+### Bind compiler traces to operations
+
+Do not infer a compiler node's identity from a familiar stack offset or carry
+bit numbers between source variants. The old particle trace labeled home -248
+as the reciprocal; assignment endpoints identify it as normalized Z. In the
+current 1186 source, `invW` at -240 has no global range. The reciprocal is a
+division-expression range (bit 1086, internal color 30, emitted F20).
+The corrected passive trace emits the complete 17136-byte translation-unit
+text identically to the configured compiler.
+
+An assigned color or a shared basic block does not identify the interference
+edge that excluded another register. Keep hook source and build dependencies
+with the trace, record actual operands and assignment endpoints, and prove
+zero changed code before using diagnostic output to guide source changes.
+
+The restored allocator probe records both initial constraints and the inline
+colored-neighbor propagation in `globalcolor`. The initial `updateforbidden`
+hook alone missed those later edges. Its complete TU text matches normal IDO
+for both best candidates (17136/21760 bytes). The archived float probe inputs
+and hashes are in `blocker-audit-20260927/allocator-propagation-equivalence.json`.
+
+The actual particle F2 blocker is the size range at -168, selected at priority
+50 before the division's 16.6667. For effect, the division expression itself
+takes F2 at priority 5000 and forbids it for the destination variable, later
+selected at 1666.67. `compute_save` divides frequency-weighted savings by a
+compressed live-unit/bitvector count. Trace priority values are meaningful
+only after computation (`phase=priority-selected`), not at initialization.
+
+Changing one allocation is not sufficient: fusing particle size scaling makes
+the division emit into target F2, but introduces a global inverse variable
+and an extra spill at SP+0x200. It scores 1312 with 1421 words, not an exact
+match. The new range, absent from the 1186 baseline, explains that spill.
+
+### Check generated store boundaries
+
+A source assignment after a branch does not prove a late machine store.
+Effect's separate late S-step carrier (4726) still emits two early stores:
+the final scalar copy is forwarded away. A one-element addressable S-step
+home retains a single late SP+0x200 store and the 736-byte/1374-word shape,
+but the tested sprite-pointer carrier uses V1 instead of target V0 and
+scores 5510. Actual neighbor propagation identifies the sprite-index range
+as that carrier's V0 blocker. Neither representation is an integration
+candidate. Integer traces are passive-equal to normal objects; reduced
+evidence and source/object hashes are in `step-causal-{edges,probes}.json`.
