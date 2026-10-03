@@ -1523,7 +1523,7 @@ def dump_objfile(
     if not os.path.isfile(objfile):
         fail(f"Not able to find .o file for function: {objfile} is not a file.")
 
-    refobjfile = os.path.join(project.expected_dir, objfile)
+    refobjfile = os.path.join(project.expected_dir, os.path.relpath(objfile))
     if config.diff_mode != DiffMode.SINGLE and not os.path.isfile(refobjfile):
         fail(f'Please ensure an OK .o file exists at "{refobjfile}".')
 
@@ -1532,7 +1532,13 @@ def dump_objfile(
     else:
         disassemble_flag = "-d"
 
-    objdump_flags = [disassemble_flag, "-rz", "-j", config.diff_section]
+    objdump_flags = [
+        disassemble_flag,
+        "-rz",
+        "-j",
+        config.diff_section,
+        f"--disassemble={start}",
+    ]
     return (
         objfile,
         (objdump_flags, refobjfile, start),

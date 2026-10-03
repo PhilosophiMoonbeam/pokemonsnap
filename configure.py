@@ -27,12 +27,16 @@ LD_PATH = f"{BASENAME}.ld"
 MAP_PATH = f"build/{BASENAME}.map"
 ELF_PATH = f"build/{BASENAME}.elf"
 Z64_PATH = f"build/{BASENAME}.z64"
+OBJECTS_PATH = f"build/{BASENAME}.objects"
+GENERATED_UNDEFINED_SYMS_PATH = f"build/{BASENAME}.undefined_syms.txt"
+UNDEFINED_SYMS_GENERATOR = TOOLS_DIR / "build" / "undefined_syms.py"
 OK_PATH = f"build/{BASENAME}.ok"
 
 COMMON_INCLUDES = "-I include -I src -I ultralib/include -I ultralib/include/ido -I ultralib/include/PR -I ultralib/src -I build/include -I build -I ."
 IDO_DEFS = "-DF3DEX_GBI_2 -D_LANGUAGE_C -DNDEBUG -D_FINALROM"
 
 CROSS = "mips-linux-gnu-"
+CROSS_NM = f"{CROSS}nm"
 CROSS_AS = f"{CROSS}as"
 CROSS_CPP = shutil.which(f"{CROSS}cpp") or shutil.which("cpp") or f"{CROSS}cpp"
 CROSS_LD = f"{CROSS}ld"
@@ -261,9 +265,15 @@ def create_build_script(linker_entries: List[LinkerEntry]):
     )
 
     ninja.rule(
+        "undefined_syms",
+        description="undefined_syms $out",
+        command=f"{sys.executable} {UNDEFINED_SYMS_GENERATOR} --nm {CROSS_NM} --objects $objects --auto undefined_syms_auto.txt --manual undefined_syms.txt --output $out",
+    )
+
+    ninja.rule(
         "ld",
         description="link $out",
-        command=f"{CROSS_LD} -T undefined_syms.txt -T undefined_syms_auto.txt -Map $mapfile -T $in -o $out",
+        command=f"{CROSS_LD} -T undefined_syms.txt -T $undefined_syms -Map $mapfile -T $in -o $out",
     )
 
     ninja.rule(
@@ -554,12 +564,33 @@ def create_build_script(linker_entries: List[LinkerEntry]):
             print(f"ERROR: Unsupported build segment type {seg.type}")
             sys.exit(1)
 
+    object_strs = sorted(str(obj) for obj in built_objects)
+    objects_path = Path(OBJECTS_PATH)
+    objects_path.parent.mkdir(parents=True, exist_ok=True)
+    objects_path.write_text("\n".join(object_strs) + "\n")
+
+    ninja.build(
+        GENERATED_UNDEFINED_SYMS_PATH,
+        "undefined_syms",
+        [
+            str(UNDEFINED_SYMS_GENERATOR),
+            OBJECTS_PATH,
+            "undefined_syms_auto.txt",
+            "undefined_syms.txt",
+        ],
+        implicit=object_strs,
+        variables={"objects": OBJECTS_PATH},
+    )
+
     ninja.build(
         ELF_PATH,
         "ld",
         LD_PATH,
-        implicit=[str(obj) for obj in built_objects],
-        variables={"mapfile": MAP_PATH},
+        implicit=[GENERATED_UNDEFINED_SYMS_PATH, *object_strs],
+        variables={
+            "mapfile": MAP_PATH,
+            "undefined_syms": GENERATED_UNDEFINED_SYMS_PATH,
+        },
     )
 
     ninja.build(

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile and score the final GLOBAL_ASM C candidates."""
+"""Compile and score the remaining GLOBAL_ASM C candidates."""
 
 from __future__ import annotations
 
@@ -66,14 +66,20 @@ DIFF = [
     "./diff.py",
 ]
 TARGETS = (
-    ("func_80374714_847EC4", "src/window/847B60.c", "build/src/window/847B60.c.o", ()),
     ("func_8009E3D0", "src/app_render/47380.c", "build/src/app_render/47380.c.o", ()),
     ("fx_draw", "src/app_render/effect.c", "build/src/app_render/effect.c.o", ("-I", "src/app_render")),
 )
 
 
 def score(symbol: str, source: str, object_name: str, extra_args: tuple[str, ...]) -> int:
-    object_path = ROOT / object_name
+    object_path = (ROOT / object_name).resolve()
+    # Validate the mirrored reference before compilation can overwrite the output.
+    object_name = str(object_path.relative_to(ROOT))
+    expected_path = ROOT / "expected" / object_name
+    if not expected_path.is_file():
+        raise FileNotFoundError(f"missing reference object: {expected_path}")
+    if object_path.exists() and object_path.samefile(expected_path):
+        raise ValueError(f"candidate aliases reference object: {object_path}")
     object_path.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(
         [*COMPILE, *extra_args, "-o", str(object_path), source],

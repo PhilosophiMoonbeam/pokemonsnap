@@ -1103,6 +1103,8 @@ void fx_draw(GObj* camObj) {
         sp204 = cam->vp.vp.vtrans[2];
 
         sp220 = sqrtf(SQ(sp248[0][0]) + SQ(sp248[1][0]) + SQ(sp248[2][0]));
+        if (sp220)
+            ;
         temp_f0 = SQ(sp248[0][1]) + SQ(sp248[1][1]);
         temp_f0 += SQ(sp248[2][1]);
         temp_f0 = sqrtf(temp_f0);

@@ -116,12 +116,10 @@ PhotoData* func_803746B4_847E64(s32 arg0) {
     return &func_8009BC74()[arg0];
 }
 
-#ifdef NON_MATCHING
-
-#define AVERAGE_PIXEL(p0, p1, p2, p3)                                                                                 \
-    (((((p0) & 0xF800) + ((p1) & 0xF800) + ((p2) & 0xF800) + ((p3) & 0xF800)) / 4) & 0xF800) |                   \
-     (((((p0) & 0x07C0) + ((p1) & 0x07C0) + ((p2) & 0x07C0) + ((p3) & 0x07C0)) / 4) & 0x07C0) |                   \
-     (((((p0) & 0x003E) + ((p1) & 0x003E) + ((p2) & 0x003E) + ((p3) & 0x003E)) / 4) & 0x003E) | 1
+#define AVERAGE_PIXEL(p0, p1, p2, p3)                                                              \
+    (((((p0) & 0xF800) + ((p1) & 0xF800) + ((p2) & 0xF800) + ((p3) & 0xF800)) / 4) & 0xF800) |     \
+        (((((p0) & 0x07C0) + ((p1) & 0x07C0) + ((p2) & 0x07C0) + ((p3) & 0x07C0)) / 4) & 0x07C0) | \
+        (((((p0) & 0x003E) + ((p1) & 0x003E) + ((p2) & 0x003E) + ((p3) & 0x003E)) / 4) & 0x003E) | 1
 
 s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     s32 width;
@@ -150,9 +148,8 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
         bitmap = sprite->bitmap;
         cacheBuf = bitmap->buf;
+        cacheSize = bitmap->width_img * sprite->height;
         dst = cacheBuf;
-        texelCount = sprite->height;
-        cacheSize = bitmap->width_img * texelCount;
         width = cacheSize;
         (width && width);
         y = 0;
@@ -162,10 +159,9 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
                 *dst++ = 0;
                 y++;
             } while (y != width);
-            reloadBitmap = sprite->bitmap;
+            reloadBitmap = (Bitmap*) ((uintptr_t) sprite->bitmap & 0xFFFFFFFFFFFFFFFFu);
             cacheBuf = reloadBitmap->buf;
-            texelCount = sprite->height;
-            cacheSize = reloadBitmap->width_img * (0, texelCount);
+            cacheSize = (s32) ((u64) reloadBitmap->width_img) * (s32) ((u64) sprite->height);
         }
         osWritebackDCache(cacheBuf, cacheSize);
         return 1;
@@ -173,7 +169,7 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
     ;
     bitmapRow = sprite->width;
-    width = bitmapRow;
+    width = bitmapRow & 0xFFFFFFFFFFFFFFFFu;
     (bitmapRow && bitmapRow);
     bitmapRow = 0;
     ;
@@ -188,10 +184,10 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
     dstWidth.stored = (s32) (uintptr_t) (finalBitmap = (volatile Bitmap*) (uintptr_t) bitmap->width_img);
     ;
     bitmapIndex = 0;
-    tileHeight = bitmap->actualHeight;
+    tileHeight = bitmap->actualHeight & 0xFFFFFFFFFFFFFFFFu;
     ;
 
-    if (initialHeight > 0) {
+    if ((s32) ((u64) initialHeight) > 0) {
         do {
             x = 0;
             dst = (u16*) bitmap[bitmapIndex].buf + (bitmapRow * dstWidth.stored);
@@ -209,7 +205,10 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                     srcRow1 = srcPixels;
                     srcRow1 += src->width;
+                    // Keep these loads on one source line for IDO scheduling.
+                    // clang-format off
                     pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
+                    // clang-format on
                     if (bitmapRow & 1) {
                         *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                     } else {
@@ -236,7 +235,9 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                             srcRow1 = srcPixels;
                             srcRow1 += src->width;
+                            // clang-format off
                             pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
+                            // clang-format on
                             if (bitmapRow) {
                             }
                             if (rowParity) {
@@ -257,7 +258,9 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 
                             srcRow1 = srcPixels;
                             srcRow1 += src->width;
+                            // clang-format off
                             pixel0 = srcPixels[0]; pixel1 = srcPixels[1]; pixel2 = srcRow1[0]; pixel3 = srcRow1[1];
+                            // clang-format on
                             if (rowParity) {
                                 *(u16*) (((uintptr_t) dst) ^ 4) = AVERAGE_PIXEL(pixel0, pixel1, pixel2, pixel3);
                             } else {
@@ -289,9 +292,6 @@ s32 func_80374714_847EC4(PhotoData* photo, Sprite* sprite) {
 #undef AVERAGE_PIXEL
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/window/847B60/func_80374714_847EC4.s")
-#endif
 
 void func_80374D20_8484D0(void) {
     func_8009FBC4();
