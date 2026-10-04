@@ -6,6 +6,44 @@ matching remains paused and must not resume without an explicit request.
 
 # Continue — remaining two assembly fallbacks
 
+## Restored development environment — 2026-10-04
+
+Ubuntu 26.04.1 LTS, x86-64. Restoration and exact-ROM build verification are
+complete; matching was not resumed. The checkout remains on
+`hermes/final-stretch` at migration checkpoint
+`adfb1ceb2396dd0f489ae38f5aaa7a6a7af5a6c8`. Git status was clean after setup;
+historical dirty-worktree/no-commit statements below describe earlier work.
+
+- Public research and private migration state were restored in runbook order.
+  All eight private package checksums passed. Staged/restored comparisons found
+  no missing paths or content differences outside intentionally excluded metadata.
+  `AGENTS.md` is restored and ignored; read it first and never commit it.
+- Local Git protections are installed. The refs bundle was verified, not
+  imported over branches or anchors. Historical production sources were not overlaid.
+- Normal IDO 7.1/5.3 and asm-processor are configured. MIPS binutils 2.42,
+  Ninja 1.13.2, pigment64 0.6.3, uv 0.12.13, and Rust/cargo 1.98.1 are available.
+  Frozen Python synchronization uses Python 3.13.13; `uv.lock` is unchanged.
+- `tools/server-bootstrap.sh` and `sha1sum -c checksum.sha1` passed after private
+  restoration. The linker used generated `build/pokemonsnap.undefined_syms.txt`.
+  This verifies the ASM-backed ROM, not either outstanding renderer C match.
+- Host build tools are user-installed under `~/.local/share/pokemonsnap-host`
+  with launchers in `~/.local/bin`. For direct archived binutils invocation,
+  include both its `usr/lib/x86_64-linux-gnu` directory and
+  `$HOME/.local/share/pokemonsnap-host/usr/lib/x86_64-linux-gnu` in
+  `LD_LIBRARY_PATH`; the latter supplies `libsframe.so.1`. Preserve archived tools.
+  The 50 known broken binutils documentation/manpage links are unchanged.
+- Clang-format 21.1.8 and IDE extras were not installed. Inspect live Format CI
+  before installing a formatter; do not bulk-reformat compiler-sensitive source.
+- Graft was available but had no usable graph during setup. Try `graft map`,
+  then `graft ask "<question>" --source` before source exploration; if unavailable,
+  use targeted repository searches rather than making graph setup a prerequisite.
+
+An explicit request to resume authorizes matching, not commits or pushes.
+Start with the current checkpoint and “Next action — only when asked to resume”
+below; older sections are historical. Do not reopen the exact window match,
+run reset/clean, or run the production-object scorer without its repair procedure.
+
+
 ## Current paused checkpoint
 
 **Paused at the user's request. Do not resume matching automatically.**
@@ -27,7 +65,7 @@ Exact paths and hashes, measured experiments, compiler arguments, trace proofs,
 and source-eligibility decisions are in
 **`nonmatchings/orchestrated-202606/resume-20261002/pause-checkpoint.json`**.
 This checkpoint supersedes all status and next-action claims in the historical
-material below. Preserve the intentionally dirty worktree and private searches.
+material below. Preserve any current worktree changes and all private searches.
 
 **Last action:** Closed all ten queued private trials through normal IDO and
 complete canonical comparisons. Neither best score improved. Address-only
@@ -36,7 +74,7 @@ baseline. Effect inline reciprocal/radius variants score 3693/736/1374 and emit
 the reciprocal into F16 with W at F18, not the target F2/F20. Integer-address
 and byte-offset cursor trials also fail the complete match.
 
-**Fresh production verification:** `ninja build/pokemonsnap.ok &&
+**Paused-checkpoint production verification:** `ninja build/pokemonsnap.ok &&
 sha1sum -c checksum.sha1` reported `ninja: no work to do.` and
 `build/pokemonsnap.z64: OK`. All nine recorded production-source/compiler/
 scorer hashes remain unchanged. This verifies the preserved ASM-backed ROM,
