@@ -33,3 +33,5 @@ venv/
 
 # Authored existing-slot audio overrides; generated sources remain in build/assets.
 /src/audio/instruments/
+/src/audio/midis/
+/src/pokemonsnap.egg-info/
