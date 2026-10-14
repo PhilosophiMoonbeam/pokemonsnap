@@ -345,9 +345,22 @@ def create_build_script(linker_entries: List[LinkerEntry]):
         command=f"{sys.executable} tools/build/audio_banks.py inventory $table_json $overrides $out",
         restat=True,
     )
-
-
     ninja.build("audio_always", "phony")
+    ninja.rule(
+        "audio_seq",
+        description="audio sequence bank $out",
+        command=f"{sys.executable} tools/audio_sequence_bank.py build $source $out",
+        restat=True,
+    )
+    ninja.rule(
+        "audio_sequence_inventory",
+        command=f"{sys.executable} tools/audio_sequence_bank.py inventory src/audio/midis $out",
+        restat=True,
+    )
+    ninja.build("audio_inventory_force", "phony")
+    ninja.build("build/audio_sequences.inventory", "audio_sequence_inventory",
+                implicit=["audio_inventory_force", "tools/audio_sequence_bank.py"])
+
     for entry in linker_entries:
         seg = entry.segment
 
@@ -624,6 +637,15 @@ def create_build_script(linker_entries: List[LinkerEntry]):
                 )
             else:
                 build(entry.object_path, [entry.object_path.with_suffix("")], "bin")
+        elif seg.type == "snap_audio_sbk":
+            raw_bin = entry.object_path.with_suffix("")
+            ninja.build(str(raw_bin), "audio_seq",
+                        [str(path) for path in entry.src_paths],
+                        implicit=["build/audio_sequences.inventory", "tools/audio_seq.py",
+                                  "tools/audio_midi.py", "tools/audio_native.py",
+                                  "tools/audio_midi_hints.py", "tools/audio_sequence_bank.py"],
+                        variables={"source": str(entry.src_paths[0])})
+            build(entry.object_path, [raw_bin], "bin")
         elif isinstance(seg, splat.segtypes.common.bin.CommonSegBin):
             build(entry.object_path, entry.src_paths, "bin")
         elif seg.type == "snap_effect_sprites":
