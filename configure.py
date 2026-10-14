@@ -558,6 +558,8 @@ def create_build_script(linker_entries: List[LinkerEntry]):
             compressed = entry.object_path.with_suffix(".vpk0")
             build(compressed, entry.src_paths, "vpk0_compress")
             build(entry.object_path, [compressed], "bin")
+        elif seg.type == "snap_fill":
+            build(entry.object_path, entry.src_paths, "as")
         elif isinstance(seg, splat.segtypes.common.bin.CommonSegBin):
             build(entry.object_path, entry.src_paths, "bin")
         elif seg.type == "snap_effect_sprites":

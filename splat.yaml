@@ -263,7 +263,7 @@ segments:
     - [0x437F0, .data, ../ultralib/src/audio/csplayer]
     - [0x43830, .data, ../ultralib/src/vimodes/vimodepallan1]
     - [0x43880, .data, ../ultralib/src/os/exceptasm]
-    - [0x438A0, data]
+    - { start: 0x438A0, type: snap_fill, name: sdk_reserved_zero, value: 0 }
     - [0x438B0, .data, ../ultralib/src/os/thread]
     - [0x438D0, .data, ../ultralib/src/io/siacs]
     - [0x438E0, .data, ../ultralib/src/io/controller]
@@ -10537,7 +10537,7 @@ segments:
   - [0xAFD494, bin, audio/seq/AFD494]
   - [0xAFDCD8, bin, audio/seq/AFDCD8]
   - [0xAFDDC4, bin, audio/seq/AFDDC4]
-  - [0xAFEED8, bin, AFEED8] # padding
+  - { start: 0xAFEED8, type: snap_fill, name: AFEED8, subalign: 1 }
 
   # Audio banks and wave tables
   - [0xAFEEE0, bin, audio/bank1]
@@ -10545,5 +10545,5 @@ segments:
   - [0xBA6C20, bin, audio/bank2]
   - [0xBB6940, bin, audio/table2]
 
-  - [0xF53540, bin, padding]
+  - { start: 0xF53540, type: snap_fill, name: padding, value: 0xFF, subalign: 1 }
   - [0x1000000]

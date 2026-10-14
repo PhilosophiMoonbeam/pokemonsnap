@@ -19,3 +19,11 @@ For Python dependencies:
 2. (one-time) Set up tools: `uv run configure.py --setup`
 3. Run extraction and disassembly: `uv run configure.py`
 4. Rebuild the rom: `ninja`
+
+## Uniform ROM fill
+
+The `snap_fill` segment type rebuilds verified repeated-byte regions from
+their size and fill value using assembler `.fill` directives. It covers the
+SDK reserved zeros, audio alignment bytes, and final `0xFF` ROM padding.
+Extraction rejects nonuniform input; no binary assets or padding-only C
+include files are required.
